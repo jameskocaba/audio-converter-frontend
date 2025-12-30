@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bacon Converter | Pro Audio Tool</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🥓 BACON</h1>
+        <h1>Batch Audio Converter</h1>
+        <p class="subtitle">Convert SoundCloud playlists or tracks to High-Quality MP3</p>
+        
+        <div class="input-group">
+            <input type="text" id="urlInput" placeholder="Paste playlist or track here...">
+            <button id="pasteBtn" type="button">Paste</button>
+        </div>
+        
+        <button id="convertBtn">Convert to MP3</button>
+        <div id="status">Ready</div>
+
+        <div id="downloadArea" class="hidden">
+            <div class="download-header">
+                <h3>Your Downloads</h3>
+                <button id="clearBtn">Clear List</button>
+            </div>
+            <ul id="downloadList"></ul>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 Bacon Converter. Batch Audio Extraction.</p>
+            <div class="footer-links">
+                <a href="#" onclick="openModal('aboutModal')">About</a> | 
+                <a href="#" onclick="openModal('privacyModal')">Privacy</a> | 
+                <a href="#" onclick="openModal('disclaimerModal')">Disclaimer</a>
+            </div>
+        </footer>
+    </div>
+
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('aboutModal')">&times;</span>
+            <h2>About</h2>
+            <p>Bacon Converter is a specialized tool for extracting high-bitrate audio from public web links. We focus on batch processing, allowing you to "fry up" entire playlists at once.</p>
+        </div>
+    </div>
+
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('privacyModal')">&times;</span>
+            <h2>Privacy</h2>
+            <p>We do not store user data or IP logs. Files are cached temporarily for download and automatically deleted from our server every hour. No account required.</p>
+        </div>
+    </div>
+
+    <div id="disclaimerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('disclaimerModal')">&times;</span>
+            <h2>Legal Disclaimer</h2>
+            <p>This service is intended for personal, non-commercial use only. Users are responsible for complying with the terms of service of the content platforms and local copyright laws.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
