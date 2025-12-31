@@ -1,66 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MP3 Audio | Pro Conversion Tool</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="container">
-        <h1>MP3 Audio</h1>
-        <p class="subtitle">Convert SoundCloud playlists to High-Quality MP3s up to 15 tracks at a time. Tips are appreciated</p>
-        
-        <div class="input-group">
-            <input type="text" id="urlInput" placeholder="Paste playlist or track here...">
-            <button id="pasteBtn" type="button">Paste</button>
-        </div>
-        
-        <button id="convertBtn">Convert to MP3</button>
-        <div id="status">Ready</div>
-
-        <div id="downloadArea" class="hidden">
-            <div class="download-header">
-                <h3>Your Downloads</h3>
-                <button id="clearBtn">Clear List</button>
-            </div>
-            <ul id="downloadList"></ul>
-        </div>
-
-        <footer>
-            <p>&copy; 2025 MP3 Audio. All Rights Reserved.</p>
-            <div class="footer-links">
-                <a href="#" onclick="openModal('aboutModal')">About</a> | 
-                <a href="#" onclick="openModal('privacyModal')">Privacy</a> | 
-                <a href="#" onclick="openModal('disclaimerModal')">Disclaimer</a>
-            </div>
-        </footer>
+<footer>
+    <p>&copy; 2025 MP3 Audio. All Rights Reserved.</p>
+    <div class="footer-links">
+        <a href="#" onclick="openModal('aboutModal')">About</a> | 
+        <a href="#" onclick="openModal('privacyModal')">Privacy</a> | 
+        <a href="#" onclick="openModal('disclaimerModal')">Disclaimer</a> | 
+        <a href="https://buymeacoffee.com/jameskocaba" target="_blank">Donate</a>
     </div>
-
-    <div id="aboutModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('aboutModal')">&times;</span>
-            <h2>About</h2>
-            <p>MP3 Audio is a specialized tool for extracting high-bitrate audio from public web links. We focus on batch processing, allowing you to download multiple tracks at once.</p>
-        </div>
-    </div>
-
-    <div id="privacyModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('privacyModal')">&times;</span>
-            <h2>Privacy</h2>
-            <p>We do not store user data or IP logs. Files are cached temporarily for download and automatically deleted from our server every hour. No account required.</p>
-        </div>
-    </div>
-
-    <div id="disclaimerModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('disclaimerModal')">&times;</span>
-            <h2>Legal Disclaimer</h2>
-            <p>This service is intended for personal, non-commercial use only. Users are responsible for complying with the terms of service of the content platforms and local copyright laws.</p>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+</footer>
