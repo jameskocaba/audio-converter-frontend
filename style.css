@@ -43,42 +43,6 @@ footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; fon
 .footer-links a { color: #3b82f6; text-decoration: none; margin: 0 5px; cursor: pointer; }
 
 /* Modals */
-.modal { 
-  display: none; 
-  position: fixed; 
-  z-index: 100; 
-  left: 0; 
-  top: 0; 
-  width: 100%; 
-  height: 100%; 
-  background: rgba(0,0,0,0.5); 
-  
-  /* ADD THESE THREE LINES TO CENTER EVERYTHING */
-  .modal.is-open {
-  display: flex;         /* Overrides display: none */
-  align-items: center;   /* Vertical center */
-  justify-content: center; /* Horizontal center */
-}
-
-.modal-content { 
-  background: white; 
-  /* REMOVE margin: 15% auto; */
-  padding: 25px; 
-  border-radius: 12px; 
-  width: 100%;           /* Use full width of container */
-  max-width: 500px;      /* But don't exceed 500px */
-  max-height: 90dvh;     /* Limit height to 90% of dynamic viewport */
-  overflow-y: auto;      /* Add scrollbar if content is too long */
-  position: relative; 
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2); /* Added for depth */
-}
-
-.close { 
-  position: absolute; 
-  right: 15px; 
-  top: 10px; 
-  font-size: 24px; 
-  cursor: pointer; 
-  color: #94a3b8; 
-  z-index: 10;            /* Ensure it stays above content */
-}
+.modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+.modal-content { background: white; margin: 15% auto; padding: 25px; border-radius: 12px; width: 80%; max-width: 500px; position: relative; }
+.close { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; color: #94a3b8; }

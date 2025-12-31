@@ -9,14 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
 
-    // Paste from clipboard
     pasteBtn.addEventListener('click', async () => {
         try {
             urlInput.value = await navigator.clipboard.readText();
         } catch (err) { alert("Please paste manually."); }
     });
 
-    // Clear inputs and list
     clearBtn.addEventListener('click', () => {
         downloadList.innerHTML = '';
         downloadArea.classList.add('hidden');
@@ -24,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         statusDiv.textContent = "Ready";
     });
 
-    // Main Conversion Logic
     convertBtn.addEventListener('click', async () => {
         const url = urlInput.value.trim();
         if (!url) return;
@@ -79,28 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-/** * MODAL SYSTEM 
- * Uses 'is-open' class for Flexbox centering
- */
-function openModal(id) {
-    const modal = document.getElementById(id);
-    if (modal) {
-        modal.classList.add('is-open');
-        document.body.style.overflow = 'hidden'; // Stop background scroll
-    }
-}
-
-function closeModal(id) {
-    const modal = document.getElementById(id);
-    if (modal) {
-        modal.classList.remove('is-open');
-        document.body.style.overflow = 'auto'; // Restore background scroll
-    }
-}
-
-// Global listener to close modal when clicking outside the content
-window.addEventListener('click', (e) => {
-    if (e.target.classList.contains('modal')) {
-        closeModal(e.target.id);
-    }
-});
+function openModal(id) { document.getElementById(id).style.display = "block"; }
+function closeModal(id) { document.getElementById(id).style.display = "none"; }
+window.onclick = (e) => { if (e.target.className === 'modal') e.target.style.display = "none"; };
