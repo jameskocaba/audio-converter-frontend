@@ -54,7 +54,7 @@ footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; fon
   background: rgba(0,0,0,0.5); 
   
   /* ADD THESE THREE LINES TO CENTER EVERYTHING */
-  .modal.is.open {
+  .modal.is-open {
   display: flex;         /* Overrides display: none */
   align-items: center;   /* Vertical center */
   justify-content: center; /* Horizontal center */
