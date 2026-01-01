@@ -76,6 +76,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function openModal(id) { document.getElementById(id).style.display = "block"; }
-function closeModal(id) { document.getElementById(id).style.display = "none"; }
-window.onclick = (e) => { if (e.target.className === 'modal') e.target.style.display = "none"; };
+// Use 'flex' instead of 'block' to support the new CSS centering logic
+function openModal(id) { 
+    document.getElementById(id).style.display = "flex"; 
+}
+
+function closeModal(id) { 
+    document.getElementById(id).style.display = "none"; 
+}
+
+window.onclick = (e) => { 
+    if (e.target.className === 'modal') e.target.style.display = "none"; 
+};

@@ -42,7 +42,38 @@ input:focus { border-color: #3b82f6; outline: none; }
 footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 0.75rem; color: #94a3b8; }
 .footer-links a { color: #3b82f6; text-decoration: none; margin: 0 5px; cursor: pointer; }
 
-/* Modals */
-.modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-.modal-content { background: white; margin: 15% auto; padding: 25px; border-radius: 12px; width: 80%; max-width: 500px; position: relative; }
-.close { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; color: #94a3b8; }
+/* Updated Modals */
+.modal { 
+    display: none; 
+    position: fixed; 
+    z-index: 100; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0,0,0,0.5); 
+    align-items: center;      /* Centers modal vertically */
+    justify-content: center;  /* Centers modal horizontally */
+}
+
+.modal-content { 
+    background: white; 
+    padding: 25px; 
+    border-radius: 12px; 
+    position: relative; 
+    width: auto;              /* Resizes to content width */
+    max-width: 500px;         /* Prevents it from getting too wide */
+    min-width: 280px;         /* Ensures it's not too narrow on mobile */
+    max-height: 85vh;         /* Prevents it from going off-screen */
+    overflow-y: auto;         /* Adds scroll if content is very long */
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.close { 
+    position: absolute; 
+    right: 15px; 
+    top: 10px; 
+    font-size: 24px; 
+    cursor: pointer; 
+    color: #94a3b8; 
+}
