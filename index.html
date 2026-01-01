@@ -1,164 +1,171 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>MP3 Audio | Pro Audio Media Archive Conversion Tool</title>
+
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Specific styling for the Orange Warning Box */
-        #warningBox {
-            display: none;
-            background-color: #fff3e0; /* Light Orange */
-            border: 1px solid #ffe0b2;
-            color: #e65100; /* Darker orange text */
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: left;
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-        #warningBox ul {
-            margin: 10px 0 0 20px;
-            padding: 0;
-        }
-        .hidden { display: none; }
-    </style>
+
 </head>
+
 <body>
+
     <div class="container">
+
         <h1>MP3 Audio</h1>
+
         <p class="subtitle">Backup SoundCloud shareable tracks and playlists to High-Quality MP3s up to 15 songs at a time.</p>
+
         
+
         <div class="input-group">
+
             <input type="text" id="urlInput" placeholder="Paste shareable playlist or track url here...">
+
             <button id="pasteBtn" type="button">Paste</button>
+
         </div>
+
         
+
         <button id="convertBtn">Convert to MP3</button>
-        
-        <div id="warningBox">
-            <strong>Notice:</strong> <span id="warningMessage"></span>
-        </div>
 
         <div id="status">Ready</div>
 
+
+
         <div id="downloadArea" class="hidden">
+
             <div class="download-header">
+
                 <h3>Your Downloads</h3>
+
                 <button id="clearBtn">Clear List</button>
+
             </div>
+
             <ul id="downloadList"></ul>
+
         </div>
 
+
+
         <footer>
+
             <p>&copy; 2025 MP3 Audio. All Rights Reserved.</p>
+
             <div class="footer-links">
+
                 <a href="mailto:jameskocaba@gmail.com">Contact</a> |
+
                 <a href="#" onclick="openModal('aboutModal')">About</a> |
+
                 <a href="#" onclick="openModal('FAQModal')">FAQs</a> |
+
                 <a href="#" onclick="openModal('privacyModal')">Privacy</a> | 
+
                 <a href="#" onclick="openModal('disclaimerModal')">Disclaimer</a> |
+
                 <a href="https://buymeacoffee.com/jameskocaba" target="_blank">Donate</a>
+
             </div>
+
         </footer>
+
     </div>
 
-    <div id="aboutModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('aboutModal')">&times;</span><h2>About</h2><p>Content here...</p></div></div>
-    <div id="FAQModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('FAQModal')">&times;</span><h2>FAQs</h2><p>Content here...</p></div></div>
-    <div id="privacyModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('privacyModal')">&times;</span><h2>Privacy</h2><p>Content here...</p></div></div>
-    <div id="disclaimerModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('disclaimerModal')">&times;</span><h2>Legal Disclaimer</h2><p>Content here...</p></div></div>
 
-    <script>
-        // DOM Elements
-        const convertBtn = document.getElementById('convertBtn');
-        const urlInput = document.getElementById('urlInput');
-        const status = document.getElementById('status');
-        const warningBox = document.getElementById('warningBox');
-        const warningMessage = document.getElementById('warningMessage');
-        const downloadArea = document.getElementById('downloadArea');
-        const downloadList = document.getElementById('downloadList');
 
-        // Paste functionality
-        document.getElementById('pasteBtn').addEventListener('click', async () => {
-            const text = await navigator.clipboard.readText();
-            urlInput.value = text;
-        });
+    <div id="aboutModal" class="modal">
 
-        // Conversion functionality
-        convertBtn.addEventListener('click', async () => {
-            const url = urlInput.value.trim();
-            
-            // Reset UI
-            warningBox.style.display = 'none';
-            status.innerText = "Processing...";
-            downloadList.innerHTML = "";
-            
-            try {
-                const response = await fetch('/convert', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url: url })
-                });
+        <div class="modal-content">
 
-                const data = await response.json();
+            <span class="close" onclick="closeModal('aboutModal')">&times;</span>
 
-                if (!response.ok || data.status === "error") {
-                    // Show Orange Warning for invalid links or server errors
-                    warningBox.style.display = 'block';
-                    warningMessage.innerText = data.message || "An error occurred.";
-                    status.innerText = "Ready";
-                    return;
-                }
+            <h2>About</h2>
 
-                // Handle Success
-                status.innerText = "Conversion Complete!";
-                downloadArea.classList.remove('hidden');
+            <p>At mp3aud.io, we provide a specialized utility designed for digital preservation and audio archiving. Unlike standard "ripping" tools that often re-compress audio and degrade quality, our platform focuses on as close as possbile to the Original Stream Capture. This ensures that when you generate a backup from a shareable SoundCloud link, the metadata and frequency response are preserved with the highest integrity allowed by the system.</p>
 
-                // 1. Show ZIP if available
-                if (data.zipLink) {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<a href="${data.zipLink}" class="download-link">🎁 Download All (ZIP)</a>`;
-                    downloadList.appendChild(li);
-                }
 
-                // 2. Show Individual Tracks
-                data.tracks.forEach(track => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<a href="${track.downloadLink}">${track.name}</a>`;
-                    downloadList.appendChild(li);
-                });
 
-                // 3. Show Skipped Tracks in the Orange Warning Box
-                if (data.skipped && data.skipped.length > 0) {
-                    warningBox.style.display = 'block';
-                    let listHtml = "The following tracks were skipped (likely due to artist restrictions):<ul>";
-                    data.skipped.forEach(t => listHtml += `<li>${t}</li>`);
-                    listHtml += "</ul>";
-                    warningMessage.innerHTML = listHtml;
-                }
+            <p>We believe in the importance of "Music Permanence." In an era where digital content can disappear due to platform shifts or licensing changes, mp3aud.io empowers creators and listeners to maintain a personal offline archive of the sounds that matter most. Our process is entirely browser-based and privacy-focused, ensuring your data remains your own while you secure your digital library.</p>
 
-            } catch (err) {
-                warningBox.style.display = 'block';
-                warningMessage.innerText = "Connection error. Please check if the server is running.";
-                status.innerText = "Ready";
-            }
-        });
+        </div>
 
-        // Modal Logic
-        function openModal(id) { document.getElementById(id).style.display = "block"; }
-        function closeModal(id) { document.getElementById(id).style.display = "none"; }
-        window.onclick = function(event) {
-            if (event.target.className === 'modal') { event.target.style.display = "none"; }
-        };
+    </div>
 
-        // Clear List
-        document.getElementById('clearBtn').addEventListener('click', () => {
-            downloadList.innerHTML = "";
-            downloadArea.classList.add('hidden');
-            warningBox.style.display = 'none';
-        });
-    </script>
+
+
+    <div id="FAQModal" class="modal">
+
+        <div class="modal-content">
+
+            <span class="close" onclick="closeModal('FAQModal')">&times;</span>
+
+            <h2>FAQs</h2>
+
+            <p>1. How do I back up my SoundCloud tracks to MP3?</p>
+
+            <p>Simply copy the shareable URL from SoundCloud, paste it into the search box on mp3aud.io, and click the "Analyze/Download" button. Our system will automatically process the link and generate a high-quality MP3 backup for you to save.</p>
+
+    <p>2. Why should I create a backup of my SoundCloud playlist?</p>
+
+            <p>Tracks on SoundCloud are often removed due to license changes, artist account deletions, or copyright updates. Creating a local MP3 backup ensures that you have permanent access to your favorite music and sets, even if the original link goes offline.</p>
+
+            <p>3. What audio quality are the MP3 backups?</p>
+
+            <p>We prioritize audio fidelity. Our tool attempts to capture the highest available bitrate provided by the shareable link. This ensures your backup sounds as close to the original stream as possible, typically 128kbps depending on the source file.</p>
+
+            <p>4. Is it free to use mp3aud.io?</p>
+
+            <p>Yes. Currently, our SoundCloud backup tool is 100% free to use. There is no software to install and no registration required. We provide a clean, fast interface for users to archive songs instantly.</p>
+
+        </div>
+
+    </div>
+
+
+
+    <div id="privacyModal" class="modal">
+
+        <div class="modal-content">
+
+            <span class="close" onclick="closeModal('privacyModal')">&times;</span>
+
+            <h2>Privacy</h2>
+
+            <p>We do not store user data or IP logs. Files are cached temporarily for download and automatically deleted from our server every hour. No account required.</p>
+
+        </div>
+
+    </div>
+
+
+
+    <div id="disclaimerModal" class="modal">
+
+        <div class="modal-content">
+
+            <span class="close" onclick="closeModal('disclaimerModal')">&times;</span>
+
+            <h2>Legal Disclaimer</h2>
+
+            <p>This service is intended for personal, non-commercial use only. Users are responsible for complying with the terms of service of the content platforms and local copyright laws.</p>
+
+        </div>
+
+    </div>
+
+
+
+    <script src="script.js"></script>
+
 </body>
+
 </html>
