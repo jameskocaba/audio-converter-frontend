@@ -1,14 +1,12 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif;
-    /* Soft light blue background to make the logo pop */
-    background: #f0f4f8; 
+    background: #f4f7f9;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     margin: 0;
 }
-
 .container {
     background: white;
     padding: 2.5rem;
@@ -18,120 +16,33 @@ body {
     max-width: 460px;
     text-align: center;
 }
-
-/* Updated to the dark blue from your logo */
-h1 { color: #1a4d8c; font-size: 1.6rem; margin-bottom: 0.5rem; }
+h1 { color: #1e293b; font-size: 1.6rem; margin-bottom: 0.5rem; }
 .subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem; }
-
 .input-group { display: flex; gap: 8px; margin-bottom: 1rem; }
 input { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; }
-
-/* Focus border matches the logo blue */
-input:focus { border-color: #1a4d8c; outline: none; }
-
-#pasteBtn { 
-    padding: 10px 15px; 
-    background: #475569; 
-    color: white; 
-    border: none; 
-    border-radius: 6px; 
-    cursor: pointer; 
-}
-
-/* Primary Button: Gradient from Logo Blue to Logo Green */
-#convertBtn { 
-    width: 100%; 
-    padding: 14px; 
-    background: linear-gradient(135deg, #1a4d8c 0%, #3bb371 100%); 
-    color: white; 
-    border: none; 
-    border-radius: 6px; 
-    font-weight: 600; 
-    cursor: pointer; 
-    transition: opacity 0.2s;
-}
-
-#convertBtn:hover {
-    opacity: 0.9;
-}
-
-#cancelBtn {
-    width: 100%;
-    padding: 12px;
-    background: #ef4444;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background 0.2s;
-}
-
-#cancelBtn:hover { background: #dc2626; }
-
+input:focus { border-color: #3b82f6; outline: none; }
+#pasteBtn { padding: 10px 15px; background: #475569; color: white; border: none; border-radius: 6px; cursor: pointer; }
+#convertBtn { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
 #convertBtn:disabled { background: #94a3b8; cursor: not-allowed; }
 
 #status { margin: 1.5rem 0; font-size: 0.9rem; color: #475569; }
-
-/* Spinner color updated to Logo Green */
 .spinner {
-    border: 3px solid rgba(0,0,0,0.1); 
-    width: 28px; 
-    height: 28px; 
-    border-radius: 50%;
-    border-left-color: #3bb371; 
-    animation: spin 0.8s linear infinite; 
-    margin: 0 auto 10px;
+    border: 3px solid rgba(0,0,0,0.1); width: 28px; height: 28px; border-radius: 50%;
+    border-left-color: #ef4444; animation: spin 0.8s linear infinite; margin: 0 auto 10px;
 }
-
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 .hidden { display: none !important; }
-
-.download-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-top: 1.5rem; 
-    padding-top: 1rem; 
-    border-top: 1px solid #e2e8f0; 
-}
-
+.download-header { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; }
 #clearBtn { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
 #downloadList { list-style: none; padding: 0; margin-top: 1rem; text-align: left;}
-
-/* ZIP button uses the Dark Blue */
-.zip-btn { 
-    display: block; 
-    background: #1a4d8c; 
-    color: white; 
-    padding: 12px; 
-    text-align: center; 
-    border-radius: 6px; 
-    text-decoration: none; 
-    margin-bottom: 12px; 
-    font-weight: bold; 
-}
-
-/* Track button uses the Logo Green */
-.track-btn { 
-    display: block; 
-    background: #3bb371; 
-    color: white; 
-    padding: 10px; 
-    text-align: center; 
-    border-radius: 6px; 
-    text-decoration: none; 
-    margin-bottom: 6px; 
-    font-size: 0.85rem; 
-}
+.zip-btn { display: block; background: #0f172a; color: white; padding: 12px; text-align: center; border-radius: 6px; text-decoration: none; margin-bottom: 12px; font-weight: bold; }
+.track-btn { display: block; background: #10b981; color: white; padding: 10px; text-align: center; border-radius: 6px; text-decoration: none; margin-bottom: 6px; font-size: 0.85rem; }
 
 footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 0.75rem; color: #94a3b8; }
+.footer-links a { color: #3b82f6; text-decoration: none; margin: 0 5px; cursor: pointer; }
 
-/* Footer links updated to Logo Blue */
-.footer-links a { color: #1a4d8c; text-decoration: none; margin: 0 5px; cursor: pointer; font-weight: 500; }
-
+/* Updated Modals */
 .modal { 
     display: none; 
     position: fixed; 
@@ -141,8 +52,8 @@ footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; fon
     width: 100%; 
     height: 100%; 
     background: rgba(0,0,0,0.5); 
-    align-items: center; 
-    justify-content: center; 
+    align-items: center;      /* Centers modal vertically */
+    justify-content: center;  /* Centers modal horizontally */
 }
 
 .modal-content { 
@@ -150,11 +61,11 @@ footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; fon
     padding: 25px; 
     border-radius: 12px; 
     position: relative; 
-    width: auto; 
-    max-width: 500px; 
-    min-width: 280px; 
-    max-height: 85vh; 
-    overflow-y: auto; 
+    width: auto;              /* Resizes to content width */
+    max-width: 500px;         /* Prevents it from getting too wide */
+    min-width: 280px;         /* Ensures it's not too narrow on mobile */
+    max-height: 85vh;         /* Prevents it from going off-screen */
+    overflow-y: auto;         /* Adds scroll if content is very long */
     box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
 
