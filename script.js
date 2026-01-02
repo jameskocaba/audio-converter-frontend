@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const urlInput = document.getElementById('urlInput');
     const convertBtn = document.getElementById('convertBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
     const pasteBtn = document.getElementById('pasteBtn');
     const clearBtn = document.getElementById('clearBtn');
     const statusDiv = document.getElementById('status');
@@ -9,10 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadList = document.getElementById('downloadList');
 
     const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
-
-    // State management for cancellation
-    let currentSessionId = null;
-    let abortController = null;
 
     pasteBtn.addEventListener('click', async () => {
         try {
@@ -27,43 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
         statusDiv.textContent = "Ready";
     });
 
-    // --- CANCEL BUTTON LOGIC ---
-    cancelBtn.addEventListener('click', async () => {
-        if (!currentSessionId) return;
-
-        // 1. Kill browser request
-        if (abortController) abortController.abort();
-
-        // 2. Notify backend to kill process
-        try {
-            statusDiv.innerHTML = "Stopping...";
-            await fetch(`${BACKEND_URL}/cancel`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ session_id: currentSessionId }),
-            });
-        } catch (e) { console.error("Cancel notify error", e); }
-
-        statusDiv.textContent = "Conversion cancelled.";
-        resetUI();
-    });
-
-    function resetUI() {
-        convertBtn.disabled = false;
-        cancelBtn.classList.add('hidden'); 
-        currentSessionId = null;
-    }
-
     convertBtn.addEventListener('click', async () => {
         const url = urlInput.value.trim();
         if (!url) return;
 
-        // Setup session and abort controller
-        currentSessionId = self.crypto.randomUUID();
-        abortController = new AbortController();
-
         convertBtn.disabled = true;
-        cancelBtn.classList.remove('hidden'); 
         statusDiv.innerHTML = `<div class="spinner"></div><p>Converting tracks...</p>`;
         downloadArea.classList.add('hidden');
 
@@ -71,11 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`${BACKEND_URL}/convert`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    url: url,
-                    session_id: currentSessionId 
-                }),
-                signal: abortController.signal 
+                body: JSON.stringify({ url: url }),
             });
             const result = await response.json();
 
@@ -111,39 +70,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         downloadList.appendChild(li);
                     });
                 }
-            } else if (result.status === "cancelled") {
-                statusDiv.textContent = "Conversion stopped.";
-            } else { 
-                statusDiv.textContent = "Error: " + result.message; 
-            }
-        } catch (e) {
-            if (e.name === 'AbortError') {
-                console.log("Fetch aborted");
-            } else {
-                statusDiv.textContent = "Server error.";
-            }
-        } finally { 
-            resetUI();
-        }
+            } else { statusDiv.textContent = "Error: " + result.message; }
+        } catch (e) { statusDiv.textContent = "Server error."; }
+        finally { convertBtn.disabled = false; }
     });
 });
 
-/** * Modal Logic - Defined outside the DOMContentLoaded listener 
- * so they are globally accessible to the HTML onclick attributes.
- */
+// Use 'flex' instead of 'block' to support the new CSS centering logic
 function openModal(id) { 
-    const modal = document.getElementById(id);
-    if (modal) modal.style.display = "flex"; 
+    document.getElementById(id).style.display = "flex"; 
 }
 
 function closeModal(id) { 
-    const modal = document.getElementById(id);
-    if (modal) modal.style.display = "none"; 
+    document.getElementById(id).style.display = "none"; 
 }
 
-// Close modal when clicking outside the content area
 window.onclick = (e) => { 
-    if (e.target.className === 'modal') {
-        e.target.style.display = "none"; 
-    }
+    if (e.target.className === 'modal') e.target.style.display = "none"; 
 };
