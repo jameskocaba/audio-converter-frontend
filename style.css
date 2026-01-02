@@ -29,7 +29,7 @@ input:focus { border-color: #3b82f6; outline: none; }
 #convertBtn { 
     width: 100%; 
     padding: 14px; 
-    background: #2563eb; 
+    background: linear-gradient(135deg, #1a4d8c 0%, #3bb371 100%); 
     color: white; 
     border: none; 
     border-radius: 6px; 
