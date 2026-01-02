@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const urlInput = document.getElementById('urlInput');
     const convertBtn = document.getElementById('convertBtn');
-    const cancelBtn = document.getElementById('cancelBtn'); // Make sure this ID exists in your HTML
+    const cancelBtn = document.getElementById('cancelBtn');
     const pasteBtn = document.getElementById('pasteBtn');
     const clearBtn = document.getElementById('clearBtn');
     const statusDiv = document.getElementById('status');
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         statusDiv.textContent = "Ready";
     });
 
-    // --- NEW CANCEL BUTTON LOGIC ---
+    // --- CANCEL BUTTON LOGIC ---
     cancelBtn.addEventListener('click', async () => {
         if (!currentSessionId) return;
 
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resetUI() {
         convertBtn.disabled = false;
-        cancelBtn.classList.add('hidden'); // Hide cancel button
+        cancelBtn.classList.add('hidden'); 
         currentSessionId = null;
     }
 
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         abortController = new AbortController();
 
         convertBtn.disabled = true;
-        cancelBtn.classList.remove('hidden'); // Show cancel button
+        cancelBtn.classList.remove('hidden'); 
         statusDiv.innerHTML = `<div class="spinner"></div><p>Converting tracks...</p>`;
         downloadArea.classList.add('hidden');
 
@@ -73,9 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     url: url,
-                    session_id: currentSessionId // Send ID to backend
+                    session_id: currentSessionId 
                 }),
-                signal: abortController.signal // Link the signal
+                signal: abortController.signal 
             });
             const result = await response.json();
 
@@ -128,7 +128,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Modal Logic
-function openModal(id) { document.getElementById(id).style.display = "flex"; }
-function closeModal(id) { document.getElementById(id).style.display = "none"; }
-window.onclick = (e) => { if (e.target.className === 'modal') e.target.style.display = "none"; };
+/** * Modal Logic - Defined outside the DOMContentLoaded listener 
+ * so they are globally accessible to the HTML onclick attributes.
+ */
+function openModal(id) { 
+    const modal = document.getElementById(id);
+    if (modal) modal.style.display = "flex"; 
+}
+
+function closeModal(id) { 
+    const modal = document.getElementById(id);
+    if (modal) modal.style.display = "none"; 
+}
+
+// Close modal when clicking outside the content area
+window.onclick = (e) => { 
+    if (e.target.className === 'modal') {
+        e.target.style.display = "none"; 
+    }
+};
