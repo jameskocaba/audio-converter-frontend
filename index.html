@@ -6,17 +6,8 @@
     <title>MP3 Audio | Pro Audio Media Archive Conversion Tool</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Add this to ensure your logo scales nicely */
-        .logo-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .main-logo {
-            max-width: 300px; /* Adjust size as needed */
-            height: auto;
-            display: block;
-            margin: 0 auto;
-        }
+        .logo-container { text-align: center; margin-bottom: 20px; }
+        .main-logo { max-width: 300px; height: auto; display: block; margin: 0 auto; }
     </style>
 </head>
 <body>
@@ -33,7 +24,8 @@
         </div>
         
         <button id="convertBtn">Convert to MP3</button>
-        <button id="cancelBtn" class="hidden">Cancel Conversion</button> <div id="status">Ready</div>
+        <button id="cancelBtn" class="hidden">Cancel Conversion</button> 
+        <div id="status">Ready</div>
 
         <div id="downloadArea" class="hidden">
             <div class="download-header">
@@ -60,7 +52,31 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal('aboutModal')">&times;</span>
             <h2>About</h2>
-            <p>At mp3aud.io, we provide a specialized utility designed for digital preservation and audio archiving...</p>
+            <p>At mp3aud.io, we provide a specialized utility designed for digital preservation and audio archiving.</p>
+        </div>
+    </div>
+
+    <div id="FAQModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('FAQModal')">&times;</span>
+            <h2>Frequently Asked Questions</h2>
+            <p><strong>What is the limit?</strong> Up to 15 tracks per playlist to ensure server stability.</p>
+        </div>
+    </div>
+
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('privacyModal')">&times;</span>
+            <h2>Privacy Policy</h2>
+            <p>We do not store your personal data. Files are processed and cleared from our servers regularly.</p>
+        </div>
+    </div>
+
+    <div id="disclaimerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('disclaimerModal')">&times;</span>
+            <h2>Disclaimer</h2>
+            <p>This tool is intended for personal archival use of shareable media only.</p>
         </div>
     </div>
     
