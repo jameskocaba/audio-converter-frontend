@@ -26,8 +26,14 @@ input:focus { border-color: #3b82f6; outline: none; }
 
 #pasteBtn { padding: 10px 15px; background: #475569; color: white; border: none; border-radius: 6px; cursor: pointer; }
 
+/* Flex Button Group for side-by-side */
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
 #convertBtn { 
-    width: 100%; 
+    flex: 2; /* Takes up more space */
     padding: 14px; 
     background: linear-gradient(135deg, #1a4d8c 0%, #3bb371 100%); 
     color: white; 
@@ -37,23 +43,21 @@ input:focus { border-color: #3b82f6; outline: none; }
     cursor: pointer; 
 }
 
-/* New Cancel Button Style */
-#cancelBtn {
-    width: 100%;
-    padding: 12px;
-    background: #ef4444; /* Distinct red color */
-    color: white;
+#cancelBtn, #resetBtn {
+    flex: 1; /* Smaller secondary buttons */
+    padding: 14px;
     border: none;
     border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
-    margin-top: 10px;
     transition: background 0.2s;
 }
 
-#cancelBtn:hover {
-    background: #dc2626;
-}
+#cancelBtn { background: #ef4444; color: white; }
+#cancelBtn:hover { background: #dc2626; }
+
+#resetBtn { background: #94a3b8; color: white; }
+#resetBtn:hover { background: #64748b; }
 
 #convertBtn:disabled { background: #94a3b8; cursor: not-allowed; }
 
@@ -66,7 +70,6 @@ input:focus { border-color: #3b82f6; outline: none; }
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* Shared Hidden State */
 .hidden { display: none !important; }
 
 .download-header { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; }

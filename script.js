@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const urlInput = document.getElementById('urlInput');
     const convertBtn = document.getElementById('convertBtn');
-    const cancelBtn = document.getElementById('cancelBtn'); // Added reference
+    const cancelBtn = document.getElementById('cancelBtn');
+    const resetBtn = document.getElementById('resetBtn');
     const pasteBtn = document.getElementById('pasteBtn');
     const clearBtn = document.getElementById('clearBtn');
     const statusDiv = document.getElementById('status');
@@ -10,10 +11,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
 
-    // State management for cancellation
     let currentSessionId = null;
     let abortController = null;
 
+    // --- Helper Functions ---
+    const resetUI = () => {
+        convertBtn.disabled = false;
+        cancelBtn.classList.add('hidden');
+        resetBtn.classList.remove('hidden'); 
+        currentSessionId = null;
+    };
+
+    const fullReset = () => {
+        urlInput.value = '';
+        statusDiv.textContent = "Ready";
+        downloadList.innerHTML = '';
+        downloadArea.classList.add('hidden');
+        resetUI();
+    };
+
+    // --- Event Listeners ---
     pasteBtn.addEventListener('click', async () => {
         try {
             urlInput.value = await navigator.clipboard.readText();
@@ -23,18 +40,16 @@ document.addEventListener('DOMContentLoaded', () => {
     clearBtn.addEventListener('click', () => {
         downloadList.innerHTML = '';
         downloadArea.classList.add('hidden');
-        urlInput.value = '';
         statusDiv.textContent = "Ready";
     });
 
-    // --- NEW CANCEL BUTTON LOGIC ---
+    resetBtn.addEventListener('click', fullReset);
+
     cancelBtn.addEventListener('click', async () => {
         if (!currentSessionId) return;
 
-        // 1. Kill the browser fetch request
         if (abortController) abortController.abort();
 
-        // 2. Notify backend to stop processing
         try {
             statusDiv.innerHTML = "Stopping...";
             await fetch(`${BACKEND_URL}/cancel`, {
@@ -48,22 +63,17 @@ document.addEventListener('DOMContentLoaded', () => {
         resetUI();
     });
 
-    function resetUI() {
-        convertBtn.disabled = false;
-        cancelBtn.classList.add('hidden'); // Hide cancel button again
-        currentSessionId = null;
-    }
-
     convertBtn.addEventListener('click', async () => {
         const url = urlInput.value.trim();
         if (!url) return;
 
-        // Setup session tracking and browser abort signal
         currentSessionId = self.crypto.randomUUID();
         abortController = new AbortController();
 
         convertBtn.disabled = true;
-        cancelBtn.classList.remove('hidden'); // SHOW THE BUTTON
+        resetBtn.classList.add('hidden'); // Hide reset while processing
+        cancelBtn.classList.remove('hidden'); // Show cancel while processing
+        
         statusDiv.innerHTML = `<div class="spinner"></div><p>Converting tracks...</p>`;
         downloadArea.classList.add('hidden');
 
@@ -73,9 +83,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     url: url,
-                    session_id: currentSessionId // Ensure backend receives this ID
+                    session_id: currentSessionId 
                 }),
-                signal: abortController.signal // Link to browser abort controller
+                signal: abortController.signal 
             });
             const result = await response.json();
 
@@ -123,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusDiv.textContent = "Server error.";
             }
         } finally { 
-            resetUI(); // Reset buttons regardless of success or error
+            resetUI();
         }
     });
 });
