@@ -12,14 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
 
     let currentSessionId = null;
-    let abortController = null;
+    let pollInterval = null;
 
     // --- Helper Functions ---
     const resetUI = () => {
         convertBtn.disabled = false;
         cancelBtn.classList.add('hidden');
         resetBtn.classList.remove('hidden'); 
-        currentSessionId = null;
+        if (pollInterval) clearInterval(pollInterval);
     };
 
     const fullReset = () => {
@@ -28,6 +28,28 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadList.innerHTML = '';
         downloadArea.classList.add('hidden');
         resetUI();
+    };
+
+    const renderResults = (result) => {
+        statusDiv.innerHTML = `✅ ${result.tracks.length} track(s) ready.`;
+        downloadArea.classList.remove('hidden');
+        downloadList.innerHTML = ''; 
+
+        if (result.zipLink) {
+            const zipA = document.createElement('a');
+            zipA.href = `${BACKEND_URL}${result.zipLink}`;
+            zipA.innerHTML = "<strong>DOWNLOAD ALL (ZIP)</strong>";
+            zipA.className = "zip-btn";
+            downloadList.appendChild(zipA);
+        }
+
+        result.tracks.forEach(t => {
+            const a = document.createElement('a');
+            a.href = `${BACKEND_URL}${t.downloadLink}`;
+            a.textContent = `⬇️ ${t.name}`;
+            a.className = "track-btn";
+            downloadList.appendChild(a);
+        });
     };
 
     // --- Event Listeners ---
@@ -47,8 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cancelBtn.addEventListener('click', async () => {
         if (!currentSessionId) return;
-
-        if (abortController) abortController.abort();
+        clearInterval(pollInterval);
 
         try {
             statusDiv.innerHTML = "Stopping...";
@@ -67,72 +88,55 @@ document.addEventListener('DOMContentLoaded', () => {
         const url = urlInput.value.trim();
         if (!url) return;
 
-        currentSessionId = self.crypto.randomUUID();
-        abortController = new AbortController();
-
         convertBtn.disabled = true;
-        resetBtn.classList.add('hidden'); // Hide reset while processing
-        cancelBtn.classList.remove('hidden'); // Show cancel while processing
+        resetBtn.classList.add('hidden');
+        cancelBtn.classList.remove('hidden');
         
-        statusDiv.innerHTML = `<div class="spinner"></div><p>Converting tracks...</p>`;
+        statusDiv.innerHTML = `<div class="spinner"></div><p>Initializing connection...</p>`;
         downloadArea.classList.add('hidden');
 
         try {
+            // 1. Tell server to start (Returns immediately)
             const response = await fetch(`${BACKEND_URL}/convert`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    url: url,
-                    session_id: currentSessionId 
-                }),
-                signal: abortController.signal 
+                body: JSON.stringify({ url: url })
             });
-            const result = await response.json();
+            
+            const startData = await response.json();
+            currentSessionId = startData.session_id;
 
-            if (result.status === "success") {
-                statusDiv.innerHTML = `✅ ${result.tracks.length} track(s) ready.`;
-                downloadArea.classList.remove('hidden');
-                downloadList.innerHTML = ''; 
+            if (startData.status === "started") {
+                // 2. Start Polling for status
+                pollInterval = setInterval(async () => {
+                    try {
+                        const statusRes = await fetch(`${BACKEND_URL}/status/${currentSessionId}`);
+                        const result = await statusRes.json();
 
-                if (result.zipLink) {
-                    const zipA = document.createElement('a');
-                    zipA.href = `${BACKEND_URL}${result.zipLink}`;
-                    zipA.innerHTML = "<strong>DOWNLOAD ALL (ZIP)</strong>";
-                    zipA.className = "zip-btn";
-                    downloadList.appendChild(zipA);
-                }
+                        if (result.status === "processing") {
+                            statusDiv.innerHTML = `<div class="spinner"></div><p>Downloaded ${result.count || 0} tracks...</p>`;
+                        } 
+                        else if (result.status === "completed") {
+                            clearInterval(pollInterval);
+                            renderResults(result);
+                            resetUI();
+                        } 
+                        else if (result.status === "error") {
+                            clearInterval(pollInterval);
+                            statusDiv.textContent = "Error: " + result.message;
+                            resetUI();
+                        }
+                    } catch (pollErr) {
+                        console.error("Polling error", pollErr);
+                    }
+                }, 3000); // Check every 3 seconds
 
-                result.tracks.forEach(t => {
-                    const a = document.createElement('a');
-                    a.href = `${BACKEND_URL}${t.downloadLink}`;
-                    a.textContent = `⬇️ ${t.name}`;
-                    a.className = "track-btn";
-                    downloadList.appendChild(a);
-                });
-
-                if (result.skipped && result.skipped.length > 0) {
-                    const skipLi = document.createElement('li');
-                    skipLi.innerHTML = "<strong style='color:#ef4444'>⚠️ Unavailable:</strong>";
-                    downloadList.appendChild(skipLi);
-                    result.skipped.forEach(s => {
-                        const li = document.createElement('li');
-                        li.textContent = `🚫 ${s}`;
-                        li.style.cssText = "font-size:12px; color:#64748b; margin-left:10px;";
-                        downloadList.appendChild(li);
-                    });
-                }
-            } else if (result.status === "cancelled") {
-                statusDiv.textContent = "Conversion stopped.";
-            } else { 
-                statusDiv.textContent = "Error: " + result.message; 
+            } else {
+                statusDiv.textContent = "Error: " + startData.message;
+                resetUI();
             }
         } catch (e) {
-            if (e.name === 'AbortError') {
-                console.log("Request was aborted.");
-            } else {
-                statusDiv.textContent = "Server error.";
-            }
-        } finally { 
+            statusDiv.textContent = "Server connection failed.";
             resetUI();
         }
     });
