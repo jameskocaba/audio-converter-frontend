@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         progressFill.style.width = '0%';
         progressFill.textContent = '0%';
         
-        statusDiv.innerHTML = `<div class="spinner"></div><p>Converting tracks in batches of 10...</p>`;
+        statusDiv.innerHTML = `<div class="spinner"></div><p>Converting tracks in batches of 3...</p>`;
         downloadArea.classList.add('hidden');
 
         try {
