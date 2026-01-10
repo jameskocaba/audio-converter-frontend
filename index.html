@@ -30,7 +30,7 @@
             <img src="logo.png" alt="mp3aud.io logo" class="main-logo">
         </div>
         
-        <p class="subtitle">Convert, zip and backup SoundCloud shareable playlists to high-quality MP3s 500 tracks at a time. Please be patient for multiple song conversions.</p>
+        <p class="subtitle">Convert, zip and backup SoundCloud shareable playlists to high-quality MP3s up to 200 tracks at a time. Tracks are processed in batches of 10 for optimal performance.</p>
         
         <div class="input-group">
             <input type="text" id="urlInput" placeholder="Paste shareable url here...">
@@ -44,6 +44,9 @@
         </div>
 
         <div id="status">Ready</div>
+        <div id="progressBar" class="hidden">
+            <div id="progressFill"></div>
+        </div>
 
         <div id="downloadArea" class="hidden">
             <div class="download-header">
@@ -87,6 +90,8 @@
             <p>We prioritize audio fidelity. Our tool attempts to capture the highest available bitrate provided by the shareable link. This ensures your backup sounds as close to the original stream as possible, typically 128kbps depending on the source file.</p>
             <p>4. Is it free to use mp3aud.io?</p>
             <p>Yes. Currently, our SoundCloud backup tool is 100% free to use. There is no software to install and no registration required. We provide a clean, fast interface for users to archive songs instantly.</p>
+            <p>5. How many tracks can I convert at once?</p>
+            <p>You can convert up to 200 tracks from a single playlist. Tracks are processed in batches of 10 for optimal performance and reliability.</p>
         </div>
     </div>
 

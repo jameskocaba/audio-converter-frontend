@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const pasteBtn = document.getElementById('pasteBtn');
     const clearBtn = document.getElementById('clearBtn');
     const statusDiv = document.getElementById('status');
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
     const downloadArea = document.getElementById('downloadArea');
     const downloadList = document.getElementById('downloadList');
 
@@ -19,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         convertBtn.disabled = false;
         cancelBtn.classList.add('hidden');
         resetBtn.classList.remove('hidden'); 
+        progressBar.classList.add('hidden');
         currentSessionId = null;
     };
 
@@ -28,6 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadList.innerHTML = '';
         downloadArea.classList.add('hidden');
         resetUI();
+    };
+
+    const updateProgress = (current, total) => {
+        const percent = Math.round((current / total) * 100);
+        progressFill.style.width = percent + '%';
+        progressFill.textContent = percent + '%';
     };
 
     // --- Event Listeners ---
@@ -71,10 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
         abortController = new AbortController();
 
         convertBtn.disabled = true;
-        resetBtn.classList.add('hidden'); // Hide reset while processing
-        cancelBtn.classList.remove('hidden'); // Show cancel while processing
+        resetBtn.classList.add('hidden');
+        cancelBtn.classList.remove('hidden');
+        progressBar.classList.remove('hidden');
+        progressFill.style.width = '0%';
+        progressFill.textContent = '0%';
         
-        statusDiv.innerHTML = `<div class="spinner"></div><p>Converting tracks...</p>`;
+        statusDiv.innerHTML = `<div class="spinner"></div><p>Converting tracks in batches of 10...</p>`;
         downloadArea.classList.add('hidden');
 
         try {
@@ -90,14 +102,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (result.status === "success") {
-                statusDiv.innerHTML = `✅ ${result.tracks.length} track(s) ready.`;
+                updateProgress(100, 100);
+                
+                const processedCount = result.total_processed || result.tracks.length;
+                const expectedCount = result.total_expected || result.tracks.length;
+                
+                statusDiv.innerHTML = `✅ ${processedCount} of ${expectedCount} track(s) ready.`;
                 downloadArea.classList.remove('hidden');
                 downloadList.innerHTML = ''; 
 
                 if (result.zipLink) {
                     const zipA = document.createElement('a');
                     zipA.href = `${BACKEND_URL}${result.zipLink}`;
-                    zipA.innerHTML = "<strong>DOWNLOAD ALL (ZIP)</strong>";
+                    zipA.innerHTML = "<strong>📦 DOWNLOAD ALL (ZIP)</strong>";
                     zipA.className = "zip-btn";
                     downloadList.appendChild(zipA);
                 }
