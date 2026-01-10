@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentSessionId = null;
     let abortController = null;
+    let progressInterval = null;
 
     // --- Helper Functions ---
     const resetUI = () => {
@@ -23,6 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
         resetBtn.classList.remove('hidden'); 
         progressBar.classList.add('hidden');
         currentSessionId = null;
+        
+        if (progressInterval) {
+            clearInterval(progressInterval);
+            progressInterval = null;
+        }
     };
 
     const fullReset = () => {
@@ -36,7 +42,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateProgress = (current, total) => {
         const percent = Math.round((current / total) * 100);
         progressFill.style.width = percent + '%';
-        progressFill.textContent = percent + '%';
+        progressFill.textContent = `${current}/${total} (${percent}%)`;
+    };
+
+    const pollProgress = async (sessionId) => {
+        try {
+            const response = await fetch(`${BACKEND_URL}/progress/${sessionId}`);
+            if (response.ok) {
+                const progress = await response.json();
+                
+                if (progress.status === "processing" && progress.total > 0) {
+                    updateProgress(progress.current, progress.total);
+                    statusDiv.innerHTML = `<div class="spinner"></div><p>Processing track ${progress.current} of ${progress.total}...</p>`;
+                }
+            }
+        } catch (e) {
+            console.error("Progress polling error:", e);
+        }
     };
 
     // --- Event Listeners ---
@@ -84,10 +106,13 @@ document.addEventListener('DOMContentLoaded', () => {
         cancelBtn.classList.remove('hidden');
         progressBar.classList.remove('hidden');
         progressFill.style.width = '0%';
-        progressFill.textContent = '0%';
+        progressFill.textContent = '0/0 (0%)';
         
-        statusDiv.innerHTML = `<div class="spinner"></div><p>Converting tracks in batches of 3...</p>`;
+        statusDiv.innerHTML = `<div class="spinner"></div><p>Analyzing playlist...</p>`;
         downloadArea.classList.add('hidden');
+
+        // Start polling progress every 2 seconds
+        progressInterval = setInterval(() => pollProgress(currentSessionId), 2000);
 
         try {
             const response = await fetch(`${BACKEND_URL}/convert`, {
@@ -101,8 +126,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const result = await response.json();
 
+            // Stop progress polling
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+
             if (result.status === "success") {
-                updateProgress(100, 100);
+                updateProgress(result.total_processed, result.total_expected);
                 
                 const processedCount = result.total_processed || result.tracks.length;
                 const expectedCount = result.total_expected || result.tracks.length;
@@ -147,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.name === 'AbortError') {
                 console.log("Request was aborted.");
             } else {
-                statusDiv.textContent = "Server error.";
+                statusDiv.textContent = "Server error. Please try a smaller playlist or wait and try again.";
             }
         } finally { 
             resetUI();
