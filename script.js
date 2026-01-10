@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
 
     let currentSessionId = null;
-    let eventSource = null;
 
     // --- Helper Functions ---
     const resetUI = () => {
@@ -23,11 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         resetBtn.classList.remove('hidden'); 
         progressBar.classList.add('hidden');
         currentSessionId = null;
-        
-        if (eventSource) {
-            eventSource.close();
-            eventSource = null;
-        }
     };
 
     const fullReset = () => {
@@ -39,7 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateProgress = (current, total) => {
-        const percent = Math.round((current / total) * 100);
+        // Prevent division by zero
+        const percent = total > 0 ? Math.round((current / total) * 100) : 0;
         progressFill.style.width = percent + '%';
         progressFill.textContent = `${current}/${total} (${percent}%)`;
     };
@@ -62,17 +57,14 @@ document.addEventListener('DOMContentLoaded', () => {
     cancelBtn.addEventListener('click', async () => {
         if (!currentSessionId) return;
 
-        if (eventSource) {
-            eventSource.close();
-            eventSource = null;
-        }
-
         try {
             statusDiv.innerHTML = "Stopping...";
+            // We use keepalive: true to ensure the request is sent even if the page is unloading
             await fetch(`${BACKEND_URL}/cancel`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ session_id: currentSessionId }),
+                keepalive: true 
             });
         } catch (e) { console.error("Cancel notify error", e); }
 
@@ -96,12 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
         statusDiv.innerHTML = `<div class="spinner"></div><p>Starting conversion...</p>`;
         downloadArea.classList.add('hidden');
 
-        // Create EventSource for SSE
-        const eventSourceUrl = `${BACKEND_URL}/convert`;
-        
-        // Use fetch with streaming for POST
         try {
-            const response = await fetch(eventSourceUrl, {
+            const response = await fetch(`${BACKEND_URL}/convert`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -109,6 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     session_id: currentSessionId 
                 }),
             });
+
+            // FIX 1: Check if the server rejected the request immediately
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.message || `HTTP Error ${response.status}`);
+            }
 
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
@@ -120,92 +114,88 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 buffer += decoder.decode(value, { stream: true });
                 const lines = buffer.split('\n\n');
-                buffer = lines.pop(); // Keep incomplete line in buffer
+                buffer = lines.pop(); 
 
                 for (const line of lines) {
                     if (line.startsWith('data: ')) {
-                        const data = JSON.parse(line.slice(6));
-                        
-                        switch (data.type) {
-                            case 'status':
-                                statusDiv.innerHTML = `<div class="spinner"></div><p>${data.message}</p>`;
-                                break;
-                                
-                            case 'total':
-                                updateProgress(0, data.total);
-                                statusDiv.innerHTML = `<div class="spinner"></div><p>Found ${data.total} tracks. Starting conversion...</p>`;
-                                break;
-                                
-                            case 'progress':
-                                updateProgress(data.current, data.total);
-                                statusDiv.innerHTML = `<div class="spinner"></div><p>Processing: ${data.track} (${data.current}/${data.total})</p>`;
-                                break;
-                                
-                            case 'complete':
-                                console.log(`✅ Completed: ${data.track}`);
-                                break;
-                                
-                            case 'failed':
-                                console.log(`❌ Failed: ${data.track}`);
-                                break;
-                                
-                            case 'done':
-                                // Final result
-                                updateProgress(data.total_processed, data.total_expected);
-                                
-                                statusDiv.innerHTML = `✅ ${data.total_processed} of ${data.total_expected} track(s) ready.`;
-                                downloadArea.classList.remove('hidden');
-                                downloadList.innerHTML = ''; 
+                        try {
+                            const data = JSON.parse(line.slice(6));
+                            
+                            switch (data.type) {
+                                case 'status':
+                                    statusDiv.innerHTML = `<div class="spinner"></div><p>${data.message}</p>`;
+                                    break;
+                                    
+                                case 'total':
+                                    updateProgress(0, data.total);
+                                    statusDiv.innerHTML = `<div class="spinner"></div><p>Found ${data.total} tracks. Starting conversion...</p>`;
+                                    break;
+                                    
+                                case 'progress':
+                                    updateProgress(data.current, data.total);
+                                    statusDiv.innerHTML = `<div class="spinner"></div><p>Processing: ${data.track} (${data.current}/${data.total})</p>`;
+                                    break;
+                                    
+                                case 'done':
+                                    updateProgress(data.total_processed, data.total_expected);
+                                    statusDiv.innerHTML = `✅ ${data.total_processed} of ${data.total_expected} track(s) ready.`;
+                                    downloadArea.classList.remove('hidden');
+                                    downloadList.innerHTML = ''; 
 
-                                if (data.zipLink) {
-                                    const zipA = document.createElement('a');
-                                    zipA.href = `${BACKEND_URL}${data.zipLink}`;
-                                    zipA.innerHTML = "<strong>📦 DOWNLOAD ALL (ZIP)</strong>";
-                                    zipA.className = "zip-btn";
-                                    downloadList.appendChild(zipA);
-                                }
+                                    if (data.zipLink) {
+                                        const zipA = document.createElement('a');
+                                        zipA.href = `${BACKEND_URL}${data.zipLink}`;
+                                        zipA.innerHTML = "<strong>📦 DOWNLOAD ALL (ZIP)</strong>";
+                                        zipA.className = "zip-btn";
+                                        downloadList.appendChild(zipA);
+                                    }
 
-                                data.tracks.forEach(t => {
-                                    const a = document.createElement('a');
-                                    a.href = `${BACKEND_URL}${t.downloadLink}`;
-                                    a.textContent = `⬇️ ${t.name}`;
-                                    a.className = "track-btn";
-                                    downloadList.appendChild(a);
-                                });
-
-                                if (data.skipped && data.skipped.length > 0) {
-                                    const skipLi = document.createElement('li');
-                                    skipLi.innerHTML = "<strong style='color:#ef4444'>⚠️ Unavailable:</strong>";
-                                    downloadList.appendChild(skipLi);
-                                    data.skipped.forEach(s => {
-                                        const li = document.createElement('li');
-                                        li.textContent = `🚫 ${s}`;
-                                        li.style.cssText = "font-size:12px; color:#64748b; margin-left:10px;";
-                                        downloadList.appendChild(li);
+                                    data.tracks.forEach(t => {
+                                        const a = document.createElement('a');
+                                        a.href = `${BACKEND_URL}${t.downloadLink}`;
+                                        a.textContent = `⬇️ ${t.name}`;
+                                        a.className = "track-btn";
+                                        downloadList.appendChild(a);
                                     });
-                                }
-                                break;
-                                
-                            case 'cancelled':
-                                statusDiv.textContent = "Conversion stopped.";
-                                break;
-                                
-                            case 'error':
-                                statusDiv.textContent = "Error: " + data.message;
-                                break;
+
+                                    // Handle skipped tracks
+                                    if (data.skipped && data.skipped.length > 0) {
+                                        const skipLi = document.createElement('li');
+                                        skipLi.innerHTML = "<strong style='color:#ef4444'>⚠️ Unavailable:</strong>";
+                                        downloadList.appendChild(skipLi);
+                                        data.skipped.forEach(s => {
+                                            const li = document.createElement('li');
+                                            li.textContent = `🚫 ${s}`;
+                                            li.style.cssText = "font-size:12px; color:#64748b; margin-left:10px;";
+                                            downloadList.appendChild(li);
+                                        });
+                                    }
+                                    break;
+                                    
+                                case 'cancelled':
+                                    statusDiv.textContent = "Conversion stopped.";
+                                    break;
+                                    
+                                case 'error':
+                                    statusDiv.textContent = "Error: " + data.message;
+                                    break;
+                            }
+                        } catch (parseError) {
+                            console.warn("JSON Parse Error on line:", line);
                         }
                     }
                 }
             }
         } catch (e) {
             console.error("Streaming error:", e);
-            statusDiv.textContent = "Server error. Please try a smaller playlist or wait and try again.";
+            // FIX 2: Show the ACTUAL error, not a generic one
+            if (e.name === 'AbortError') {
+                statusDiv.textContent = "Request timed out. Please try again.";
+            } else {
+                statusDiv.textContent = `Connection Error: ${e.message}. (Server might have timed out)`;
+            }
         } finally { 
             resetUI();
         }
     });
 });
-
-function openModal(id) { document.getElementById(id).style.display = "flex"; }
-function closeModal(id) { document.getElementById(id).style.display = "none"; }
-window.onclick = (e) => { if (e.target.className === 'modal') e.target.style.display = "none"; };
