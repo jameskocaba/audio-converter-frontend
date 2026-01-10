@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateProgress = (current, total) => {
-        // Prevent division by zero
         const percent = total > 0 ? Math.round((current / total) * 100) : 0;
         progressFill.style.width = percent + '%';
         progressFill.textContent = `${current}/${total} (${percent}%)`;
@@ -59,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             statusDiv.innerHTML = "Stopping...";
-            // We use keepalive: true to ensure the request is sent even if the page is unloading
             await fetch(`${BACKEND_URL}/cancel`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -98,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }),
             });
 
-            // FIX 1: Check if the server rejected the request immediately
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
                 throw new Error(errData.message || `HTTP Error ${response.status}`);
@@ -128,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     
                                 case 'total':
                                     updateProgress(0, data.total);
-                                    statusDiv.innerHTML = `<div class="spinner"></div><p>Found ${data.total} tracks. Starting conversion...</p>`;
+                                    statusDiv.innerHTML = `<div class="spinner"></div><p>Found ${data.total} tracks. Starting...</p>`;
                                     break;
                                     
                                 case 'progress':
@@ -138,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     
                                 case 'done':
                                     updateProgress(data.total_processed, data.total_expected);
-                                    statusDiv.innerHTML = `✅ ${data.total_processed} of ${data.total_expected} track(s) ready.`;
+                                    statusDiv.innerHTML = `✅ ${data.total_processed} of ${data.total_expected} item(s) ready.`;
                                     downloadArea.classList.remove('hidden');
                                     downloadList.innerHTML = ''; 
 
@@ -153,12 +150,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                     data.tracks.forEach(t => {
                                         const a = document.createElement('a');
                                         a.href = `${BACKEND_URL}${t.downloadLink}`;
-                                        a.textContent = `⬇️ ${t.name}`;
+                                        // Display icon based on file type
+                                        const icon = t.name.toLowerCase().endsWith('.mp3') ? '⬇️' : '🖼️';
+                                        a.textContent = `${icon} ${t.name}`;
                                         a.className = "track-btn";
                                         downloadList.appendChild(a);
                                     });
 
-                                    // Handle skipped tracks
                                     if (data.skipped && data.skipped.length > 0) {
                                         const skipLi = document.createElement('li');
                                         skipLi.innerHTML = "<strong style='color:#ef4444'>⚠️ Unavailable:</strong>";
@@ -188,14 +186,43 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (e) {
             console.error("Streaming error:", e);
-            // FIX 2: Show the ACTUAL error, not a generic one
             if (e.name === 'AbortError') {
                 statusDiv.textContent = "Request timed out. Please try again.";
             } else {
-                statusDiv.textContent = `Connection Error: ${e.message}. (Server might have timed out)`;
+                statusDiv.textContent = `Connection Error: ${e.message}`;
             }
         } finally { 
             resetUI();
         }
     });
 });
+
+/**
+ * --- GLOBAL MODAL FUNCTIONS ---
+ * These are placed outside the DOMContentLoaded listener so the 
+ * onclick attributes in the HTML can access them.
+ */
+
+function openModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.style.display = "flex";
+        document.body.style.overflow = "hidden"; // Prevent background scroll
+    }
+}
+
+function closeModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.style.display = "none";
+        document.body.style.overflow = "auto"; // Restore scroll
+    }
+}
+
+// Close the modal if the user clicks anywhere outside the modal box
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+};
