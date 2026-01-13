@@ -14,14 +14,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
 
     let currentSessionId = null;
+    let isConverting = false;
 
     // --- Helper Functions ---
     const resetUI = () => {
         convertBtn.disabled = false;
         cancelBtn.classList.add('hidden');
-        resetBtn.classList.remove('hidden'); 
         progressBar.classList.add('hidden');
         currentSessionId = null;
+        isConverting = false;
+        
+        // Show reset button if there are downloads, otherwise hide it
+        if (downloadList.children.length > 0) {
+            resetBtn.classList.remove('hidden');
+        } else {
+            resetBtn.classList.add('hidden');
+        }
     };
 
     const fullReset = () => {
@@ -29,7 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
         statusDiv.textContent = "Ready";
         downloadList.innerHTML = '';
         downloadArea.classList.add('hidden');
-        resetUI();
+        progressBar.classList.add('hidden');
+        progressFill.style.width = '0%';
+        progressFill.textContent = '0/0 (0%)';
+        convertBtn.disabled = false;
+        cancelBtn.classList.add('hidden');
+        resetBtn.classList.add('hidden');
+        currentSessionId = null;
+        isConverting = false;
     };
 
     const updateProgress = (current, total) => {
@@ -49,6 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadList.innerHTML = '';
         downloadArea.classList.add('hidden');
         statusDiv.textContent = "Ready";
+        // Hide reset button when clearing downloads
+        if (!isConverting) {
+            resetBtn.classList.add('hidden');
+        }
     });
 
     resetBtn.addEventListener('click', fullReset);
@@ -75,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!url) return;
 
         currentSessionId = self.crypto.randomUUID();
+        isConverting = true;
 
         convertBtn.disabled = true;
         resetBtn.classList.add('hidden');
@@ -147,15 +167,17 @@ document.addEventListener('DOMContentLoaded', () => {
                                         downloadList.appendChild(zipA);
                                     }
 
-                                    data.tracks.forEach(t => {
-                                        const a = document.createElement('a');
-                                        a.href = `${BACKEND_URL}${t.downloadLink}`;
-                                        // Display icon based on file type
-                                        const icon = t.name.toLowerCase().endsWith('.mp3') ? '⬇️' : '🖼️';
-                                        a.textContent = `${icon} ${t.name}`;
-                                        a.className = "track-btn";
-                                        downloadList.appendChild(a);
-                                    });
+                                    // Only show individual tracks if they exist in the response
+                                    if (data.tracks && data.tracks.length > 0) {
+                                        data.tracks.forEach(t => {
+                                            const a = document.createElement('a');
+                                            a.href = `${BACKEND_URL}${t.downloadLink}`;
+                                            const icon = t.name.toLowerCase().endsWith('.mp3') ? '⬇️' : '🖼️';
+                                            a.textContent = `${icon} ${t.name}`;
+                                            a.className = "track-btn";
+                                            downloadList.appendChild(a);
+                                        });
+                                    }
 
                                     if (data.skipped && data.skipped.length > 0) {
                                         const skipLi = document.createElement('li');
@@ -207,7 +229,7 @@ function openModal(id) {
     const modal = document.getElementById(id);
     if (modal) {
         modal.style.display = "flex";
-        document.body.style.overflow = "hidden"; // Prevent background scroll
+        document.body.style.overflow = "hidden";
     }
 }
 
@@ -215,11 +237,10 @@ function closeModal(id) {
     const modal = document.getElementById(id);
     if (modal) {
         modal.style.display = "none";
-        document.body.style.overflow = "auto"; // Restore scroll
+        document.body.style.overflow = "auto";
     }
 }
 
-// Close the modal if the user clicks anywhere outside the modal box
 window.onclick = function(event) {
     if (event.target.classList.contains('modal')) {
         event.target.style.display = "none";
