@@ -86,7 +86,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) { console.error("Cancel notify error", e); }
 
         statusDiv.textContent = "Conversion cancelled.";
-        resetUI();
+        isConverting = false;
+        convertBtn.disabled = false;
+        cancelBtn.classList.add('hidden');
+        resetBtn.classList.remove('hidden'); // Always show reset after cancellation
+        progressBar.classList.add('hidden');
+        currentSessionId = null;
     });
 
     convertBtn.addEventListener('click', async () => {
