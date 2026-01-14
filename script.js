@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentSessionId = null;
 
+    // --- Helper Functions ---
     const resetUI = () => {
         convertBtn.disabled = false;
         cancelBtn.classList.add('hidden');
@@ -37,9 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
         progressFill.textContent = `${current}/${total} (${percent}%)`;
     };
 
+    // --- Event Listeners ---
     pasteBtn.addEventListener('click', async () => {
-        try { urlInput.value = await navigator.clipboard.readText(); } 
-        catch (err) { alert("Please paste manually."); }
+        try {
+            urlInput.value = await navigator.clipboard.readText();
+        } catch (err) { alert("Please paste manually."); }
     });
 
     clearBtn.addEventListener('click', () => {
@@ -52,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cancelBtn.addEventListener('click', async () => {
         if (!currentSessionId) return;
+
         try {
             statusDiv.innerHTML = "Stopping...";
             await fetch(`${BACKEND_URL}/cancel`, {
@@ -61,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 keepalive: true 
             });
         } catch (e) { console.error("Cancel notify error", e); }
+
         statusDiv.textContent = "Conversion cancelled.";
         resetUI();
     });
@@ -76,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cancelBtn.classList.remove('hidden');
         progressBar.classList.remove('hidden');
         progressFill.style.width = '0%';
-        progressFill.textContent = '0%';
+        progressFill.textContent = '0/0 (0%)';
         
         statusDiv.innerHTML = `<div class="spinner"></div><p>Starting conversion...</p>`;
         downloadArea.classList.add('hidden');
@@ -85,10 +90,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`${BACKEND_URL}/convert`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: url, session_id: currentSessionId }),
+                body: JSON.stringify({ 
+                    url: url,
+                    session_id: currentSessionId 
+                }),
             });
 
-            if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.message || `HTTP Error ${response.status}`);
+            }
 
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
@@ -114,41 +125,46 @@ document.addEventListener('DOMContentLoaded', () => {
                                     
                                 case 'total':
                                     updateProgress(0, data.total);
-                                    statusDiv.innerHTML = `<div class="spinner"></div><p>Found ${data.total} tracks...</p>`;
+                                    statusDiv.innerHTML = `<div class="spinner"></div><p>Found ${data.total} tracks. Starting...</p>`;
                                     break;
                                     
-                                case 'detail':
-                                    // New: Shows "Downloading..." or "Zipping..." per track
-                                    statusDiv.innerHTML = `<div class="spinner"></div><p><b>Track ${data.current}:</b> ${data.status}</p>`;
-                                    break;
-
                                 case 'progress':
                                     updateProgress(data.current, data.total);
-                                    // Keep the detailed status visible, or revert to generic
+                                    statusDiv.innerHTML = `<div class="spinner"></div><p>Processing: ${data.track} (${data.current}/${data.total})</p>`;
                                     break;
                                     
                                 case 'done':
                                     updateProgress(data.total_processed, data.total_expected);
-                                    statusDiv.innerHTML = `✅ Complete! ${data.total_processed} tracks ready.`;
+                                    statusDiv.innerHTML = `✅ ${data.total_processed} of ${data.total_expected} item(s) ready.`;
                                     downloadArea.classList.remove('hidden');
                                     downloadList.innerHTML = ''; 
 
                                     if (data.zipLink) {
                                         const zipA = document.createElement('a');
                                         zipA.href = `${BACKEND_URL}${data.zipLink}`;
-                                        zipA.innerHTML = "<strong>📦 DOWNLOAD ZIP</strong>";
+                                        zipA.innerHTML = "<strong>📦 DOWNLOAD ALL (ZIP)</strong>";
                                         zipA.className = "zip-btn";
                                         downloadList.appendChild(zipA);
                                     }
-                                    
+
+                                    data.tracks.forEach(t => {
+                                        const a = document.createElement('a');
+                                        a.href = `${BACKEND_URL}${t.downloadLink}`;
+                                        // Display icon based on file type
+                                        const icon = t.name.toLowerCase().endsWith('.mp3') ? '⬇️' : '🖼️';
+                                        a.textContent = `${icon} ${t.name}`;
+                                        a.className = "track-btn";
+                                        downloadList.appendChild(a);
+                                    });
+
                                     if (data.skipped && data.skipped.length > 0) {
-                                        const skipHeader = document.createElement('li');
-                                        skipHeader.innerHTML = "<br><strong>⚠️ Skipped Tracks:</strong>";
-                                        downloadList.appendChild(skipHeader);
+                                        const skipLi = document.createElement('li');
+                                        skipLi.innerHTML = "<strong style='color:#ef4444'>⚠️ Unavailable:</strong>";
+                                        downloadList.appendChild(skipLi);
                                         data.skipped.forEach(s => {
                                             const li = document.createElement('li');
                                             li.textContent = `🚫 ${s}`;
-                                            li.style.color = "#ef4444";
+                                            li.style.cssText = "font-size:12px; color:#64748b; margin-left:10px;";
                                             downloadList.appendChild(li);
                                         });
                                     }
@@ -162,14 +178,51 @@ document.addEventListener('DOMContentLoaded', () => {
                                     statusDiv.textContent = "Error: " + data.message;
                                     break;
                             }
-                        } catch (e) { console.warn("Parse error", e); }
+                        } catch (parseError) {
+                            console.warn("JSON Parse Error on line:", line);
+                        }
                     }
                 }
             }
         } catch (e) {
-            statusDiv.textContent = `Error: ${e.message}`;
+            console.error("Streaming error:", e);
+            if (e.name === 'AbortError') {
+                statusDiv.textContent = "Request timed out. Please try again.";
+            } else {
+                statusDiv.textContent = `Connection Error: ${e.message}`;
+            }
         } finally { 
             resetUI();
         }
     });
 });
+
+/**
+ * --- GLOBAL MODAL FUNCTIONS ---
+ * These are placed outside the DOMContentLoaded listener so the 
+ * onclick attributes in the HTML can access them.
+ */
+
+function openModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.style.display = "flex";
+        document.body.style.overflow = "hidden"; // Prevent background scroll
+    }
+}
+
+function closeModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.style.display = "none";
+        document.body.style.overflow = "auto"; // Restore scroll
+    }
+}
+
+// Close the modal if the user clicks anywhere outside the modal box
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+};
