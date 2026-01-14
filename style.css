@@ -16,6 +16,8 @@ body {
     width: 90%;
     max-width: 460px;
     text-align: center;
+    position: relative;
+    z-index: 1; /* Ensure container is below modals */
 }
 
 h1 { color: #1e293b; font-size: 1.6rem; margin-bottom: 0.5rem; }
@@ -26,14 +28,13 @@ input:focus { border-color: #3b82f6; outline: none; }
 
 #pasteBtn { padding: 10px 15px; background: #475569; color: white; border: none; border-radius: 6px; cursor: pointer; }
 
-/* Flex Button Group for side-by-side */
 .button-group {
     display: flex;
     gap: 10px;
 }
 
 #convertBtn { 
-    flex: 2; /* Takes up more space */
+    flex: 2;
     padding: 14px; 
     background: linear-gradient(135deg, #1a4d8c 0%, #3bb371 100%); 
     color: white; 
@@ -44,7 +45,7 @@ input:focus { border-color: #3b82f6; outline: none; }
 }
 
 #cancelBtn, #resetBtn {
-    flex: 1; /* Smaller secondary buttons */
+    flex: 1;
     padding: 14px;
     border: none;
     border-radius: 6px;
@@ -63,7 +64,6 @@ input:focus { border-color: #3b82f6; outline: none; }
 
 #status { margin: 1.5rem 0; font-size: 0.9rem; color: #475569; }
 
-/* Progress Bar */
 #progressBar {
     width: 100%;
     height: 30px;
@@ -104,14 +104,41 @@ input:focus { border-color: #3b82f6; outline: none; }
 .zip-btn { display: block; background: #0f172a; color: white; padding: 12px; text-align: center; border-radius: 6px; text-decoration: none; margin-bottom: 12px; font-weight: bold; }
 .track-btn { display: block; background: #10b981; color: white; padding: 10px; text-align: center; border-radius: 6px; text-decoration: none; margin-bottom: 6px; font-size: 0.85rem; }
 
-footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 0.75rem; color: #94a3b8; }
-.footer-links a { color: #3b82f6; text-decoration: none; margin: 0 5px; cursor: pointer; }
+footer { 
+    margin-top: 30px; 
+    padding-top: 20px; 
+    border-top: 1px solid #e2e8f0; 
+    font-size: 0.75rem; 
+    color: #94a3b8;
+    position: relative;
+    z-index: 1; /* Keep footer below modals */
+}
 
-/* Modals */
+.footer-links { 
+    margin-top: 8px;
+}
+
+.footer-links a { 
+    color: #3b82f6; 
+    text-decoration: none; 
+    margin: 0 5px; 
+    cursor: pointer;
+    transition: color 0.2s;
+    display: inline-block;
+    position: relative;
+    z-index: 2; /* Ensure links are clickable */
+}
+
+.footer-links a:hover {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+/* Modals - FIXED z-index */
 .modal { 
     display: none; 
     position: fixed; 
-    z-index: 100; 
+    z-index: 1000; /* High z-index to appear above everything */
     left: 0; 
     top: 0; 
     width: 100%; 
@@ -131,14 +158,34 @@ footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; fon
     min-width: 280px; 
     max-height: 85vh; 
     overflow-y: auto; 
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    z-index: 1001; /* Above modal backdrop */
+}
+
+.modal-content h2 {
+    color: #1e293b;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.modal-content p {
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    text-align: left;
 }
 
 .close { 
     position: absolute; 
     right: 15px; 
     top: 10px; 
-    font-size: 24px; 
+    font-size: 28px; 
     cursor: pointer; 
-    color: #94a3b8; 
+    color: #94a3b8;
+    transition: color 0.2s;
+    z-index: 1002; /* Above modal content */
+}
+
+.close:hover {
+    color: #475569;
 }
