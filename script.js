@@ -12,6 +12,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadList = document.getElementById('downloadList');
 
     const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
+    
+    // Check if backend is awake on page load
+    const checkBackendHealth = async () => {
+        try {
+            const response = await fetch(`${BACKEND_URL}/health`, {
+                method: 'GET',
+                signal: AbortSignal.timeout(10000) // 10 second timeout
+            });
+            if (response.ok) {
+                console.log('Backend is ready');
+                return true;
+            }
+        } catch (error) {
+            console.warn('Backend may be sleeping, will retry on conversion');
+        }
+        return false;
+    };
+    
+    // Call on page load
+    checkBackendHealth();
 
     let currentSessionId = null;
     let pollInterval = null;
@@ -183,11 +203,16 @@ document.addEventListener('DOMContentLoaded', () => {
         progressFill.style.width = '0%';
         progressFill.textContent = '0/0 (0%)';
         
-        updateStatus('Starting conversion...');
+        updateStatus('Connecting to server...');
         downloadArea.classList.add('hidden');
 
         try {
-            // Start conversion
+            // Start conversion with longer timeout for cold start
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout for cold start
+            
+            updateStatus('Waking up server (this may take 30-60 seconds)...');
+            
             const response = await fetch(`${BACKEND_URL}/start_conversion`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -195,11 +220,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     url: url,
                     session_id: currentSessionId 
                 }),
+                signal: controller.signal
             });
+
+            clearTimeout(timeoutId);
 
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.error || `HTTP Error ${response.status}`);
+                throw new Error(errData.error || `Server error: ${response.status}`);
             }
 
             const data = await response.json();
@@ -219,7 +247,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (e) {
             console.error("Conversion error:", e);
-            statusDiv.innerHTML = `<p style="color:#ef4444;">❌ Error: ${e.message}</p>`;
+            
+            let errorMessage = 'Connection failed';
+            if (e.name === 'AbortError') {
+                errorMessage = 'Server took too long to respond. The server may be sleeping. Please try again in 1 minute.';
+            } else if (e.message.includes('Failed to fetch')) {
+                errorMessage = 'Cannot connect to server. Please check:<br>1. Server URL is correct<br>2. Server is running<br>3. CORS is enabled';
+            } else {
+                errorMessage = e.message;
+            }
+            
+            statusDiv.innerHTML = `<p style="color:#ef4444;">❌ ${errorMessage}</p>`;
             resetUI();
         }
     });
