@@ -13,36 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
     
-    // Check if backend is awake on page load
-    const checkBackendHealth = async () => {
-        try {
-            const response = await fetch(`${BACKEND_URL}/health`, {
-                method: 'GET',
-                signal: AbortSignal.timeout(10000) // 10 second timeout
-            });
-            if (response.ok) {
-                console.log('Backend is ready');
-                return true;
-            }
-        } catch (error) {
-            console.warn('Backend may be sleeping, will retry on conversion');
-        }
-        return false;
-    };
-    
-    // Call on page load
-    checkBackendHealth();
-
     let currentSessionId = null;
     let pollInterval = null;
 
     // --- Helper Functions ---
     const resetUI = () => {
         convertBtn.disabled = false;
+        cancelBtn.disabled = false;
+        cancelBtn.textContent = "Cancel";
         cancelBtn.classList.add('hidden');
         resetBtn.classList.remove('hidden'); 
         progressBar.classList.add('hidden');
-        currentSessionId = null;
         if (pollInterval) {
             clearInterval(pollInterval);
             pollInterval = null;
@@ -63,17 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
         progressFill.textContent = `${current}/${total} (${percent}%)`;
     };
 
-    const updateStatus = (message, trackName = '', stepInfo = '') => {
+    const updateStatus = (message, stepInfo = '') => {
         let html = `<div class="spinner"></div>`;
-        if (message) {
-            html += `<p>${message}</p>`;
-        }
-        if (trackName) {
-            html += `<p class="track-name">${trackName}</p>`;
-        }
-        if (stepInfo) {
-            html += `<p class="step-info">${stepInfo}</p>`;
-        }
+        if (message) html += `<p>${message}</p>`;
+        if (stepInfo) html += `<p class="step-info" style="font-size:0.8rem; color:#64748b;">${stepInfo}</p>`;
         statusDiv.innerHTML = html;
     };
 
@@ -82,78 +56,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const response = await fetch(`${BACKEND_URL}/status/${currentSessionId}`);
-            
-            if (!response.ok) {
-                throw new Error('Failed to get status');
-            }
-
+            if (!response.ok) throw new Error('Status check failed');
             const data = await response.json();
             
-            // Update progress bar
-            const totalProcessed = data.completed + data.skipped;
-            updateProgress(totalProcessed, data.total);
+            updateProgress(data.completed + data.skipped, data.total);
 
-            // Update status message
+            // Handle Cancellation State
+            if (data.status === 'cancelled') {
+                clearInterval(pollInterval);
+                pollInterval = null;
+                statusDiv.innerHTML = `<p style="color:#ef4444; font-weight:bold;">⛔ Conversion Stopped.</p><p style="font-size:0.8rem;">Session cleared.</p>`;
+                resetUI();
+                return;
+            }
+
             if (data.status === 'processing') {
+                const isStopping = cancelBtn.disabled && cancelBtn.textContent === "Stopping...";
                 updateStatus(
-                    `Processing track ${data.current_track} of ${data.total}`,
-                    '',
+                    isStopping ? "⛔ Stopping process..." : `Processing track ${data.current_track} of ${data.total}`,
                     data.current_status
                 );
             } else if (data.status === 'completed') {
-                // Stop polling
                 clearInterval(pollInterval);
                 pollInterval = null;
 
-                // Show completion
                 statusDiv.innerHTML = `
                     <p style="font-size:1.1rem; font-weight:600; color:#10b981; margin-bottom:8px;">🎉 Conversion Complete!</p>
-                    <p style="color:#64748b; font-size:0.85rem;">${data.completed} tracks successfully converted${data.skipped > 0 ? ` • ${data.skipped} unavailable` : ''}</p>
+                    <p style="color:#64748b; font-size:0.85rem;">${data.completed} tracks successfully converted</p>
                 `;
 
-                // Show download area
                 downloadArea.classList.remove('hidden');
                 downloadList.innerHTML = '';
 
                 if (data.zip_ready && data.zip_path) {
                     const zipA = document.createElement('a');
                     zipA.href = `${BACKEND_URL}${data.zip_path}`;
-                    zipA.innerHTML = `<strong>📦 DOWNLOAD ALL (ZIP) - ${data.completed} Tracks</strong>`;
+                    zipA.innerHTML = `<strong>📦 DOWNLOAD ALL (ZIP)</strong>`;
                     zipA.className = "zip-btn";
                     downloadList.appendChild(zipA);
                 }
-
-                // Show skipped tracks
-                if (data.skipped_tracks && data.skipped_tracks.length > 0) {
-                    const skipHeader = document.createElement('div');
-                    skipHeader.style.cssText = "margin-top:15px; padding:10px; background:#fef2f2; border-left:3px solid #ef4444; border-radius:4px;";
-                    skipHeader.innerHTML = `<strong style='color:#ef4444'>⚠️ Unavailable Tracks (${data.skipped_tracks.length}):</strong>`;
-                    downloadList.appendChild(skipHeader);
-                    
-                    data.skipped_tracks.forEach(s => {
-                        const li = document.createElement('div');
-                        li.textContent = `🚫 ${s}`;
-                        li.style.cssText = "font-size:12px; color:#64748b; margin-left:15px; padding:4px 0;";
-                        downloadList.appendChild(li);
-                    });
-                }
-
-                resetUI();
-            } else if (data.status === 'cancelled') {
-                clearInterval(pollInterval);
-                pollInterval = null;
-                statusDiv.textContent = "⏸️ Conversion stopped by user.";
                 resetUI();
             } else if (data.status === 'error') {
                 clearInterval(pollInterval);
                 pollInterval = null;
-                statusDiv.innerHTML = `<p style="color:#ef4444;">❌ Error during conversion</p>`;
+                statusDiv.innerHTML = `<p style="color:#ef4444;">❌ Error: ${data.error || 'Unknown error'}</p>`;
                 resetUI();
             }
-
         } catch (error) {
             console.error('Poll error:', error);
-            // Don't stop polling on single error - server might be waking up
         }
     };
 
@@ -172,120 +122,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resetBtn.addEventListener('click', fullReset);
 
+    // FIXED CANCEL LOGIC
     cancelBtn.addEventListener('click', async () => {
         if (!currentSessionId) return;
 
+        // Immediate Visual Feedback
+        cancelBtn.disabled = true;
+        cancelBtn.textContent = "Stopping...";
+        statusDiv.innerHTML = `<div class="spinner" style="border-left-color: #ef4444;"></div><p>Sending stop signal...</p>`;
+
         try {
-            statusDiv.innerHTML = "⏸️ Stopping conversion...";
             await fetch(`${BACKEND_URL}/cancel`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ session_id: currentSessionId }),
             });
         } catch (e) { 
-            console.error("Cancel error", e); 
+            console.error("Cancel request failed", e); 
         }
     });
 
     convertBtn.addEventListener('click', async () => {
         const url = urlInput.value.trim();
-        if (!url) {
-            alert('Please enter a URL');
-            return;
-        }
+        if (!url) { alert('Please enter a URL'); return; }
 
         currentSessionId = self.crypto.randomUUID();
-
         convertBtn.disabled = true;
         resetBtn.classList.add('hidden');
         cancelBtn.classList.remove('hidden');
         progressBar.classList.remove('hidden');
-        progressFill.style.width = '0%';
-        progressFill.textContent = '0/0 (0%)';
-        
         updateStatus('Connecting to server...');
-        downloadArea.classList.add('hidden');
 
         try {
-            // Start conversion with longer timeout for cold start
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout for cold start
-            
-            updateStatus('Waking up server (this may take 30-60 seconds)...');
-            
             const response = await fetch(`${BACKEND_URL}/start_conversion`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    url: url,
-                    session_id: currentSessionId 
-                }),
-                signal: controller.signal
+                body: JSON.stringify({ url: url, session_id: currentSessionId }),
             });
 
-            clearTimeout(timeoutId);
-
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.error || `Server error: ${response.status}`);
-            }
-
+            if (!response.ok) throw new Error('Server error starting conversion');
             const data = await response.json();
             
             if (data.status === 'started') {
-                updateStatus(`Found ${data.total_tracks} tracks. Starting download...`);
                 updateProgress(0, data.total_tracks);
-                
-                // Start polling every 2 seconds
                 pollInterval = setInterval(pollStatus, 2000);
-                
-                // Initial poll
-                pollStatus();
-            } else {
-                throw new Error('Failed to start conversion');
             }
-
         } catch (e) {
-            console.error("Conversion error:", e);
-            
-            let errorMessage = 'Connection failed';
-            if (e.name === 'AbortError') {
-                errorMessage = 'Server took too long to respond. The server may be sleeping. Please try again in 1 minute.';
-            } else if (e.message.includes('Failed to fetch')) {
-                errorMessage = 'Cannot connect to server. Please check:<br>1. Server URL is correct<br>2. Server is running<br>3. CORS is enabled';
-            } else {
-                errorMessage = e.message;
-            }
-            
-            statusDiv.innerHTML = `<p style="color:#ef4444;">❌ ${errorMessage}</p>`;
+            statusDiv.innerHTML = `<p style="color:#ef4444;">❌ ${e.message}</p>`;
             resetUI();
         }
     });
 });
 
-/**
- * --- GLOBAL MODAL FUNCTIONS ---
- */
-
-function openModal(id) {
-    const modal = document.getElementById(id);
-    if (modal) {
-        modal.style.display = "flex";
-        document.body.style.overflow = "hidden";
-    }
-}
-
-function closeModal(id) {
-    const modal = document.getElementById(id);
-    if (modal) {
-        modal.style.display = "none";
-        document.body.style.overflow = "auto";
-    }
-}
-
-window.onclick = function(event) {
-    if (event.target.classList.contains('modal')) {
-        event.target.style.display = "none";
-        document.body.style.overflow = "auto";
-    }
-};
+// Global Modal Helpers
+function openModal(id) { document.getElementById(id).style.display = "flex"; }
+function closeModal(id) { document.getElementById(id).style.display = "none"; }
+window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.style.display = "none"; };

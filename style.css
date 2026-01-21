@@ -17,11 +17,11 @@ body {
     max-width: 460px;
     text-align: center;
     position: relative;
-    z-index: 1; /* Ensure container is below modals */
+    z-index: 1;
 }
 
 h1 { color: #1e293b; font-size: 1.6rem; margin-bottom: 0.5rem; }
-.subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem; }
+.subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.4; }
 .input-group { display: flex; gap: 8px; margin-bottom: 1rem; }
 input { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; }
 input:focus { border-color: #3b82f6; outline: none; }
@@ -44,6 +44,8 @@ input:focus { border-color: #3b82f6; outline: none; }
     cursor: pointer; 
 }
 
+#convertBtn:disabled { background: #94a3b8; cursor: not-allowed; }
+
 #cancelBtn, #resetBtn {
     flex: 1;
     padding: 14px;
@@ -51,18 +53,25 @@ input:focus { border-color: #3b82f6; outline: none; }
     border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s ease;
 }
 
 #cancelBtn { background: #ef4444; color: white; }
-#cancelBtn:hover { background: #dc2626; }
+#cancelBtn:hover:not(:disabled) { background: #dc2626; }
+
+/* Fixed Cancel Disabled State */
+#cancelBtn:disabled { 
+    background: #fca5a5; 
+    color: white; 
+    cursor: not-allowed; 
+    opacity: 0.8;
+    transform: scale(0.98);
+}
 
 #resetBtn { background: #94a3b8; color: white; }
 #resetBtn:hover { background: #64748b; }
 
-#convertBtn:disabled { background: #94a3b8; cursor: not-allowed; }
-
-#status { margin: 1.5rem 0; font-size: 0.9rem; color: #475569; }
+#status { margin: 1.5rem 0; font-size: 0.9rem; color: #475569; min-height: 50px; }
 
 #progressBar {
     width: 100%;
@@ -90,7 +99,7 @@ input:focus { border-color: #3b82f6; outline: none; }
 
 .spinner {
     border: 3px solid rgba(0,0,0,0.1); width: 28px; height: 28px; border-radius: 50%;
-    border-left-color: #ef4444; animation: spin 0.8s linear infinite; margin: 0 auto 10px;
+    border-left-color: #3b82f6; animation: spin 0.8s linear infinite; margin: 0 auto 10px;
 }
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -102,90 +111,25 @@ input:focus { border-color: #3b82f6; outline: none; }
 #downloadList { list-style: none; padding: 0; margin-top: 1rem; text-align: left;}
 
 .zip-btn { display: block; background: #0f172a; color: white; padding: 12px; text-align: center; border-radius: 6px; text-decoration: none; margin-bottom: 12px; font-weight: bold; }
-.track-btn { display: block; background: #10b981; color: white; padding: 10px; text-align: center; border-radius: 6px; text-decoration: none; margin-bottom: 6px; font-size: 0.85rem; }
 
 footer { 
-    margin-top: 30px; 
-    padding-top: 20px; 
-    border-top: 1px solid #e2e8f0; 
-    font-size: 0.75rem; 
-    color: #94a3b8;
-    position: relative;
-    z-index: 1; /* Keep footer below modals */
+    margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; 
+    font-size: 0.75rem; color: #94a3b8;
 }
 
-.footer-links { 
-    margin-top: 8px;
-}
+.footer-links { margin-top: 8px; }
+.footer-links a { color: #3b82f6; text-decoration: none; margin: 0 5px; cursor: pointer; }
 
-.footer-links a { 
-    color: #3b82f6; 
-    text-decoration: none; 
-    margin: 0 5px; 
-    cursor: pointer;
-    transition: color 0.2s;
-    display: inline-block;
-    position: relative;
-    z-index: 2; /* Ensure links are clickable */
-}
-
-.footer-links a:hover {
-    color: #2563eb;
-    text-decoration: underline;
-}
-
-/* Modals - FIXED z-index */
+/* Modals */
 .modal { 
-    display: none; 
-    position: fixed; 
-    z-index: 1000; /* High z-index to appear above everything */
-    left: 0; 
-    top: 0; 
-    width: 100%; 
-    height: 100%; 
-    background: rgba(0,0,0,0.5); 
-    align-items: center; 
-    justify-content: center; 
+    display: none; position: fixed; z-index: 1000; left: 0; top: 0; 
+    width: 100%; height: 100%; background: rgba(0,0,0,0.5); 
+    align-items: center; justify-content: center; 
 }
 
 .modal-content { 
-    background: white; 
-    padding: 25px; 
-    border-radius: 12px; 
-    position: relative; 
-    width: auto; 
-    max-width: 500px; 
-    min-width: 280px; 
-    max-height: 85vh; 
-    overflow-y: auto; 
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-    z-index: 1001; /* Above modal backdrop */
+    background: white; padding: 25px; border-radius: 12px; position: relative; 
+    max-width: 500px; width: 90%; max-height: 85vh; overflow-y: auto; 
 }
 
-.modal-content h2 {
-    color: #1e293b;
-    margin-top: 0;
-    margin-bottom: 15px;
-}
-
-.modal-content p {
-    color: #475569;
-    line-height: 1.6;
-    margin-bottom: 12px;
-    text-align: left;
-}
-
-.close { 
-    position: absolute; 
-    right: 15px; 
-    top: 10px; 
-    font-size: 28px; 
-    cursor: pointer; 
-    color: #94a3b8;
-    transition: color 0.2s;
-    z-index: 1002; /* Above modal content */
-}
-
-.close:hover {
-    color: #475569;
-}
+.close { position: absolute; right: 15px; top: 10px; font-size: 28px; cursor: pointer; color: #94a3b8; }
