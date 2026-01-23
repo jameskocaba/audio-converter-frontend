@@ -44,10 +44,22 @@ document.addEventListener('DOMContentLoaded', () => {
         progressFill.textContent = `${current}/${total} (${percent}%)`;
     };
 
-    const updateStatus = (message, stepInfo = '') => {
-        let html = `<div class="spinner"></div>`;
+    const updateStatus = (message, stepInfo = '', queueInfo = null) => {
+        let html = '';
+        
+        // Queue position badge
+        if (queueInfo && queueInfo.position > 0) {
+            html += `<div class="queue-badge">📋 Position in Queue: #${queueInfo.position}</div>`;
+        }
+        
+        // Spinner for active processing
+        if (!queueInfo || queueInfo.position === 0) {
+            html += `<div class="spinner"></div>`;
+        }
+        
         if (message) html += `<p>${message}</p>`;
         if (stepInfo) html += `<p class="step-info" style="font-size:0.8rem; color:#64748b;">${stepInfo}</p>`;
+        
         statusDiv.innerHTML = html;
     };
 
@@ -58,6 +70,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`${BACKEND_URL}/status/${currentSessionId}`);
             if (!response.ok) throw new Error('Status check failed');
             const data = await response.json();
+            
+            // Handle Queue Status
+            if (data.status === 'queued' && data.queue_position > 0) {
+                updateStatus(
+                    `⏳ Waiting in queue...`,
+                    `Your conversion will start soon. Please keep this tab open.`,
+                    { position: data.queue_position }
+                );
+                progressBar.classList.add('hidden');
+                return;
+            }
+            
+            // Show progress bar once processing starts
+            if (data.status === 'processing') {
+                progressBar.classList.remove('hidden');
+            }
             
             updateProgress(data.completed + data.skipped, data.total);
 
@@ -122,7 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resetBtn.addEventListener('click', fullReset);
 
-    // FIXED CANCEL LOGIC
     cancelBtn.addEventListener('click', async () => {
         if (!currentSessionId) return;
 
@@ -150,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
         convertBtn.disabled = true;
         resetBtn.classList.add('hidden');
         cancelBtn.classList.remove('hidden');
-        progressBar.classList.remove('hidden');
         updateStatus('Connecting to server...');
 
         try {
@@ -163,8 +189,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Server error starting conversion');
             const data = await response.json();
             
-            if (data.status === 'started') {
-                updateProgress(0, data.total_tracks);
+            if (data.status === 'started' || data.status === 'queued') {
+                if (data.queue_position > 0) {
+                    updateStatus(
+                        `⏳ Added to queue`,
+                        `You are #${data.queue_position} in line. Total tracks: ${data.total_tracks}`,
+                        { position: data.queue_position }
+                    );
+                } else {
+                    progressBar.classList.remove('hidden');
+                    updateProgress(0, data.total_tracks);
+                }
                 pollInterval = setInterval(pollStatus, 2000);
             }
         } catch (e) {

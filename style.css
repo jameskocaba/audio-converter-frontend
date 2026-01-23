@@ -1,135 +1,106 @@
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif;
-    background: #f4f7f9;
+/* Add these styles to your existing style.css */
+
+/* Queue Badge */
+.queue-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    display: inline-block;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    animation: pulse-badge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { transform: scale(1); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
+    50% { transform: scale(1.02); box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4); }
+}
+
+/* Enhanced Status Area for Queue */
+#status {
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+    color: #475569;
+    min-height: 80px;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+#status p {
+    margin: 5px 0;
+}
+
+/* Queue Position Indicator */
+.queue-position {
+    background: #f1f5f9;
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin: 10px 0;
+    border-left: 4px solid #667eea;
+    font-size: 0.85rem;
+}
+
+.queue-position strong {
+    color: #667eea;
+    font-size: 1.1rem;
+}
+
+/* Waiting State Animation */
+.waiting-dots::after {
+    content: '...';
+    animation: dots 1.5s steps(3, end) infinite;
+}
+
+@keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+}
+
+/* Enhanced Spinner for Queue */
+.spinner {
+    border: 3px solid rgba(0,0,0,0.1);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border-left-color: #667eea;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 12px;
+}
+
+/* Queue Info Box */
+.queue-info-box {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 1px solid #fbbf24;
+    border-radius: 8px;
+    padding: 12px 15px;
+    margin: 10px 0;
+    font-size: 0.85rem;
+    color: #78350f;
     display: flex;
-    justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    margin: 0;
-}
-
-.container {
-    background: white;
-    padding: 2.5rem;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    width: 90%;
-    max-width: 460px;
-    text-align: center;
-    position: relative;
-    z-index: 1;
-}
-
-h1 { color: #1e293b; font-size: 1.6rem; margin-bottom: 0.5rem; }
-.subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.4; }
-.input-group { display: flex; gap: 8px; margin-bottom: 1rem; }
-input { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; }
-input:focus { border-color: #3b82f6; outline: none; }
-
-#pasteBtn { padding: 10px 15px; background: #475569; color: white; border: none; border-radius: 6px; cursor: pointer; }
-
-.button-group {
-    display: flex;
     gap: 10px;
 }
 
-#convertBtn { 
-    flex: 2;
-    padding: 14px; 
-    background: linear-gradient(135deg, #1a4d8c 0%, #3bb371 100%); 
-    color: white; 
-    border: none; 
-    border-radius: 6px; 
-    font-weight: 600; 
-    cursor: pointer; 
+.queue-info-box::before {
+    content: "⏱️";
+    font-size: 1.2rem;
 }
 
-#convertBtn:disabled { background: #94a3b8; cursor: not-allowed; }
-
-#cancelBtn, #resetBtn {
-    flex: 1;
-    padding: 14px;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
+/* Responsive adjustments */
+@media (max-width: 500px) {
+    .queue-badge {
+        font-size: 0.9rem;
+        padding: 10px 15px;
+    }
+    
+    #status {
+        min-height: 100px;
+        padding: 12px;
+    }
 }
-
-#cancelBtn { background: #ef4444; color: white; }
-#cancelBtn:hover:not(:disabled) { background: #dc2626; }
-
-/* Fixed Cancel Disabled State */
-#cancelBtn:disabled { 
-    background: #fca5a5; 
-    color: white; 
-    cursor: not-allowed; 
-    opacity: 0.8;
-    transform: scale(0.98);
-}
-
-#resetBtn { background: #94a3b8; color: white; }
-#resetBtn:hover { background: #64748b; }
-
-#status { margin: 1.5rem 0; font-size: 0.9rem; color: #475569; min-height: 50px; }
-
-#progressBar {
-    width: 100%;
-    height: 30px;
-    background: #e2e8f0;
-    border-radius: 15px;
-    overflow: hidden;
-    margin: 1rem 0;
-    position: relative;
-}
-
-#progressFill {
-    height: 100%;
-    background: linear-gradient(90deg, #3b82f6 0%, #10b981 100%);
-    width: 0%;
-    transition: width 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    font-size: 0.85rem;
-    border-radius: 15px;
-}
-
-.spinner {
-    border: 3px solid rgba(0,0,0,0.1); width: 28px; height: 28px; border-radius: 50%;
-    border-left-color: #3b82f6; animation: spin 0.8s linear infinite; margin: 0 auto 10px;
-}
-
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-.hidden { display: none !important; }
-
-.download-header { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; }
-#clearBtn { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
-#downloadList { list-style: none; padding: 0; margin-top: 1rem; text-align: left;}
-
-.zip-btn { display: block; background: #0f172a; color: white; padding: 12px; text-align: center; border-radius: 6px; text-decoration: none; margin-bottom: 12px; font-weight: bold; }
-
-footer { 
-    margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; 
-    font-size: 0.75rem; color: #94a3b8;
-}
-
-.footer-links { margin-top: 8px; }
-.footer-links a { color: #3b82f6; text-decoration: none; margin: 0 5px; cursor: pointer; }
-
-/* Modals */
-.modal { 
-    display: none; position: fixed; z-index: 1000; left: 0; top: 0; 
-    width: 100%; height: 100%; background: rgba(0,0,0,0.5); 
-    align-items: center; justify-content: center; 
-}
-
-.modal-content { 
-    background: white; padding: 25px; border-radius: 12px; position: relative; 
-    max-width: 500px; width: 90%; max-height: 85vh; overflow-y: auto; 
-}
-
-.close { position: absolute; right: 15px; top: 10px; font-size: 28px; cursor: pointer; color: #94a3b8; }
