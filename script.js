@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 statusDiv.innerHTML = `
                     <p style="font-size:1.1rem; font-weight:600; color:#10b981; margin-bottom:8px;">&#127881; Conversion Complete!</p>
-                    <p style="color:#64748b; font-size:0.85rem;">${data.completed} tracks successfully converted</p>
+                    <p style="color:#64748b; font-size:0.85rem;">${data.completed} track(s) successfully converted</p>
                 `;
 
                 downloadArea.classList.remove('hidden');
