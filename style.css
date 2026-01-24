@@ -106,8 +106,6 @@ input:focus { border-color: #3b82f6; outline: none; }
 
 .hidden { display: none !important; }
 
-.download-header { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; }
-#clearBtn { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
 #downloadList { list-style: none; padding: 0; margin-top: 1rem; text-align: left;}
 
 .zip-btn { display: block; background: #0f172a; color: white; padding: 12px; text-align: center; border-radius: 6px; text-decoration: none; margin-bottom: 12px; font-weight: bold; }

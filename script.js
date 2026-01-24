@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const cancelBtn = document.getElementById('cancelBtn');
     const resetBtn = document.getElementById('resetBtn');
     const pasteBtn = document.getElementById('pasteBtn');
-    const clearBtn = document.getElementById('clearBtn');
     const statusDiv = document.getElementById('status');
     const progressBar = document.getElementById('progressBar');
     const progressFill = document.getElementById('progressFill');
@@ -65,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.status === 'cancelled') {
                 clearInterval(pollInterval);
                 pollInterval = null;
-                statusDiv.innerHTML = `<p style="color:#ef4444; font-weight:bold;">â›” Conversion Stopped.</p><p style="font-size:0.8rem;">Session cleared.</p>`;
+                statusDiv.innerHTML = `<p style="color:#ef4444; font-weight:bold;">⛔ Conversion Stopped.</p><p style="font-size:0.8rem;">Session cleared.</p>`;
                 resetUI();
                 return;
             }
@@ -73,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.status === 'processing') {
                 const isStopping = cancelBtn.disabled && cancelBtn.textContent === "Stopping...";
                 updateStatus(
-                    isStopping ? "â›” Stopping process..." : `Processing track ${data.current_track} of ${data.total}`,
+                    isStopping ? "⛔ Stopping process..." : `Processing track ${data.current_track} of ${data.total}`,
                     data.current_status
                 );
             } else if (data.status === 'completed') {
@@ -81,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pollInterval = null;
 
                 statusDiv.innerHTML = `
-                    <p style="font-size:1.1rem; font-weight:600; color:#10b981; margin-bottom:8px;">ðŸŽ‰ Conversion Complete!</p>
+                    <p style="font-size:1.1rem; font-weight:600; color:#10b981; margin-bottom:8px;">🎉 Conversion Complete!</p>
                     <p style="color:#64748b; font-size:0.85rem;">${data.completed} tracks successfully converted</p>
                 `;
 
@@ -91,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.zip_ready && data.zip_path) {
                     const zipA = document.createElement('a');
                     zipA.href = `${BACKEND_URL}${data.zip_path}`;
-                    zipA.innerHTML = `<strong>ðŸ“¦ DOWNLOAD ALL (ZIP)</strong>`;
+                    zipA.innerHTML = `<strong>📦 DOWNLOAD ALL (ZIP)</strong>`;
                     zipA.className = "zip-btn";
                     downloadList.appendChild(zipA);
                 }
@@ -99,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (data.status === 'error') {
                 clearInterval(pollInterval);
                 pollInterval = null;
-                statusDiv.innerHTML = `<p style="color:#ef4444;">âŒ Error: ${data.error || 'Unknown error'}</p>`;
+                statusDiv.innerHTML = `<p style="color:#ef4444;">❌ Error: ${data.error || 'Unknown error'}</p>`;
                 resetUI();
             }
         } catch (error) {
@@ -112,12 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             urlInput.value = await navigator.clipboard.readText();
         } catch (err) { alert("Please paste manually."); }
-    });
-
-    clearBtn.addEventListener('click', () => {
-        downloadList.innerHTML = '';
-        downloadArea.classList.add('hidden');
-        statusDiv.textContent = "Ready";
     });
 
     resetBtn.addEventListener('click', fullReset);
@@ -168,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pollInterval = setInterval(pollStatus, 2000);
             }
         } catch (e) {
-            statusDiv.innerHTML = `<p style="color:#ef4444;">âŒ ${e.message}</p>`;
+            statusDiv.innerHTML = `<p style="color:#ef4444;">❌ ${e.message}</p>`;
             resetUI();
         }
     });
