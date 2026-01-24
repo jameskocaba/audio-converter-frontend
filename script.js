@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.status === 'cancelled') {
                 clearInterval(pollInterval);
                 pollInterval = null;
-                statusDiv.innerHTML = `<p style="color:#ef4444; font-weight:bold;">⛔ Conversion Stopped.</p><p style="font-size:0.8rem;">Session cleared.</p>`;
+                statusDiv.innerHTML = `<p style="color:#ef4444; font-weight:bold;">â›” Conversion Stopped.</p><p style="font-size:0.8rem;">Session cleared.</p>`;
                 resetUI();
                 return;
             }
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.status === 'processing') {
                 const isStopping = cancelBtn.disabled && cancelBtn.textContent === "Stopping...";
                 updateStatus(
-                    isStopping ? "⛔ Stopping process..." : `Processing track ${data.current_track} of ${data.total}`,
+                    isStopping ? "â›” Stopping process..." : `Processing track ${data.current_track} of ${data.total}`,
                     data.current_status
                 );
             } else if (data.status === 'completed') {
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pollInterval = null;
 
                 statusDiv.innerHTML = `
-                    <p style="font-size:1.1rem; font-weight:600; color:#10b981; margin-bottom:8px;">🎉 Conversion Complete!</p>
+                    <p style="font-size:1.1rem; font-weight:600; color:#10b981; margin-bottom:8px;">ðŸŽ‰ Conversion Complete!</p>
                     <p style="color:#64748b; font-size:0.85rem;">${data.completed} tracks successfully converted</p>
                 `;
 
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.zip_ready && data.zip_path) {
                     const zipA = document.createElement('a');
                     zipA.href = `${BACKEND_URL}${data.zip_path}`;
-                    zipA.innerHTML = `<strong>📦 DOWNLOAD ALL (ZIP)</strong>`;
+                    zipA.innerHTML = `<strong>ðŸ“¦ DOWNLOAD ALL (ZIP)</strong>`;
                     zipA.className = "zip-btn";
                     downloadList.appendChild(zipA);
                 }
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (data.status === 'error') {
                 clearInterval(pollInterval);
                 pollInterval = null;
-                statusDiv.innerHTML = `<p style="color:#ef4444;">❌ Error: ${data.error || 'Unknown error'}</p>`;
+                statusDiv.innerHTML = `<p style="color:#ef4444;">âŒ Error: ${data.error || 'Unknown error'}</p>`;
                 resetUI();
             }
         } catch (error) {
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pollInterval = setInterval(pollStatus, 2000);
             }
         } catch (e) {
-            statusDiv.innerHTML = `<p style="color:#ef4444;">❌ ${e.message}</p>`;
+            statusDiv.innerHTML = `<p style="color:#ef4444;">âŒ ${e.message}</p>`;
             resetUI();
         }
     });
