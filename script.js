@@ -58,7 +58,27 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Status check failed');
             const data = await response.json();
             
-            updateProgress(data.completed + data.skipped, data.total);
+            // Handle Queue State
+            if (data.status === 'queued') {
+                progressBar.classList.add('hidden');
+                statusDiv.innerHTML = `
+                    <div class="queue-box">
+                        <div class="spinner queue-spinner"></div>
+                        <p style="font-weight:600; color:#d97706;">Waiting in Queue</p>
+                        <p style="font-size:0.9rem;">Your Position: <span style="font-weight:bold; font-size:1.1rem;">${data.queue_position}</span></p>
+                        <p style="font-size:0.8rem; color:#64748b; margin-top:5px;">Process will start automatically...</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Normal Processing State
+            if (data.status === 'processing' || data.status === 'completed') {
+                if (progressBar.classList.contains('hidden') && data.status === 'processing') {
+                    progressBar.classList.remove('hidden');
+                }
+                updateProgress(data.completed + data.skipped, data.total);
+            }
 
             // Handle Cancellation State
             if (data.status === 'cancelled') {
@@ -115,11 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resetBtn.addEventListener('click', fullReset);
 
-    // FIXED CANCEL LOGIC
     cancelBtn.addEventListener('click', async () => {
         if (!currentSessionId) return;
 
-        // Immediate Visual Feedback
         cancelBtn.disabled = true;
         cancelBtn.textContent = "Stopping...";
         statusDiv.innerHTML = `<div class="spinner" style="border-left-color: #ef4444;"></div><p>Sending stop signal...</p>`;
@@ -143,8 +161,8 @@ document.addEventListener('DOMContentLoaded', () => {
         convertBtn.disabled = true;
         resetBtn.classList.add('hidden');
         cancelBtn.classList.remove('hidden');
-        progressBar.classList.remove('hidden');
-        updateStatus('Connecting to server...');
+        // NOTE: We keep progress bar hidden initially now, until status passes 'queued'
+        statusDiv.innerHTML = `<div class="spinner"></div><p>Connecting to server...</p>`;
 
         try {
             const response = await fetch(`${BACKEND_URL}/start_conversion`, {
@@ -156,8 +174,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Server error starting conversion');
             const data = await response.json();
             
-            if (data.status === 'started') {
-                updateProgress(0, data.total_tracks);
+            // Handle both 'started' (if queue is empty) or 'queued'
+            if (data.status === 'started' || data.status === 'queued') {
                 pollInterval = setInterval(pollStatus, 2000);
             }
         } catch (e) {
