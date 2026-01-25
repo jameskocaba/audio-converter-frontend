@@ -140,8 +140,8 @@ input:focus {
 
 #resetBtn:hover {
     border-color: #cbd5e1;
-    background: #f8fafc;
-    color: #334155;
+    background: #cbd5e1;
+    color: #64748b;
 }
 
 #cancelBtn {
