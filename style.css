@@ -1,3 +1,6 @@
+/* =========================================
+   1. GLOBAL & LAYOUT
+   ========================================= */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif;
     background: #f4f7f9;
@@ -20,115 +23,218 @@ body {
     z-index: 1;
 }
 
-h1 { color: #1e293b; font-size: 1.6rem; margin-bottom: 0.5rem; }
-.subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.4; }
+/* =========================================
+   2. TYPOGRAPHY & HEADER
+   ========================================= */
+h1 { 
+    color: #1e293b; 
+    font-size: 1.6rem; 
+    margin-bottom: 0.5rem; 
+}
 
-.input-group { display: flex; gap: 8px; margin-bottom: 1rem; }
+.subtitle { 
+    color: #64748b; 
+    font-size: 0.9rem; 
+    margin-bottom: 1.5rem; 
+    line-height: 1.4; 
+}
+
+.logo-container { 
+    text-align: center; 
+    margin-bottom: 20px; 
+}
+
+.main-logo { 
+    max-width: 300px; 
+    width: 100%; 
+    height: auto; 
+    display: block; 
+    margin: 0 auto; 
+}
+
+/* =========================================
+   3. INPUTS & BUTTONS (Themed)
+   ========================================= */
+.input-group { 
+    display: flex; 
+    gap: 8px; 
+    margin-bottom: 1rem; 
+}
 
 input { 
     flex: 1; 
     padding: 12px; 
     border: 1px solid #cbd5e1; 
-    border-radius: 6px; 
+    border-radius: 8px; 
     font-size: 0.9rem; 
 }
-input:focus { border-color: #3b82f6; outline: none; }
 
-.icon-btn {
-    padding: 12px;
-    background: #f1f5f9;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1.2rem;
+input:focus { 
+    border-color: #2980b9; 
+    outline: none; 
 }
-.icon-btn:hover { background: #e2e8f0; }
 
-button.primary-btn {
-    width: 100%;
-    padding: 14px;
-    background: #ff5500; /* SoundCloud Orange */
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 1rem;
+/* "Paste" Button - Matches the Dark Blue/Teal "MP3" text */
+#pasteBtn { 
+    padding: 0 20px; 
+    background: #2c3e50; /* Dark Teal/Blue from "MP3" text */
+    color: white; 
+    border: none; 
+    border-radius: 8px; 
     font-weight: 600;
-    cursor: pointer;
+    cursor: pointer; 
     transition: background 0.2s;
 }
-button.primary-btn:hover { background: #e64d00; }
-button:disabled { background: #94a3b8; cursor: not-allowed; }
 
-button.secondary-btn {
-    background: transparent;
-    color: #64748b;
-    border: 1px solid #cbd5e1;
-    margin-top: 10px;
-    width: 100%;
-    padding: 10px;
-    border-radius: 6px;
-    cursor: pointer;
+#pasteBtn:hover {
+    background: #34495e; 
 }
-button.secondary-btn:hover { background: #f8fafc; color: #334155; }
 
-/* Status & Progress */
-#status { margin-top: 1.5rem; min-height: 20px; font-size: 0.95rem; color: #334155; }
-
-.progress-container {
-    width: 100%;
-    background: #e2e8f0;
-    border-radius: 4px;
-    height: 8px; /* Thinner bar */
+.button-group {
+    display: flex;
+    gap: 12px;
     margin-top: 15px;
+}
+
+/* "Convert" Button - Matches the Logo Gradient (Blue Node -> Green Text) */
+#convertBtn { 
+    flex: 2;
+    padding: 15px; 
+    background: linear-gradient(90deg, #2980b9 0%, #2ecc71 100%);
+    color: white; 
+    border: none; 
+    border-radius: 8px; 
+    font-weight: 700; 
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    cursor: pointer; 
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2);
+}
+
+#convertBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(46, 204, 113, 0.3);
+}
+
+#convertBtn:disabled { 
+    background: #cbd5e1; 
+    color: #64748b;
+    box-shadow: none;
+    transform: none;
+    cursor: not-allowed; 
+}
+
+/* Secondary Buttons (Reset / Cancel) */
+#resetBtn, #cancelBtn {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid #e2e8f0;
+    background: white;
+    color: #64748b;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#resetBtn:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+    color: #334155;
+}
+
+#cancelBtn {
+    color: #ef4444;
+    border-color: #fee2e2;
+    background: #fef2f2;
+}
+
+#cancelBtn:hover:not(:disabled) {
+    background: #fee2e2;
+    border-color: #fecaca;
+}
+
+#cancelBtn:disabled { 
+    background: #fca5a5; 
+    color: white; 
+    cursor: not-allowed; 
+    opacity: 0.8;
+    transform: scale(0.98);
+    border: none;
+}
+
+/* =========================================
+   4. PROGRESS BAR (Themed)
+   ========================================= */
+#progressBar {
+    width: 100%;
+    height: 24px;
+    background: #f1f5f9;
+    border-radius: 12px;
     overflow: hidden;
+    margin: 1.5rem 0;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
     position: relative;
 }
 
-.progress-bar {
+#progressFill {
     height: 100%;
-    background: #10b981; /* Green */
+    background: linear-gradient(90deg, #2980b9 0%, #2ecc71 100%);
     width: 0%;
-    transition: width 0.3s ease;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 0.7rem; /* Tiny text inside bar */
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    border-radius: 12px;
 }
 
-/* Spinner */
+/* =========================================
+   5. STATUS, QUEUE & SPINNERS
+   ========================================= */
+#status { 
+    margin: 1.5rem 0; 
+    font-size: 0.9rem; 
+    color: #475569; 
+    min-height: 50px; 
+}
+
 .spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3b82f6; /* Blue by default */
+    border: 3px solid rgba(0,0,0,0.1); 
+    width: 28px; 
+    height: 28px; 
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    animation: spin 0.8s linear infinite;
+    border-left-color: #2980b9; /* Match Logo Blue */
+    animation: spin 0.8s linear infinite; 
     margin: 0 auto 10px;
 }
 
-/* --- NEW QUEUE STYLES --- */
+/* Queue Specific Styling */
 .queue-box {
-    background: #fffbeb;
-    border: 1px solid #fcd34d;
+    background: #ecfdf5; /* Very light green bg */
+    border: 1px solid #6ee7b7; /* Green border */
     padding: 15px;
     border-radius: 8px;
-    color: #92400e;
+    color: #065f46; /* Dark green text */
     margin-top: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* Overrides the blue color of the standard spinner */
 .queue-spinner {
-    border-top-color: #d97706 !important; 
+    border-top-color: #2ecc71 !important; /* Match Logo Green */
+    border-left-color: rgba(0,0,0,0.1) !important;
 }
-/* ------------------------ */
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
 .hidden { display: none !important; }
 
+/* =========================================
+   6. DOWNLOAD AREA & FOOTER
+   ========================================= */
 .download-separator {
     margin-top: 1.5rem;
     padding-top: 1rem;
@@ -143,76 +249,91 @@ button.secondary-btn:hover { background: #f8fafc; color: #334155; }
     border: 1px solid #ff5500;
 }
 
-#downloadList { list-style: none; padding: 0; margin-top: 1rem; text-align: left;}
+#downloadList { 
+    list-style: none; 
+    padding: 0; 
+    margin-top: 1rem; 
+    text-align: left;
+}
 
 .zip-btn { 
-    display: block; 
-    background: #0f172a; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    background: #1e293b; /* Dark Navy */
     color: white; 
-    padding: 12px; 
+    padding: 16px; 
     text-align: center; 
-    border-radius: 6px; 
+    border-radius: 8px; 
     text-decoration: none; 
     margin-bottom: 12px; 
     font-weight: bold; 
+    transition: all 0.2s;
+    border-bottom: 4px solid #0f172a; /* 3D effect */
 }
-.zip-btn:hover { background: #1e293b; }
+
+.zip-btn:hover { 
+    background: #2c3e50;
+    transform: translateY(1px);
+    border-bottom-width: 2px;
+}
 
 footer { 
-    margin-top: 30px; 
-    padding-top: 20px; 
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px 0;
     border-top: 1px solid #e2e8f0; 
     font-size: 0.75rem; 
-    color: #94a3b8; 
+    color: #94a3b8;
 }
-footer a { color: #64748b; text-decoration: none; }
-footer a:hover { text-decoration: underline; }
 
-/* Modal Styles */
-.modal {
+footer p { margin: 0 0 10px 0; }
+.footer-links { text-align: center; }
+.footer-links a { 
+    color: #2980b9; 
+    text-decoration: none; 
+    margin: 0 5px; 
+    cursor: pointer; 
+}
+
+/* =========================================
+   7. MODALS
+   ========================================= */
+.modal { 
     display: none; 
     position: fixed; 
-    z-index: 100; 
-    left: 0;
-    top: 0;
+    z-index: 1000; 
+    left: 0; 
+    top: 0; 
     width: 100%; 
     height: 100%; 
-    overflow: auto; 
-    background-color: rgba(0,0,0,0.5); 
-    align-items: center;
-    justify-content: center;
+    background: rgba(0,0,0,0.5); 
+    align-items: center; 
+    justify-content: center; 
 }
 
-.modal-content {
-    background-color: #fefefe;
-    margin: auto;
-    padding: 25px;
-    border: 1px solid #888;
-    width: 85%;
-    max-width: 500px;
-    border-radius: 10px;
+.modal-content { 
+    background: white; 
+    padding: 25px; 
+    border-radius: 12px; 
+    position: relative; 
+    max-width: 500px; 
+    width: 90%; 
+    max-height: 85vh; 
+    overflow-y: auto; 
     text-align: left;
-    position: relative;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    line-height: 1;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
 }
 
 .modal-content h2 { margin-top: 0; color: #1e293b; }
 .modal-content p, .modal-content li { color: #334155; line-height: 1.5; font-size: 0.9rem; }
 .modal-content ul { padding-left: 20px; }
+
+.close { 
+    position: absolute; 
+    right: 15px; 
+    top: 10px; 
+    font-size: 28px; 
+    cursor: pointer; 
+    color: #94a3b8; 
+}
