@@ -77,7 +77,7 @@ input:focus {
 /* "Paste" Button - Matches the Dark Blue/Teal "MP3" text */
 #pasteBtn { 
     padding: 0 20px; 
-    background: #2c3e50; /* Dark Teal/Blue from "MP3" text */
+    background: #2c3e50; 
     color: white; 
     border: none; 
     border-radius: 8px; 
@@ -96,7 +96,7 @@ input:focus {
     margin-top: 15px;
 }
 
-/* "Convert" Button - Matches the Logo Gradient (Blue Node -> Green Text) */
+/* "Convert" Button - Matches the Logo Gradient */
 #convertBtn { 
     flex: 2;
     padding: 15px; 
@@ -126,28 +126,34 @@ input:focus {
 }
 
 /* Secondary Buttons (Reset / Cancel) */
-#resetBtn, #cancelBtn {
+#resetBtn {
     flex: 1;
     padding: 15px;
-    border: 2px solid #e2e8f0;
-    background: white;
-    color: #64748b;
+    border: none;
+    background: #e2e8f0; /* Gray Background */
+    color: #475569;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+#resetBtn:hover {
+    background: #cbd5e1; /* Darker Gray */
+    transform: scale(1.05); /* Flex/Scale Effect */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+#cancelBtn {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid #fee2e2;
+    background: #fef2f2;
+    color: #ef4444;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-}
-
-#resetBtn:hover {
-    border-color: #cbd5e1;
-    background: #cbd5e1;
-    color: #64748b;
-}
-
-#cancelBtn {
-    color: #ef4444;
-    border-color: #fee2e2;
-    background: #fef2f2;
 }
 
 #cancelBtn:hover:not(:disabled) {
@@ -208,24 +214,23 @@ input:focus {
     width: 28px; 
     height: 28px; 
     border-radius: 50%;
-    border-left-color: #2980b9; /* Match Logo Blue */
+    border-left-color: #2980b9; 
     animation: spin 0.8s linear infinite; 
     margin: 0 auto 10px;
 }
 
-/* Queue Specific Styling */
 .queue-box {
-    background: #ecfdf5; /* Very light green bg */
-    border: 1px solid #6ee7b7; /* Green border */
+    background: #ecfdf5; 
+    border: 1px solid #6ee7b7; 
     padding: 15px;
     border-radius: 8px;
-    color: #065f46; /* Dark green text */
+    color: #065f46; 
     margin-top: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .queue-spinner {
-    border-top-color: #2ecc71 !important; /* Match Logo Green */
+    border-top-color: #2ecc71 !important; 
     border-left-color: rgba(0,0,0,0.1) !important;
 }
 
@@ -261,7 +266,7 @@ input:focus {
     justify-content: center;
     align-items: center;
     gap: 10px;
-    background: #1e293b; /* Dark Navy */
+    background: #1e293b; 
     color: white; 
     padding: 16px; 
     text-align: center; 
@@ -270,7 +275,7 @@ input:focus {
     margin-bottom: 12px; 
     font-weight: bold; 
     transition: all 0.2s;
-    border-bottom: 4px solid #0f172a; /* 3D effect */
+    border-bottom: 4px solid #0f172a; 
 }
 
 .zip-btn:hover { 
