@@ -342,3 +342,62 @@ footer p { margin: 0 0 10px 0; }
     cursor: pointer; 
     color: #94a3b8; 
 }
+
+/* =========================================
+   8. TOP UTILITY BAR (NEW)
+   ========================================= */
+.utility-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px; /* Space between row and logo */
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f1f5f9; /* Optional: Subtle divider line */
+}
+
+.social-icons {
+    display: flex;
+    gap: 15px;
+}
+
+.social-icons a {
+    color: #64748b; /* Updated to Slate Gray to match Top 5 Button */
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.social-icons a:hover {
+    color: #2980b9; /* Brand Blue on hover */
+}
+
+.top-chart-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    
+    /* Transparent Background + Border (Ghost Button Style) */
+    background: transparent; 
+    border: 1px solid #e2e8f0; 
+    
+    padding: 6px 12px;
+    border-radius: 20px; /* Pill shape */
+}
+
+.top-chart-link:hover {
+    color: #2980b9;
+    border-color: #2980b9;
+    background: #fff;
+}
+
+/* Mobile Tweak: Hide text if screen is very small */
+@media (max-width: 380px) {
+    .chart-text {
+        display: none;
+    }
+}
