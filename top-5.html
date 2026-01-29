@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weekly Top 5 Downloads | MP3aud.io</title>
     
-    <link rel="stylesheet" href="top-5.css">
+    <link rel="stylesheet" href="top-5_style.css">
     
 </head>
 <body>
@@ -32,38 +32,7 @@
                 </p>
             </header>
 
-            <section class="chart-section">
-                
-                <article class="week-archive-block">
-                    <h2 class="date-label">Week Ending: Jan 30, 2026</h2>
-                    
-                    <div class="content-row">
-                        <p class="playlist-desc">
-                            <strong>This Week's Mix:</strong> A high-energy selection of 80s pop anthems and new wave classics. Featuring tracks from Depeche Mode, Madonna, and The Cure. Perfect for driving or a retro workout session.
-                        </p>
-
-                        <button class="sc-share-button" onclick="copyLink(this, 'https://soundcloud.com/your-week-1-link')">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                            <span>Copy Playlist</span>
-                        </button>
-                    </div>
-                </article>
-
-                <article class="week-archive-block" style="opacity: 0.9;">
-                    <h2 class="date-label">Week Ending: Jan 23, 2026</h2>
-                    
-                    <div class="content-row">
-                        <p class="playlist-desc">
-                            <strong>Flashback Friday:</strong> Dive into the grunge era with deep cuts from Seattle's finest. Includes Alice in Chains, Soundgarden, and Pearl Jam. A darker, guitar-heavy mix for rainy days.
-                        </p>
-
-                        <button class="sc-share-button" onclick="copyLink(this, 'https://soundcloud.com/your-week-2-link')">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                            <span>Copy Playlist</span>
-                        </button>
-                    </div>
-                </article>
-
+            <section class="chart-section" id="chart-container">
             </section>
 
             <footer>
@@ -73,6 +42,56 @@
     </main>
 
     <script>
+        // ==========================================
+        //      WEEKLY UPDATES GO HERE
+        // ==========================================
+        
+        const weeklyData = [
+            
+            // --- PASTE NEW WEEK HERE (COPY CODE BELOW) ---
+            /* {
+                date: "Feb 06, 2026",
+                title: "New Mix Title",
+                desc: "Description goes here...",
+                link: "https://soundcloud.com/link"
+            },
+            */
+            // ---------------------------------------------
+
+            {
+                date: "Jan 23, 2026",
+                title: "Viral Rock Anthems",
+                desc: "Queen, Guns and Roses, Oasis, Nirvana and The Killers",
+                link: "https://soundcloud.com/user-841173538/sets/viral-rock-anthems?si=85048f778b284860a0780079da9d6e2d&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
+            }
+        ];
+
+        // ==========================================
+        //    AUTOMATION SCRIPT (DO NOT TOUCH)
+        // ==========================================
+
+        const container = document.getElementById('chart-container');
+
+        weeklyData.forEach(week => {
+            const article = `
+                <article class="week-archive-block">
+                    <h2 class="date-label">Week Ending: ${week.date}</h2>
+                    
+                    <div class="content-row">
+                        <p class="playlist-desc">
+                            <strong>${week.title}:</strong> ${week.desc}
+                        </p>
+
+                        <button class="sc-share-button" onclick="copyLink(this, '${week.link}')">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                            <span>Copy Playlist</span>
+                        </button>
+                    </div>
+                </article>
+            `;
+            container.innerHTML += article;
+        });
+
         function copyLink(button, url) {
             navigator.clipboard.writeText(url).then(function() {
                 const span = button.querySelector('span');
