@@ -63,15 +63,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 progressBar.classList.add('hidden');
                 
                 const waitText = data.estimated_wait <= 1 
-                    ? "Less than 1 min" 
+                    ? "< 1 min" 
                     : `~${data.estimated_wait} mins`;
 
+                // UPDATED: Position and Wait time on the same line
                 statusDiv.innerHTML = `
                     <div class="queue-box">
                         <div class="spinner queue-spinner"></div>
                         <p style="font-weight:600; color:#d97706;">Waiting in Queue</p>
-                        <p style="font-size:0.9rem;">Your Position: <span style="font-weight:bold; font-size:1.1rem;">${data.queue_position}</span></p>
-                        <p style="font-size:0.9rem; margin-top: 4px;">Estimated Duration: <span style="font-weight:bold; color:#d97706;">${waitText}</span></p>
+                        <p style="font-size:0.95rem; margin-top: 5px;">
+                            Position: <span style="font-weight:bold; font-size:1.1rem;">${data.queue_position}</span>
+                            <span style="margin: 0 8px; color: #cbd5e1;">|</span>
+                            Wait Time: <span style="font-weight:bold; color:#d97706;">${waitText}</span>
+                        </p>
                         <p style="font-size:0.8rem; color:#64748b; margin-top:5px;">Process will start automatically...</p>
                     </div>
                 `;
