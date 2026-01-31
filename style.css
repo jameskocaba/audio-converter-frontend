@@ -40,7 +40,7 @@ h1 {
 .h1-subtext {
     font-size: 0.9rem;
     color: #64748b;
-    font-weight: 200;
+    /*font-weight: 200;*/
     margin-bottom: 1.5rem;
     display: block; 
 }
