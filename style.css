@@ -29,7 +29,7 @@ body {
 /* Optimized H1 for SEO - Ensure inline styles are removed in HTML */
 h1 { 
     color: #1e293b; 
-    font-size: 1.0rem; /* Slightly reduced to fit under logo */
+    font-size: 1.2rem; /* Slightly reduced to fit under logo */
     font-weight: 700;
     margin-top: 2px;
     margin-bottom: 0.5rem; 
