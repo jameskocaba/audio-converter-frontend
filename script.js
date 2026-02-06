@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const urlInput = document.getElementById('urlInput');
+    const emailInput = document.getElementById('emailInput'); // New field
     const convertBtn = document.getElementById('convertBtn');
     const cancelBtn = document.getElementById('cancelBtn');
     const resetBtn = document.getElementById('resetBtn');
@@ -10,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadArea = document.getElementById('downloadArea');
     const downloadList = document.getElementById('downloadList');
 
+    // Update this if you use a custom domain later, otherwise keep the onrender URL
     const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
     
     let currentSessionId = null;
@@ -31,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fullReset = () => {
         urlInput.value = '';
+        if (emailInput) emailInput.value = ''; // Clear email field
         statusDiv.innerHTML = "Ready";
         downloadList.innerHTML = '';
         downloadArea.classList.add('hidden');
@@ -58,15 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Status check failed');
             const data = await response.json();
             
-            // Handle Queue State
+            // --- STATE: WAITING IN QUEUE ---
             if (data.status === 'queued') {
                 progressBar.classList.add('hidden');
                 
-                const waitText = data.estimated_wait <= 1 
-                    ? "< 1 min" 
-                    : `~${data.estimated_wait} mins`;
+                const waitText = data.estimated_wait <= 1 ? "< 1 min" : `~${data.estimated_wait} mins`;
 
-                // UPDATED: Position and Wait time on the same line
                 statusDiv.innerHTML = `
                     <div class="queue-box">
                         <div class="spinner queue-spinner"></div>
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p style="font-size:0.95rem; margin-top: 5px;">
                             Position: <span style="font-weight:bold; font-size:1.1rem;">${data.queue_position}</span>
                             <span style="margin: 0 8px; color: #cbd5e1;">|</span>
-                            Estimated Duration: <span style="font-weight:bold; color:#d97706;">${waitText}</span>
+                            Est. Duration: <span style="font-weight:bold; color:#d97706;">${waitText}</span>
                         </p>
                         <p style="font-size:0.8rem; color:#64748b; margin-top:5px;">Process will start automatically...</p>
                     </div>
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Normal Processing State
+            // --- STATE: PROCESSING OR COMPLETED ---
             if (data.status === 'processing' || data.status === 'completed') {
                 if (progressBar.classList.contains('hidden') && data.status === 'processing') {
                     progressBar.classList.remove('hidden');
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateProgress(data.completed + data.skipped, data.total);
             }
 
-            // Handle Cancellation State
+            // --- STATE: CANCELLED ---
             if (data.status === 'cancelled') {
                 clearInterval(pollInterval);
                 pollInterval = null;
@@ -109,10 +109,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearInterval(pollInterval);
                 pollInterval = null;
 
-                statusDiv.innerHTML = `
+                let successHtml = `
                     <p style="font-size:1.1rem; font-weight:600; color:#10b981; margin-bottom:8px;">&#127881; Conversion Complete!</p>
                     <p style="color:#64748b; font-size:0.85rem;">${data.completed} track(s) successfully converted</p>
                 `;
+                
+                // Show notification confirmation if email was used
+                if (emailInput && emailInput.value) {
+                    successHtml += `<p style="font-size:0.8rem; color:#3b82f6; margin-top:5px; font-weight:500;">📩 Notification sent to ${emailInput.value}</p>`;
+                }
+
+                statusDiv.innerHTML = successHtml;
 
                 downloadArea.classList.remove('hidden');
                 downloadList.innerHTML = '';
@@ -165,26 +172,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     convertBtn.addEventListener('click', async () => {
         const url = urlInput.value.trim();
+        const email = emailInput ? emailInput.value.trim() : "";
+        
         if (!url) { alert('Please enter a URL'); return; }
 
         currentSessionId = self.crypto.randomUUID();
         convertBtn.disabled = true;
         resetBtn.classList.add('hidden');
         cancelBtn.classList.remove('hidden');
-        // NOTE: We keep progress bar hidden initially now, until status passes 'queued'
         statusDiv.innerHTML = `<div class="spinner"></div><p>Connecting to server...</p>`;
 
         try {
             const response = await fetch(`${BACKEND_URL}/start_conversion`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: url, session_id: currentSessionId }),
+                body: JSON.stringify({ 
+                    url: url, 
+                    session_id: currentSessionId,
+                    email: email // Send email to backend
+                }),
             });
 
             if (!response.ok) throw new Error('Server error starting conversion');
             const data = await response.json();
             
-            // Handle both 'started' (if queue is empty) or 'queued'
+            // Handle both 'started' (immediate) or 'queued' (wait list)
             if (data.status === 'started' || data.status === 'queued') {
                 pollInterval = setInterval(pollStatus, 2000);
             }
