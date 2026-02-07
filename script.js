@@ -205,6 +205,43 @@ document.addEventListener('DOMContentLoaded', () => {
             resetUI();
         }
     });
+
+    /* ==========================================================================
+       Google Analytics 4 Custom Event Tracking
+       ========================================================================== */
+
+    // 1. Track "Convert to MP3" Button Clicks
+    if (convertBtn) {
+        convertBtn.addEventListener('click', () => {
+            // Only track if the input is not empty (valid attempt)
+            if (urlInput && urlInput.value.trim() !== "" && typeof gtag === 'function') {
+                gtag('event', 'convert_start', {
+                    'event_category': 'Conversion',
+                    'event_label': 'SoundCloud URL Submitted',
+                    'transport_type': 'beacon'
+                });
+            }
+        });
+    }
+
+    // 2. Track "Download" Clicks (Using Event Delegation)
+    if (downloadList) {
+        downloadList.addEventListener('click', (e) => {
+            // Look for the closest anchor tag
+            const downloadLink = e.target.closest('a');
+            
+            if (downloadLink && typeof gtag === 'function') {
+                gtag('event', 'file_download', {
+                    'event_category': 'Conversion',
+                    'event_label': 'Download ZIP Success',
+                    'file_extension': 'zip',
+                    'file_name': downloadLink.getAttribute('download') || 'playlist_backup',
+                    'transport_type': 'beacon'
+                });
+            }
+        });
+    }
+
 });
 
 // Global Modal Helpers
