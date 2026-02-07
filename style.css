@@ -417,9 +417,9 @@ footer p { margin: 0 0 10px 0; }
 }
 
 /* =========================================
-   9. PRIVACY HINT
+   9. SECURE NOTE HINT
    ========================================= */
-.privacy-hint {
+.secure-note {
     font-size: 0.75rem;
     color: #94a3b8;
     margin: 4px 0 20px 5px;
