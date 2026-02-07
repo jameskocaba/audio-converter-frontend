@@ -46,31 +46,40 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "MP3aud.io - Shareable URL to MP3 Converter",
+      "@type": "SoftwareApplication",
+      "name": "MP3aud.io",
       "url": "https://mp3aud.io",
-      "description": "Public access conversion tool for shareable media. Backup up to 50 media files with metadata.",
+      "image": "https://mp3aud.io/og-image.jpg",
+      "description": "Public access conversion tool for shareable media. Backup up to 50 media files with metadata in a single ZIP file.",
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Any",
+      "fileFormat": "audio/mp3",
+      "softwareVersion": "1.0",
       "offers": {
         "@type": "Offer",
         "price": "0",
-        "priceCurrency": "USD"
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
       },
-      "featureList": [
-        "Convert shareable URLs to MP3",
-        "Process up to 50 media files at once",
-        "High-quality audio",
-        "Metadata included",
-        "ZIP file processor",
-        "No registration required",
-        "Public access"
-      ],
-      "screenshot": "https://mp3aud.io/og-image.jpg",
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.8",
-        "ratingCount": "1247"
+        "ratingCount": "1247",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "featureList": [
+        "Convert shareable URLs to MP3",
+        "Batch process up to 50 files",
+        "Automatic ZIP creation",
+        "Metadata tagging",
+        "Mobile friendly",
+        "No registration required"
+      ],
+      "author": {
+        "@type": "Organization",
+        "name": "MP3aud.io",
+        "url": "https://mp3aud.io"
       }
     }
     </script>
@@ -96,6 +105,17 @@
         
         .footer-links a {
             margin: 0 5px;
+        }
+
+        /* --- RESTORED: CSS for the Privacy Hint Text --- */
+        .privacy-hint {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin: 4px 0 20px 5px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
     </style>
 </head>
@@ -138,7 +158,7 @@
                             aria-label="Paste from clipboard">Paste</button>
                 </div>
 
-                <div class="input-group" style="margin-bottom: 20px;">
+                <div class="input-group" style="margin-bottom: 0;">
                     <input type="email" 
                            id="emailInput" 
                            placeholder="Enter email here...(Optional)"
@@ -146,6 +166,11 @@
                            autocomplete="on"
                            style="border-color: #e2e8f0; background: #f8fafc;">
                 </div>
+
+                <p class="privacy-hint">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    We only use this once to send your download link. No spam, ever.
+                </p>
                 
                 <div class="button-group">
                     <button id="convertBtn" aria-label="Start MP3 conversion">Convert to MP3</button>
