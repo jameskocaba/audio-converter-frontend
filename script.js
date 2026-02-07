@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const urlInput = document.getElementById('urlInput');
-    const emailInput = document.getElementById('emailInput'); // New field
+    const emailInput = document.getElementById('emailInput'); 
     const convertBtn = document.getElementById('convertBtn');
     const cancelBtn = document.getElementById('cancelBtn');
     const resetBtn = document.getElementById('resetBtn');
@@ -16,6 +16,33 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let currentSessionId = null;
     let pollInterval = null;
+    
+    // --- NEW: Screen Wake Lock Variable ---
+    let wakeLock = null;
+
+    // --- NEW: Wake Lock Functions ---
+    const requestWakeLock = async () => {
+        if ('wakeLock' in navigator) {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                console.log('Screen Wake Lock active');
+            } catch (err) {
+                console.error(`Wake Lock error: ${err.name}, ${err.message}`);
+            }
+        }
+    };
+
+    const releaseWakeLock = async () => {
+        if (wakeLock !== null) {
+            try {
+                await wakeLock.release();
+                wakeLock = null;
+                console.log('Screen Wake Lock released');
+            } catch (err) {
+                console.error(`Wake Lock release error: ${err.name}, ${err.message}`);
+            }
+        }
+    };
 
     // --- Helper Functions ---
     const resetUI = () => {
@@ -25,15 +52,19 @@ document.addEventListener('DOMContentLoaded', () => {
         cancelBtn.classList.add('hidden');
         resetBtn.classList.remove('hidden'); 
         progressBar.classList.add('hidden');
+        
         if (pollInterval) {
             clearInterval(pollInterval);
             pollInterval = null;
         }
+
+        // Release the wake lock whenever the UI resets (finished/cancelled/error)
+        releaseWakeLock();
     };
 
     const fullReset = () => {
         urlInput.value = '';
-        if (emailInput) emailInput.value = ''; // Clear email field
+        if (emailInput) emailInput.value = ''; 
         statusDiv.innerHTML = "Ready";
         downloadList.innerHTML = '';
         downloadArea.classList.add('hidden');
@@ -165,6 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ session_id: currentSessionId }),
             });
+            // Note: We don't releaseWakeLock here immediately; we wait for the pollStatus 
+            // to receive 'cancelled' state which calls resetUI(), which then releases the lock.
         } catch (e) { 
             console.error("Cancel request failed", e); 
         }
@@ -175,6 +208,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = emailInput ? emailInput.value.trim() : "";
         
         if (!url) { alert('Please enter a URL'); return; }
+
+        // Request Wake Lock when conversion starts
+        await requestWakeLock();
 
         currentSessionId = self.crypto.randomUUID();
         convertBtn.disabled = true;
@@ -189,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ 
                     url: url, 
                     session_id: currentSessionId,
-                    email: email // Send email to backend
+                    email: email 
                 }),
             });
 
@@ -202,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (e) {
             statusDiv.innerHTML = `<p style="color:#ef4444;">${e.message}</p>`;
-            resetUI();
+            resetUI(); // This will also release the wake lock if an error occurs here
         }
     });
 });
