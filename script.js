@@ -109,9 +109,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearInterval(pollInterval);
                 pollInterval = null;
 
+                // --- MODIFIED SECTION: Single Line Success Message ---
                 let successHtml = `
-                    <p style="font-size:1.1rem; font-weight:600; color:#10b981; margin-bottom:8px;">&#127881; Conversion Complete!</p>
-                    <p style="color:#64748b; font-size:0.85rem;">${data.completed} track(s) successfully converted</p>
+                    <p style="margin-bottom:8px;">
+                        <span style="font-size:1.1rem; font-weight:600; color:#10b981;">&#127881; Conversion Complete!</span>
+                        <span style="color:#64748b; font-size:0.9rem; margin-left: 10px;"> ${data.completed} track(s) successfully converted</span>
+                    </p>
                 `;
                 
                 // Show notification confirmation if email was used
