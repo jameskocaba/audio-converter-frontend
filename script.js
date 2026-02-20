@@ -218,8 +218,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 }),
             });
 
-            if (!response.ok) throw new Error('Server error starting conversion');
-            const data = await response.json();
+            // Parse the response data FIRST
+            let data;
+            try {
+                data = await response.json();
+            } catch (err) {
+                throw new Error('Server failed to respond properly.');
+            }
+
+            // If the server sent an error status (like 400 or 500), throw the SERVER'S error message
+            if (!response.ok) {
+                throw new Error(data.error || 'Server error starting conversion');
+            }
             
             if (data.status === 'started' || data.status === 'queued') {
                 pollInterval = setInterval(pollStatus, 2000);
