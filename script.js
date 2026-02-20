@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const urlInput = document.getElementById('urlInput');
     const emailInput = document.getElementById('emailInput'); 
-    const startTimeInput = document.getElementById('startTime'); // New
-    const endTimeInput = document.getElementById('endTime');     // New
-    const thumbnailContainer = document.getElementById('thumbnailContainer'); // New
-    const currentThumbnail = document.getElementById('currentThumbnail');     // New
+    const startTimeInput = document.getElementById('startTime'); // New timestamp input
+    const endTimeInput = document.getElementById('endTime');     // New timestamp input
+    const thumbnailContainer = document.getElementById('thumbnailContainer'); // New thumbnail wrapper
+    const currentThumbnail = document.getElementById('currentThumbnail');     // New thumbnail image
+    
     const convertBtn = document.getElementById('convertBtn');
     const cancelBtn = document.getElementById('cancelBtn');
     const resetBtn = document.getElementById('resetBtn');
@@ -15,11 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadArea = document.getElementById('downloadArea');
     const downloadList = document.getElementById('downloadList');
 
+    // Backend URL
     const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
     
     let currentSessionId = null;
     let pollInterval = null;
 
+    // --- Helper Functions ---
     const resetUI = () => {
         convertBtn.disabled = false;
         cancelBtn.disabled = false;
@@ -36,12 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const fullReset = () => {
         urlInput.value = '';
         if (emailInput) emailInput.value = ''; 
-        if (startTimeInput) startTimeInput.value = ''; // Clear Time
-        if (endTimeInput) endTimeInput.value = '';     // Clear Time
+        if (startTimeInput) startTimeInput.value = ''; 
+        if (endTimeInput) endTimeInput.value = '';     
         statusDiv.innerHTML = "Ready";
         downloadList.innerHTML = '';
         downloadArea.classList.add('hidden');
-        thumbnailContainer.classList.add('hidden'); // Hide Thumbnail
+        thumbnailContainer.classList.add('hidden'); 
         currentThumbnail.src = '';
         resetUI();
     };
@@ -67,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Status check failed');
             const data = await response.json();
             
+            // --- STATE: WAITING IN QUEUE ---
             if (data.status === 'queued') {
                 progressBar.classList.add('hidden');
                 const waitText = data.estimated_wait <= 1 ? "< 1 min" : `~${data.estimated_wait} mins`;
@@ -80,11 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span style="margin: 0 8px; color: #cbd5e1;">|</span>
                             Est. Duration: <span style="font-weight:bold; color:#d97706;">${waitText}</span>
                         </p>
+                        <p style="font-size:0.8rem; color:#64748b; margin-top:5px;">Process will start automatically...</p>
                     </div>
                 `;
                 return;
             }
 
+            // --- STATE: PROCESSING OR COMPLETED ---
             if (data.status === 'processing' || data.status === 'completed') {
                 if (progressBar.classList.contains('hidden') && data.status === 'processing') {
                     progressBar.classList.remove('hidden');
@@ -92,14 +98,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateProgress(data.completed + data.skipped, data.total);
             }
 
+            // --- STATE: CANCELLED ---
             if (data.status === 'cancelled') {
                 clearInterval(pollInterval);
                 pollInterval = null;
-                statusDiv.innerHTML = `<p style="color:#ef4444; font-weight:bold;">Conversion Stopped.</p>`;
+                statusDiv.innerHTML = `<p style="color:#ef4444; font-weight:bold;">Conversion Stopped.</p><p style="font-size:0.8rem;">Session cleared.</p>`;
+                thumbnailContainer.classList.add('hidden'); // Hide thumbnail
                 resetUI();
                 return;
             }
 
+            // --- STATE: PROCESSING ---
             if (data.status === 'processing') {
                 const isStopping = cancelBtn.disabled && cancelBtn.textContent === "Stopping...";
                 updateStatus(
@@ -113,16 +122,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     thumbnailContainer.classList.remove('hidden');
                 }
 
+            // --- STATE: COMPLETED ---
             } else if (data.status === 'completed') {
                 clearInterval(pollInterval);
                 pollInterval = null;
 
                 let successHtml = `
                     <p style="margin-bottom:8px;">
-                        <span style="font-size:1.1rem; font-weight:600; color:#10b981;">&#127881; Complete!</span>
+                        <span style="font-size:1.1rem; font-weight:600; color:#10b981;">&#127881; Conversion Complete!</span>
+                        <span style="color:#64748b; font-size:0.9rem; margin-left: 10px;"> ${data.completed} track(s) successfully converted</span>
                     </p>
                 `;
                 
+                if (emailInput && emailInput.value) {
+                    successHtml += `<p style="font-size:0.8rem; color:#3b82f6; margin-top:5px; font-weight:500;">📩 Notification sent to ${emailInput.value}</p>`;
+                }
+
                 statusDiv.innerHTML = successHtml;
                 downloadArea.classList.remove('hidden');
                 downloadList.innerHTML = '';
@@ -135,10 +150,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     downloadList.appendChild(zipA);
                 }
                 resetUI();
+                
+            // --- STATE: ERROR ---
             } else if (data.status === 'error') {
                 clearInterval(pollInterval);
                 pollInterval = null;
-                statusDiv.innerHTML = `<p style="color:#ef4444;">Error: ${data.error}</p>`;
+                statusDiv.innerHTML = `<p style="color:#ef4444;">Error: ${data.error || 'Unknown error'}</p>`;
+                thumbnailContainer.classList.add('hidden'); // Hide thumbnail
                 resetUI();
             }
         } catch (error) {
@@ -146,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // --- Event Listeners ---
     pasteBtn.addEventListener('click', async () => {
         try {
             urlInput.value = await navigator.clipboard.readText();
@@ -156,6 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cancelBtn.addEventListener('click', async () => {
         if (!currentSessionId) return;
+
         cancelBtn.disabled = true;
         cancelBtn.textContent = "Stopping...";
         statusDiv.innerHTML = `<div class="spinner" style="border-left-color: #ef4444;"></div><p>Sending stop signal...</p>`;
@@ -193,8 +213,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     url: url, 
                     session_id: currentSessionId,
                     email: email,
-                    start_time: startTime, // Send times to backend
-                    end_time: endTime
+                    start_time: startTime, // Pass start time
+                    end_time: endTime      // Pass end time
                 }),
             });
 
@@ -209,4 +229,53 @@ document.addEventListener('DOMContentLoaded', () => {
             resetUI();
         }
     });
+
+    /* ==========================================================================
+       Google Analytics 4 Custom Event Tracking
+       ========================================================================== */
+
+    if (convertBtn) {
+        convertBtn.addEventListener('click', () => {
+            if (urlInput && urlInput.value.trim() !== "" && typeof gtag === 'function') {
+                gtag('event', 'convert_start', {
+                    'event_category': 'Conversion',
+                    'event_label': 'Media URL Submitted',
+                    'transport_type': 'beacon'
+                });
+            }
+        });
+    }
+
+    if (downloadList) {
+        downloadList.addEventListener('click', (e) => {
+            const downloadLink = e.target.closest('a');
+            if (downloadLink && typeof gtag === 'function') {
+                gtag('event', 'file_download', {
+                    'event_category': 'Conversion',
+                    'event_label': 'Download ZIP Success',
+                    'file_extension': 'zip',
+                    'file_name': downloadLink.getAttribute('download') || 'playlist_backup',
+                    'transport_type': 'beacon'
+                });
+            }
+        });
+    }
+
 });
+
+/* ==========================================================================
+   Global Modal Helpers
+   ========================================================================== */
+function openModal(id) { 
+    document.getElementById(id).style.display = "flex"; 
+}
+
+function closeModal(id) { 
+    document.getElementById(id).style.display = "none"; 
+}
+
+window.onclick = (e) => { 
+    if (e.target.classList.contains('modal')) {
+        e.target.style.display = "none"; 
+    }
+};
