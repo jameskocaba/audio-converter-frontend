@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const urlInput = document.getElementById('urlInput');
     const emailInput = document.getElementById('emailInput'); 
-    const startTimeInput = document.getElementById('startTime'); // New timestamp input
-    const endTimeInput = document.getElementById('endTime');     // New timestamp input
-    const thumbnailContainer = document.getElementById('thumbnailContainer'); // New thumbnail wrapper
-    const currentThumbnail = document.getElementById('currentThumbnail');     // New thumbnail image
+    const startTimeInput = document.getElementById('startTime'); 
+    const endTimeInput = document.getElementById('endTime');     
+    const transcribeInput = document.getElementById('transcribeAudio'); // New Checkbox
+    const thumbnailContainer = document.getElementById('thumbnailContainer'); 
+    const currentThumbnail = document.getElementById('currentThumbnail');     
     
     const convertBtn = document.getElementById('convertBtn');
     const cancelBtn = document.getElementById('cancelBtn');
@@ -40,7 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
         urlInput.value = '';
         if (emailInput) emailInput.value = ''; 
         if (startTimeInput) startTimeInput.value = ''; 
-        if (endTimeInput) endTimeInput.value = '';     
+        if (endTimeInput) endTimeInput.value = '';  
+        if (transcribeInput) transcribeInput.checked = false;   
         statusDiv.innerHTML = "Ready";
         downloadList.innerHTML = '';
         downloadArea.classList.add('hidden');
@@ -129,8 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 let successHtml = `
                     <p style="margin-bottom:8px;">
-                        <span style="font-size:1.1rem; font-weight:600; color:#10b981;">&#127881; Conversion Complete!</span>
-                        <span style="color:#64748b; font-size:0.9rem; margin-left: 10px;"> ${data.completed} track(s) successfully converted</span>
+                        <span style="font-size:1.1rem; font-weight:600; color:#10b981;">&#127881; Process Complete!</span>
+                        <span style="color:#64748b; font-size:0.9rem; margin-left: 10px;"> ${data.completed} item(s) successfully processed</span>
                     </p>
                 `;
                 
@@ -196,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = emailInput ? emailInput.value.trim() : "";
         const startTime = startTimeInput ? startTimeInput.value.trim() : "";
         const endTime = endTimeInput ? endTimeInput.value.trim() : "";
+        const transcribeAudio = transcribeInput ? transcribeInput.checked : false;
         
         if (!url) { alert('Please enter a URL'); return; }
 
@@ -213,8 +216,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     url: url, 
                     session_id: currentSessionId,
                     email: email,
-                    start_time: startTime, // Pass start time
-                    end_time: endTime      // Pass end time
+                    start_time: startTime, 
+                    end_time: endTime,
+                    transcribe_audio: transcribeAudio
                 }),
             });
 
