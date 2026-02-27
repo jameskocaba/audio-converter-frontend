@@ -5,12 +5,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Podcast & Playlist to MP3 Converter | Batch Download to ZIP - MP3aud.io</title>
-    <meta name="title" content="Podcast & Playlist to MP3 Converter | Batch Download to ZIP - MP3aud.io">
+    <title>DIY Instructions, Meeting Minutes & Playlist to MP3 Converter | Batch Download to ZIP - MP3aud.io</title>
+    <meta name="title" content="DIY Instructions, Meeting Minutes & Playlist to MP3 Converter | Batch Download to ZIP - MP3aud.io">
     
-    <meta name="description" content="Convert podcasts, playlists, and tracks to MP3 instantly. Clip specific timestamps, batch download up to 50 songs into one ZIP file. Secure, free and unlimited.">
+    <meta name="description" content="Convert DIY instructions, meeting minutes, playlists, and tracks to MP3 instantly. Clip specific timestamps, batch download up to 50 songs into one ZIP file. Secure, free and unlimited.">
     
-    <meta name="keywords" content="podcast converter, soundcloud to mp3, soundcloud downloader, batch playlist downloader, mp3 320kbps, download audio clips, online audio saver">
+    <meta name="keywords" content="facebook meeting minutes converter, facebook DIY instruction converter, soundcloud to mp3, soundcloud downloader, batch playlist downloader, mp3 320kbps, download audio clips, online audio saver">
     <meta name="author" content="MP3aud.io">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://mp3aud.io/">
@@ -18,7 +18,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mp3aud.io/">
     <meta property="og:site_name" content="MP3aud.io">
-    <meta property="og:title" content="Unlimited Media File Converter | Process Playlists & Podcasts as ZIP">
+    <meta property="og:title" content="Unlimited Media File Converter | Process Playlists, DIY Instructions and Meeting Minutes as ZIP">
     <meta property="og:description" content="Unlimited shareable URLs to Zip files. Convert and clip media files with metadata. Fast, reliable, and no software required.">
     <meta property="og:image" content="https://mp3aud.io/og-image.jpg">
     <meta property="og:image:width" content="1200">
@@ -27,7 +27,7 @@
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://mp3aud.io/">
-    <meta name="twitter:title" content="Media File Converter | Process Playlists & Podcasts as ZIP">
+    <meta name="twitter:title" content="Media File Converter | Process, DIY Instructions, Meeting Minutes & Playlists as ZIP">
     <meta name="twitter:description" content="Convert shareable URLs to Zip Files. Clip specific timestamps and backup up to 50 media files. Fast, reliable, and no software required.">
     <meta name="twitter:image" content="https://mp3aud.io/og-image.jpg">
 
@@ -76,6 +76,19 @@
             display: flex;
             align-items: center;
             gap: 4px;
+        }
+
+        /* Modal Base Styles ensuring they remain hidden on load */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.5); 
         }
     </style>
 </head>
@@ -132,7 +145,7 @@
                 <div class="checkbox-group">
                     <input type="checkbox" id="transcribeAudio" name="transcribeAudio">
                     <label for="transcribeAudio">
-                        Generate AI Meeting Minutes & Transcript
+                        Generate AI Meeting Minutes or Instructions & Transcript
                     </label>
                 </div>
 
@@ -195,8 +208,8 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal('aboutModal')" aria-label="Close modal">&times;</span>
             <h2 id="aboutTitle">About MP3aud.io</h2>
-            <p>MP3aud.io was developed to provide a specialized utility solution for digital audio preservation and archiving. Unlike other tools that offer individual file conversion, MP3aud.io sets itself apart with a clean, simple UI created for mobile devices that includes a multiple file zip option. Media conversion quality is as close as possible to the Original Stream Capture. This ensures that when you generate a backup from a shareable link, the metadata and frequency response are preserved with the highest integrity allowed by the system.</p>
-            <p>We believe in the importance of "Music Permanence." Digital content can disappear due to platform shifts or licensing changes. MP3aud.io empowers creators and listeners to maintain a personal offline archive of the sounds that matter most. Our process is entirely browser-based and privacy-focused, ensuring your digital data library remains secure on your device of choice.</p>
+            <p>MP3aud.io was originally developed as a specialized utility for digital audio preservation, ensuring your favorite media is securely archived offline. Today, it has evolved into a comprehensive media processing suite. Alongside high-fidelity MP3 extraction, we now offer advanced AI-powered transcription and formatting.</p>
+            <p>Whether you are saving a music playlist, extracting a specific clip using our timestamp tools, or converting a recorded meeting or DIY tutorial into structured HTML notes, MP3aud.io handles it all in the cloud. We believe in "Media Permanence" and accessibility, providing a fast, browser-based, and privacy-focused tool to securely build your digital library and text archives.</p>
         </div>
     </div>
 
@@ -206,25 +219,25 @@
             <h2 id="faqTitle">Frequently Asked Questions</h2>
             
             <h3>1. How do I back up my media to MP3?</h3>
-            <p>Simply copy the shareable URL, paste it into the search box on mp3aud.io, and click the "Convert to MP3" button. Our system will automatically process the link and generate a high-quality MP3 backup for you to save.</p>
+            <p>Simply copy the shareable URL, paste it into the search box, set any optional start/end times, and click "Convert to MP3". Our system will process the link and generate a ZIP file containing your high-quality MP3s.</p>
             
-            <h3>2. Why should I create a backup of my media?</h3>
-            <p>Media files are often removed due to license changes, artist account deletions, or copyright updates. Creating a local file backup ensures that you have permanent access to your favorite media, even if the original link goes offline.</p>
+            <h3>2. What does the "Generate AI" checkbox do?</h3>
+            <p>When checked, our backend uses advanced AI (OpenAI Whisper and GPT-4o) to transcribe the audio file. It then intelligently detects if the audio is a "DIY/Instructional Video" or a "Professional Meeting" and generates a formatted HTML document containing step-by-step instructions, safety warnings, or meeting minutes and action items. These text files are included in your final ZIP download.</p>
+
+            <h3>3. How do the Start and End time fields work?</h3>
+            <p>If you only want a specific segment of an audio file, you can input a Start Time (e.g., 01:20) and an End Time (e.g., 05:45). Our processor will clip the audio to those exact timestamps before converting and transcribing it.</p>
             
-            <h3>3. What audio quality are the MP3 backups?</h3>
-            <p>We prioritize audio fidelity. Our tool attempts to capture the highest available bitrate provided by the shareable link. This ensures your backup sounds as close to the original stream as possible, typically 128kbps depending on the source file.</p>
-            
-            <h3>4. Is mp3aud.io publicly accessible?</h3>
-            <p>Yes. Currently, our backup tool is 100% publicaly accessible. There is no software to install and no registration required. We provide a clean, fast interface for users to archive media instantly.</p>
+            <h3>4. What audio quality are the MP3 backups?</h3>
+            <p>We prioritize audio fidelity. Our tool attempts to capture the highest available bitrate provided by the shareable link (typically 128kbps) preserving the metadata and frequency response of the original stream.</p>
             
             <h3>5. How many files can I convert at once?</h3>
-            <p>You can convert up to 50 files per playlist. Files are processed one at a time sequentially to ensure maximum reliability and prevent server overload. You'll see real-time progress as each track completes.</p>
+            <p>You can convert up to 50 files per playlist URL. Files are processed sequentially to ensure maximum reliability. You'll see real-time progress as each track downloads, extracts, and transcribes.</p>
             
             <h3>6. Do I need to keep the browser tab open?</h3>
-            <p>If an email is not supplied then yes, you need to keep the browser tab open during the conversion process. Closing the tab will stop the download progress.</p>
+            <p>If you enter your email address before converting, you do not need to keep the tab open. We will email you a secure download link once your ZIP file is ready. Note: <strong>This link automatically expires after 1 hour</strong>.</p>
             
-            <h3>7. How many simultaneous conversions are allowed?</h3>
-            <p>Currently, we support only one playlist conversion at a time for an enhanced user experience. Users will be placed in queue when there is an ongoing active conversion.</p>
+            <h3>7. How long will my conversion take?</h3>
+            <p>Because processing high-quality audio and running AI transcription is resource-intensive, conversions are handled in a queue. If the server is busy, you will be given a queue position and an estimated wait time (averaging about 45 seconds per track).</p>
         </div>
     </div>
 
@@ -232,14 +245,16 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal('privacyModal')" aria-label="Close modal">&times;</span>
             <h2 id="privacyTitle">Privacy Policy</h2>
-            <p>We do not store user data or IP logs. Files are cached temporarily for download and automatically deleted from our server every hour.</p>
-            <p><strong>Data Collection:</strong></p>
+            <p>We prioritize your privacy. We do not store user data or IP logs, and all generated files are permanently deleted from our servers shortly after processing.</p>
+            <p><strong>Data Collection & Retention:</strong></p>
             <ul>
-                <li><strong>Email Addresses:</strong> If provided, emails are used strictly for sending a one-time "Download Ready" notification and are not stored permanently or sold.</li>
-                <li>Payment information (None collected by us)</li>
-                <li>Browsing history (None)</li>
+                <li><strong>Email Addresses:</strong> If provided, emails are used strictly by our email provider to send a one-time "Download Ready" notification. They are not stored permanently or sold.</li>
+                <li><strong>Your Files:</strong> Converted MP3s, ZIP archives, and generated text files are temporarily stored on our server to allow you to download them. They are automatically and permanently deleted <strong>1 hour</strong> after the last update to your session.</li>
             </ul>
-            <p><strong>Your Files:</strong> All converted MP3 files are temporarily stored on our server for download purposes only and are automatically deleted within 1 hour. We do not analyze, share, or retain your music files.</p>
+            <p><strong>Third-Party AI Processing:</strong></p>
+            <ul>
+                <li>If you choose to use the AI Transcription feature, your audio files are temporarily securely transmitted to OpenAI's API to generate transcripts and summaries. OpenAI does not use data submitted via their API to train their models.</li>
+            </ul>
             <p><strong>Cookies:</strong> We use Google Analytics to understand site usage and improve our service. You can opt out using browser settings or extensions.</p>
         </div>
     </div>
@@ -248,24 +263,49 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal('disclaimerModal')" aria-label="Close modal">&times;</span>
             <h2 id="disclaimerTitle">Legal Disclaimer</h2>
-            <p>This tool is intended for personal archival use of shareable media only. Users are responsible for complying with the terms of service of the content platforms and local copyright laws.</p>
+            <p>This tool is intended for personal archival and educational use of shareable media only. Users are responsible for complying with the terms of service of the content platforms and local copyright laws.</p>
+            <p><strong>AI-Generated Content Warning:</strong></p>
+            <ul>
+                <li>Transcripts, meeting minutes, DIY instructions, and safety warnings are generated by Artificial Intelligence.</li>
+                <li>MP3aud.io makes no guarantees regarding the accuracy, completeness, or safety of AI-generated text. Always verify critical information, action items, and safety protocols manually.</li>
+            </ul>
             <p><strong>Acceptable Use:</strong></p>
             <ul>
-                <li>Backing up your own uploaded media files</li>
-                <li>Archiving publicly shared mixes and DJ sets</li>
-                <li>Personal offline listening of media files you have permission to download</li>
-                <li>Educational and research purposes</li>
+                <li>Backing up your own uploaded media files and recorded meetings.</li>
+                <li>Archiving publicly shared mixes, educational podcasts, and tutorials.</li>
+                <li>Personal offline listening and reading.</li>
             </ul>
             <p><strong>Prohibited Use:</strong></p>
             <ul>
-                <li>Redistribution of copyrighted material</li>
-                <li>Commercial use of downloaded media without proper licensing</li>
-                <li>Processing media where the artist has explicitly disabled downloads</li>
-                <li>Violating the content platform's Terms of Service</li>
+                <li>Redistribution of copyrighted material.</li>
+                <li>Commercial use of downloaded media or AI-generated transcripts without proper licensing.</li>
             </ul>
-            <p>MP3aud.io is an independent utility and is not affiliated with any specific media platforms. All trademarks belong to their respective owners. By using this service, you agree to take full responsibility for your actions and comply with all applicable laws.</p>
+            <p>MP3aud.io is an independent utility and is not affiliated with any specific media platforms or AI providers. By using this service, you agree to take full responsibility for your actions and comply with all applicable laws.</p>
         </div>
     </div>
+
+    <script>
+        function openModal(modalId) {
+            var modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = "block";
+            }
+        }
+
+        function closeModal(modalId) {
+            var modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Close modal when clicking outside of the content box
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+            }
+        }
+    </script>
     
     <script src="script.js"></script>
 </body>
