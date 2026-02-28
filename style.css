@@ -26,26 +26,22 @@ body {
 /* =========================================
    2. TYPOGRAPHY & HEADER
    ========================================= */
-/* Optimized H1 for SEO - Ensure inline styles are removed in HTML */
 h1 { 
     color: #1e293b; 
-    font-size: 1.2rem; /* Slightly reduced to fit under logo */
+    font-size: 1.2rem;
     font-weight: 700;
     margin-top: 2px;
     margin-bottom: 0.5rem; 
     line-height: 1.3;
 }
 
-/* Optional subtext class for "Convert & Download... (Free)" */
 .h1-subtext {
     font-size: 0.9rem;
     color: #64748b;
-    /*font-weight: 200;*/
     margin-bottom: 1.5rem;
     display: block; 
 }
 
-/* Subtitle for the instruction paragraph */
 .subtitle { 
     color: #64748b; 
     font-size: 0.9rem; 
@@ -67,7 +63,7 @@ h1 {
 }
 
 /* =========================================
-   3. INPUTS & BUTTONS (Themed)
+   3. INPUTS & BUTTONS
    ========================================= */
 .input-group { 
     display: flex; 
@@ -81,6 +77,7 @@ input[type="text"], input[type="email"] {
     border: 1px solid #cbd5e1; 
     border-radius: 8px; 
     font-size: 0.9rem; 
+    transition: all 0.2s;
 }
 
 input[type="text"]:focus, input[type="email"]:focus { 
@@ -88,35 +85,12 @@ input[type="text"]:focus, input[type="email"]:focus {
     outline: none; 
 }
 
-/* NEW CHECKBOX STYLING */
-.checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-    text-align: left;
-    background: #f8fafc;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
+.input-error {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2 !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
 }
 
-.checkbox-group input[type="checkbox"] {
-    flex: none;
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    accent-color: #2980b9;
-}
-
-.checkbox-group label {
-    font-size: 0.85rem;
-    color: #334155;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-/* "Paste" Button - Matches the Dark Blue/Teal "MP3" text */
 #pasteBtn { 
     padding: 0 20px; 
     background: #2c3e50; 
@@ -128,9 +102,7 @@ input[type="text"]:focus, input[type="email"]:focus {
     transition: background 0.2s;
 }
 
-#pasteBtn:hover {
-    background: #34495e; 
-}
+#pasteBtn:hover { background: #34495e; }
 
 .button-group {
     display: flex;
@@ -138,7 +110,6 @@ input[type="text"]:focus, input[type="email"]:focus {
     margin-top: 15px;
 }
 
-/* "Convert" Button - Matches the Logo Gradient */
 #convertBtn { 
     flex: 2;
     padding: 15px; 
@@ -167,12 +138,11 @@ input[type="text"]:focus, input[type="email"]:focus {
     cursor: not-allowed; 
 }
 
-/* Secondary Buttons (Reset / Cancel) */
 #resetBtn {
     flex: 1;
     padding: 15px;
     border: none;
-    background: #e2e8f0; /* Gray Background */
+    background: #e2e8f0;
     color: #475569;
     border-radius: 8px;
     font-weight: 600;
@@ -181,8 +151,8 @@ input[type="text"]:focus, input[type="email"]:focus {
 }
 
 #resetBtn:hover {
-    background: #cbd5e1; /* Darker Gray */
-    transform: scale(1.05); /* Flex/Scale Effect */
+    background: #cbd5e1;
+    transform: scale(1.05);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -213,7 +183,107 @@ input[type="text"]:focus, input[type="email"]:focus {
 }
 
 /* =========================================
-   4. PROGRESS BAR (Themed)
+   4. PREMIUM AI FEATURE CARD
+   ========================================= */
+.premium-feature-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(145deg, #ffffff, #f8fafc);
+    border: 2px solid #e2e8f0;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    text-align: left;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.premium-feature-card:hover, .premium-feature-card:focus-within {
+    border-color: #2980b9;
+    box-shadow: 0 4px 12px rgba(41, 128, 185, 0.1);
+}
+
+.feature-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.pro-badge {
+    background: linear-gradient(90deg, #f59e0b, #ea580c);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 3px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+.feature-title {
+    font-size: 0.95rem;
+    color: #1e293b;
+    font-weight: 700;
+}
+
+.feature-subtitle {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin: 0 0 6px 0;
+    line-height: 1.3;
+}
+
+.example-link {
+    font-size: 0.8rem;
+    color: #2980b9;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.example-link:hover {
+    color: #1e40af;
+    text-decoration: underline;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 26px;
+    flex-shrink: 0;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+input:checked + .slider { background-color: #2ecc71; }
+input:checked + .slider:before { transform: translateX(20px); }
+.slider.round { border-radius: 34px; }
+.slider.round:before { border-radius: 50%; }
+
+/* =========================================
+   5. PROGRESS BAR & STATUS
    ========================================= */
 #progressBar {
     width: 100%;
@@ -241,9 +311,6 @@ input[type="text"]:focus, input[type="email"]:focus {
     border-radius: 12px;
 }
 
-/* =========================================
-   5. STATUS, QUEUE & SPINNERS
-   ========================================= */
 #status { 
     margin: 1.5rem 0; 
     font-size: 0.9rem; 
@@ -337,15 +404,10 @@ footer {
 
 footer p { margin: 0 0 10px 0; }
 .footer-links { text-align: center; }
-.footer-links a { 
-    color: #2980b9; 
-    text-decoration: none; 
-    margin: 0 5px; 
-    cursor: pointer; 
-}
+.footer-links a { color: #2980b9; text-decoration: none; margin: 0 5px; cursor: pointer; }
 
 /* =========================================
-   7. MODALS
+   7. MODALS & EXAMPLE COMPARISON
    ========================================= */
 .modal { 
     display: none; 
@@ -385,8 +447,53 @@ footer p { margin: 0 0 10px 0; }
     color: #94a3b8; 
 }
 
+.example-comparison {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+    align-items: center;
+}
+
+@media (min-width: 600px) {
+    .example-comparison {
+        flex-direction: row;
+        align-items: stretch;
+    }
+}
+
+.example-box {
+    flex: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    width: 100%;
+}
+
+.example-header {
+    padding: 10px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.raw-header { background: #f1f5f9; color: #475569; }
+.pro-header { background: #eff6ff; color: #1e40af; border-bottom: 1px solid #bfdbfe; }
+
+.example-body {
+    padding: 15px;
+    font-size: 0.85rem;
+    color: #334155;
+    background: #ffffff;
+    line-height: 1.5;
+}
+
+.raw-body { font-style: italic; color: #64748b; }
+.pro-body ul, .pro-body ol { margin-top: 5px; padding-left: 20px; margin-bottom: 10px; }
+.example-icon { display: flex; align-items: center; justify-content: center; }
+
 /* =========================================
-   8. TOP UTILITY BAR
+   8. TOP UTILITY BAR & NOTICES
    ========================================= */
 .utility-bar {
     display: flex;
@@ -397,21 +504,9 @@ footer p { margin: 0 0 10px 0; }
     border-bottom: 1px solid #f1f5f9; 
 }
 
-.social-icons {
-    display: flex;
-    gap: 15px;
-}
-
-.social-icons a {
-    color: #64748b; 
-    transition: color 0.2s ease;
-    display: flex;
-    align-items: center;
-}
-
-.social-icons a:hover {
-    color: #2980b9; 
-}
+.social-icons { display: flex; gap: 15px; }
+.social-icons a { color: #64748b; transition: color 0.2s ease; display: flex; align-items: center; }
+.social-icons a:hover { color: #2980b9; }
 
 .top-chart-link {
     display: flex;
@@ -422,11 +517,8 @@ footer p { margin: 0 0 10px 0; }
     font-size: 0.85rem;
     font-weight: 600;
     transition: all 0.2s ease;
-    
-    /* Transparent Background + Border (Ghost Button Style) */
     background: transparent; 
     border: 1px solid #e2e8f0; 
-    
     padding: 6px 12px;
     border-radius: 20px; 
 }
@@ -437,16 +529,8 @@ footer p { margin: 0 0 10px 0; }
     background: #fff;
 }
 
-/* Mobile Tweak: Hide text if screen is very small */
-@media (max-width: 380px) {
-    .chart-text {
-        display: none;
-    }
-}
+@media (max-width: 380px) { .chart-text { display: none; } }
 
-/* =========================================
-   9. SECURE NOTE HINT
-   ========================================= */
 .secure-note {
     font-size: 0.75rem;
     color: #94a3b8;

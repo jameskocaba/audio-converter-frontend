@@ -142,11 +142,21 @@
                     </div>
                 </div>
 
-                <div class="checkbox-group">
-                    <input type="checkbox" id="transcribeAudio" name="transcribeAudio">
-                    <label for="transcribeAudio">
-                        Generate AI Meeting Minutes or Instructions & Transcript
-                    </label>
+                <div class="premium-feature-card">
+                    <div class="feature-text">
+                        <div class="feature-header">
+                            <span class="pro-badge">✨ AI POWERED</span>
+                            <span class="feature-title">Generate Smart Notes</span>
+                        </div>
+                        <p class="feature-subtitle">Format meeting minutes, action items, or step-by-step DIY instructions.</p>
+                        <a href="#" onclick="openModal('exampleModal'); return false;" class="example-link">👀 See an example</a>
+                    </div>
+                    <div class="toggle-container">
+                        <label class="switch" aria-label="Toggle AI Generation">
+                          <input type="checkbox" id="transcribeAudio" name="transcribeAudio">
+                          <span class="slider round"></span>
+                        </label>
+                    </div>
                 </div>
 
                 <div class="input-group" style="margin-bottom: 10px;">
@@ -221,8 +231,8 @@
             <h3>1. How do I back up my media to MP3?</h3>
             <p>Simply copy the shareable URL, paste it into the search box, set any optional start/end times, and click "Convert to MP3". Our system will process the link and generate a ZIP file containing your high-quality MP3s.</p>
             
-            <h3>2. What does the "Generate AI" checkbox do?</h3>
-            <p>When checked, our backend uses advanced AI (OpenAI Whisper and GPT-4o) to transcribe the audio file. It then intelligently detects if the audio is a "DIY/Instructional Video" or a "Professional Meeting" and generates a formatted HTML document containing step-by-step instructions, safety warnings, or meeting minutes and action items. These text files are included in your final ZIP download.</p>
+            <h3>2. What does the "Generate Smart Notes" toggle do?</h3>
+            <p>When activated, our backend uses advanced AI (OpenAI Whisper and GPT-4o) to transcribe the audio file. It then intelligently detects if the audio is a "DIY/Instructional Video" or a "Professional Meeting" and generates a formatted HTML document containing step-by-step instructions, safety warnings, or meeting minutes and action items. These text files are included in your final ZIP download.</p>
 
             <h3>3. How do the Start and End time fields work?</h3>
             <p>If you only want a specific segment of an audio file, you can input a Start Time (e.g., 01:20) and an End Time (e.g., 05:45). Our processor will clip the audio to those exact timestamps before converting and transcribing it.</p>
@@ -281,6 +291,43 @@
                 <li>Commercial use of downloaded media or AI-generated transcripts without proper licensing.</li>
             </ul>
             <p>MP3aud.io is an independent utility and is not affiliated with any specific media platforms or AI providers. By using this service, you agree to take full responsibility for your actions and comply with all applicable laws.</p>
+        </div>
+    </div>
+
+    <div id="exampleModal" class="modal" role="dialog" aria-labelledby="exampleTitle" aria-hidden="true">
+        <div class="modal-content" style="max-width: 650px;">
+            <span class="close" onclick="closeModal('exampleModal')" aria-label="Close modal">&times;</span>
+            <h2 id="exampleTitle">How AI Smart Notes Work</h2>
+            <p>Our AI doesn't just transcribe; it understands the context of your audio and structures it perfectly.</p>
+            
+            <div class="example-comparison">
+                <div class="example-box">
+                    <div class="example-header raw-header">Raw Audio Transcript</div>
+                    <div class="example-body raw-body">
+                        "Uh, okay, let's get started. So today is October 4th. Sarah, can you make sure to email the client the updated specs by Friday? Uh, yeah. And we decided to push the launch to Q3. Let's make sure marketing knows..."
+                    </div>
+                </div>
+                
+                <div class="example-icon">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="#2980b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </div>
+    
+                <div class="example-box">
+                    <div class="example-header pro-header">Generated Smart Notes</div>
+                    <div class="example-body pro-body">
+                        <strong>Decisions Made:</strong>
+                        <ul>
+                            <li>Launch pushed to Q3.</li>
+                        </ul>
+                        <strong>Action Items:</strong>
+                        <ol>
+                            <li><strong>Sarah:</strong> Email client updated specs (Deadline: Friday).</li>
+                            <li><strong>Team:</strong> Inform marketing of the new Q3 launch date.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 15px; text-align: center;">You will receive both the raw text file and the formatted HTML notes in your ZIP download.</p>
         </div>
     </div>
 

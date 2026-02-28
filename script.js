@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emailInput = document.getElementById('emailInput'); 
     const startTimeInput = document.getElementById('startTime'); 
     const endTimeInput = document.getElementById('endTime');     
-    const transcribeInput = document.getElementById('transcribeAudio'); // New Checkbox
+    const transcribeInput = document.getElementById('transcribeAudio'); 
     const thumbnailContainer = document.getElementById('thumbnailContainer'); 
     const currentThumbnail = document.getElementById('currentThumbnail');     
     
@@ -40,8 +40,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const fullReset = () => {
         urlInput.value = '';
         if (emailInput) emailInput.value = ''; 
-        if (startTimeInput) startTimeInput.value = ''; 
-        if (endTimeInput) endTimeInput.value = '';  
+        if (startTimeInput) {
+            startTimeInput.value = ''; 
+            startTimeInput.classList.remove('input-error');
+        }
+        if (endTimeInput) {
+            endTimeInput.value = '';  
+            endTimeInput.classList.remove('input-error');
+        }
         if (transcribeInput) transcribeInput.checked = false;   
         statusDiv.innerHTML = "Ready";
         downloadList.innerHTML = '';
@@ -62,6 +68,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (message) html += `<p>${message}</p>`;
         if (stepInfo) html += `<p class="step-info" style="font-size:0.8rem; color:#64748b;">${stepInfo}</p>`;
         statusDiv.innerHTML = html;
+    };
+
+    // Validates HH:MM:SS or MM:SS format
+    const validateTimeFormat = (timeStr) => {
+        if (!timeStr) return true; // Empty string is valid (optional field)
+        const regex = /^(\d{1,2}:){1,2}[0-5]\d$/;
+        return regex.test(timeStr);
     };
 
     const pollStatus = async () => {
@@ -105,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearInterval(pollInterval);
                 pollInterval = null;
                 statusDiv.innerHTML = `<p style="color:#ef4444; font-weight:bold;">Conversion Stopped.</p><p style="font-size:0.8rem;">Session cleared.</p>`;
-                thumbnailContainer.classList.add('hidden'); // Hide thumbnail
+                thumbnailContainer.classList.add('hidden'); 
                 resetUI();
                 return;
             }
@@ -118,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     data.current_status
                 );
                 
-                // Show Thumbnail if available
                 if (data.current_thumbnail && data.current_thumbnail !== currentThumbnail.src) {
                     currentThumbnail.src = data.current_thumbnail;
                     thumbnailContainer.classList.remove('hidden');
@@ -158,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearInterval(pollInterval);
                 pollInterval = null;
                 statusDiv.innerHTML = `<p style="color:#ef4444;">Error: ${data.error || 'Unknown error'}</p>`;
-                thumbnailContainer.classList.add('hidden'); // Hide thumbnail
+                thumbnailContainer.classList.add('hidden'); 
                 resetUI();
             }
         } catch (error) {
@@ -200,7 +212,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const endTime = endTimeInput ? endTimeInput.value.trim() : "";
         const transcribeAudio = transcribeInput ? transcribeInput.checked : false;
         
-        if (!url) { alert('Please enter a URL'); return; }
+        // Validation Checks
+        if (!url) { 
+            alert('Please enter a valid URL'); 
+            return; 
+        }
+
+        startTimeInput.classList.remove('input-error');
+        endTimeInput.classList.remove('input-error');
+        let hasError = false;
+
+        if (!validateTimeFormat(startTime)) {
+            startTimeInput.classList.add('input-error');
+            hasError = true;
+        }
+        if (!validateTimeFormat(endTime)) {
+            endTimeInput.classList.add('input-error');
+            hasError = true;
+        }
+
+        if (hasError) {
+            alert('Please ensure timestamps are formatted as MM:SS (e.g., 01:20) or HH:MM:SS');
+            return;
+        }
 
         currentSessionId = self.crypto.randomUUID();
         convertBtn.disabled = true;
@@ -222,7 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }),
             });
 
-            // Parse the response data FIRST
             let data;
             try {
                 data = await response.json();
@@ -230,7 +263,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Server failed to respond properly.');
             }
 
-            // If the server sent an error status (like 400 or 500), throw the SERVER'S error message
             if (!response.ok) {
                 throw new Error(data.error || 'Server error starting conversion');
             }
@@ -243,10 +275,6 @@ document.addEventListener('DOMContentLoaded', () => {
             resetUI();
         }
     });
-
-    /* ==========================================================================
-       Google Analytics 4 Custom Event Tracking
-       ========================================================================== */
 
     if (convertBtn) {
         convertBtn.addEventListener('click', () => {
@@ -276,20 +304,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
-
-/* ==========================================================================
-   Global Modal Helpers
-   ========================================================================== */
-function openModal(id) { 
-    document.getElementById(id).style.display = "flex"; 
-}
-
-function closeModal(id) { 
-    document.getElementById(id).style.display = "none"; 
-}
-
-window.onclick = (e) => { 
-    if (e.target.classList.contains('modal')) {
-        e.target.style.display = "none"; 
-    }
-};
