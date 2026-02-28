@@ -276,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- Analytics ---
     if (convertBtn) {
         convertBtn.addEventListener('click', () => {
             if (urlInput && urlInput.value.trim() !== "" && typeof gtag === 'function') {
@@ -302,5 +303,27 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
 });
+
+/* ==========================================================================
+   Global Modal Helpers
+   ========================================================================== */
+function openModal(id) { 
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.style.display = "flex"; 
+    }
+}
+
+function closeModal(id) { 
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.style.display = "none"; 
+    }
+}
+
+window.onclick = (e) => { 
+    if (e.target.classList.contains('modal')) {
+        e.target.style.display = "none"; 
+    }
+};
