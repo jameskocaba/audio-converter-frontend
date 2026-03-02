@@ -166,6 +166,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = emailInput ? emailInput.value.trim() : '';
         const transcribeAudio = transcribeInput ? transcribeInput.checked : false;
 
+        // Facebook limitation check for AI transcription
+        if (transcribeAudio) {
+            const lowerUrl = url.toLowerCase();
+            if (!lowerUrl.includes('facebook.com') && !lowerUrl.includes('fb.watch')) {
+                statusDiv.innerHTML = `<p style="color: #ef4444;">⚠️ Smart Notes generation is currently only supported for Facebook videos. Please uncheck the toggle to process as a standard audio backup.</p>`;
+                return;
+            }
+        }
+
         // UI Updates for processing state
         convertBtn.disabled = true;
         resetBtn.classList.add('hidden');

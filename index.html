@@ -148,7 +148,8 @@
                             <span class="pro-badge">✨ AI POWERED</span>
                             <span class="feature-title">Generate Smart Notes</span>
                         </div>
-                        <p class="feature-subtitle">Automatically format meeting minutes, action items, or step-by-step DIY instructions.</p>
+                        <p class="feature-subtitle">Automatically format meeting minutes, action items, or step-by-step DIY instructions.<br>
+                        <span style="color: #ea580c; font-weight: 600; font-size: 0.75rem;">(Note: Smart Notes currently only supports Facebook video URLs)</span></p>
                         <a href="#" onclick="openModal('exampleModal'); return false;" class="example-link">👀 See an example</a>
                     </div>
                     <div class="toggle-container">
@@ -232,7 +233,7 @@
             <p>Simply copy the shareable URL, paste it into the search box, set any optional start/end times, toggle "Generate Smart Notes" if desired, and click "Process Media". Our system will process the link and generate a ZIP file containing your files.</p>
             
             <h3>2. What does the "Generate Smart Notes" toggle do?</h3>
-            <p>When activated, our backend uses advanced AI (OpenAI Whisper and GPT-4o) to transcribe the audio file. It then intelligently detects if the audio is a "DIY/Instructional Video" or a "Professional Meeting" and generates a formatted HTML document containing step-by-step instructions, safety warnings, or meeting minutes and action items. These text files are included in your final ZIP download.</p>
+            <p>When activated, our backend uses advanced AI (OpenAI Whisper and GPT-4o) to transcribe the audio file. It then intelligently detects if the audio is a "DIY/Instructional Video" or a "Professional Meeting" and generates a formatted HTML document containing step-by-step instructions, safety warnings, or meeting minutes and action items. These text files are included in your final ZIP download. <strong>Please note: This feature is currently only compatible with Facebook video URLs.</strong></p>
 
             <h3>3. How do the Start and End time fields work?</h3>
             <p>If you only want a specific segment of an audio file, you can input a Start Time (e.g., 01:20) and an End Time (e.g., 05:45). Our processor will clip the audio to those exact timestamps before converting and transcribing it.</p>
