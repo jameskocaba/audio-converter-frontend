@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const convertBtn = document.getElementById('convertBtn');
     const cancelBtn = document.getElementById('cancelBtn');
     const resetBtn = document.getElementById('resetBtn');
-    const pasteBtn = document.getElementById('pasteBtn');
+    const actionGroup = document.getElementById('actionGroup');
     const statusDiv = document.getElementById('status');
     const progressBar = document.getElementById('progressBar');
     const progressFill = document.getElementById('progressFill');
@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Helper Functions ---
     const resetUI = () => {
         convertBtn.disabled = false;
+        convertBtn.textContent = "Process";
         cancelBtn.disabled = false;
         cancelBtn.textContent = "Cancel";
         cancelBtn.classList.add('hidden');
@@ -54,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadArea.classList.add('hidden');
         thumbnailContainer.classList.add('hidden'); 
         currentThumbnail.src = '';
+        actionGroup.style.display = 'none'; 
         resetUI();
     };
 
@@ -63,13 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         progressFill.style.width = percent + '%';
         progressFill.textContent = `${current}/${total} (${percent}%)`;
-    };
-
-    const updateStatus = (message, stepInfo = '') => {
-        let html = `<div class="spinner"></div>`;
-        if (message) html += `<p>${message}</p>`;
-        if (stepInfo) html += `<p class="step-info" style="font-size:0.8rem; color:#64748b;">${stepInfo}</p>`;
-        statusDiv.innerHTML = html;
     };
 
     // Validates HH:MM:SS or MM:SS format
@@ -166,7 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = emailInput ? emailInput.value.trim() : '';
         const transcribeAudio = transcribeInput ? transcribeInput.checked : false;
 
-        // Facebook limitation check for AI transcription
         if (transcribeAudio) {
             const lowerUrl = url.toLowerCase();
             if (!lowerUrl.includes('facebook.com') && !lowerUrl.includes('fb.watch')) {
@@ -177,8 +171,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // UI Updates for processing state
         convertBtn.disabled = true;
+        convertBtn.textContent = "Processing...";
+        actionGroup.style.display = 'flex';
         resetBtn.classList.add('hidden');
         cancelBtn.classList.remove('hidden');
+        
         statusDiv.innerHTML = `<div class="spinner"></div><p>Starting...</p>`;
         downloadArea.classList.add('hidden');
         thumbnailContainer.classList.add('hidden');
@@ -235,13 +232,4 @@ document.addEventListener('DOMContentLoaded', () => {
     convertBtn.addEventListener('click', startConversion);
     cancelBtn.addEventListener('click', cancelConversion);
     resetBtn.addEventListener('click', fullReset);
-    
-    pasteBtn.addEventListener('click', async () => {
-        try {
-            const text = await navigator.clipboard.readText();
-            urlInput.value = text;
-        } catch (err) {
-            console.error('Failed to read clipboard text: ', err);
-        }
-    });
 });

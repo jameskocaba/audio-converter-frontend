@@ -46,51 +46,6 @@
     </script>
 
     <link rel="stylesheet" href="style.css">
-    <style>
-        .logo-container { text-align: center; margin-bottom: 20px; }
-        .main-logo { max-width: 300px; width: 100%; height: auto; display: block; margin: 0 auto; }
-        
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            padding: 20px 0;
-        }
-        
-        footer p {
-            margin: 0 0 10px 0;
-        }
-        
-        .footer-links {
-            text-align: center;
-        }
-        
-        .footer-links a {
-            margin: 0 5px;
-        }
-
-        .secure-note {
-            font-size: 0.75rem;
-            color: #94a3b8;
-            margin: 4px 0 20px 5px;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        /* Modal Base Styles ensuring they remain hidden on load */
-        .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 1000; 
-            left: 0; 
-            top: 0; 
-            width: 100%; 
-            height: 100%; 
-            overflow: auto; 
-            background-color: rgba(0,0,0,0.5); 
-        }
-    </style>
 </head>
 <body>
     <main>
@@ -114,77 +69,63 @@
             </div>
 
             <header class="logo-container">
-                <img src="logo.png" alt="MP3aud.io - Media Tools" class="main-logo">
-                <h1>AI Audio Transcriber & Media Converter</h1>
-                <span class="h1-subtext">Turn any audio or video URL into formatted meeting minutes, smart notes, and high-quality MP3s.</span>
+                <img src="logo.png" alt="MP3aud.io - Media Tools" class="main-logo" style="max-width: 240px;">
+                <p class="h1-subtext" style="margin-top: 10px;">Turn any audio or video URL into formatted notes and high-quality MP3s.</p>
             </header>
                       
             <section aria-label="Conversion tool">
-                <div class="input-group">
-                    <input type="text" 
-                           id="urlInput" 
-                           placeholder="Paste shareable url here..."
-                           aria-label="Media URL input"
-                           autocomplete="off">
-                    <button id="pasteBtn" 
-                            type="button"
-                            aria-label="Paste from clipboard">Paste</button>
+                
+                <div class="unified-search-bar">
+                    <input type="text" id="urlInput" placeholder="Paste shareable URL here..." aria-label="Media URL input" autocomplete="off">
+                    <button id="convertBtn" aria-label="Start conversion">Process</button>
                 </div>
 
-                <div class="input-group" style="gap: 15px;">
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <label for="startTime" style="font-size: 0.75rem; color: #64748b; margin-bottom: 4px; text-align: left; font-weight: 600;">Start Time (e.g. 01:20)</label>
-                        <input type="text" id="startTime" placeholder="00:00" style="width: 100%; box-sizing: border-box;">
-                    </div>
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <label for="endTime" style="font-size: 0.75rem; color: #64748b; margin-bottom: 4px; text-align: left; font-weight: 600;">End Time (e.g. 05:45)</label>
-                        <input type="text" id="endTime" placeholder="Optional" style="width: 100%; box-sizing: border-box;">
+                <div class="inline-ai-toggle">
+                    <label class="switch" aria-label="Toggle AI Generation">
+                      <input type="checkbox" id="transcribeAudio" name="transcribeAudio">
+                      <span class="slider round"></span>
+                    </label>
+                    <div class="toggle-text">
+                        <span class="feature-title" style="font-size: 0.95rem; font-weight: 700; color: #1e293b;">Generate AI Smart Notes</span>
+                        <a href="#" onclick="openModal('exampleModal'); return false;" class="example-link" style="font-size: 0.8rem; color: #2980b9; text-decoration: none; font-weight: 600;">See example</a>
                     </div>
                 </div>
 
-                <div class="premium-feature-card">
-                    <div class="feature-text">
-                        <div class="feature-header">
-                            <span class="pro-badge">✨ AI POWERED</span>
-                            <span class="feature-title">Generate Smart Notes</span>
+                <details class="advanced-options">
+                    <summary>Advanced Options (Timestamps & Email Delivery)</summary>
+                    <div class="advanced-content">
+                        <div class="input-group" style="gap: 15px; margin-bottom: 15px;">
+                            <div style="flex: 1; display: flex; flex-direction: column;">
+                                <label for="startTime" class="micro-label">Start Time (e.g. 01:20)</label>
+                                <input type="text" id="startTime" placeholder="00:00" style="width: 100%; box-sizing: border-box;">
+                            </div>
+                            <div style="flex: 1; display: flex; flex-direction: column;">
+                                <label for="endTime" class="micro-label">End Time (e.g. 05:45)</label>
+                                <input type="text" id="endTime" placeholder="Optional" style="width: 100%; box-sizing: border-box;">
+                            </div>
                         </div>
-                        <p class="feature-subtitle">Automatically format meeting minutes, action items, or step-by-step DIY instructions.<br>
-                        <span style="color: #ea580c; font-weight: 600; font-size: 0.75rem;">(Note: Smart Notes currently only supports Facebook video URLs)</span></p>
-                        <a href="#" onclick="openModal('exampleModal'); return false;" class="example-link">👀 See an example</a>
+                        
+                        <div style="display: flex; flex-direction: column;">
+                            <label for="emailInput" class="micro-label">Email Delivery (Optional)</label>
+                            <input type="email" id="emailInput" placeholder="Enter email to receive ZIP link..." style="width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px;">
+                            <p class="secure-note" style="margin-top: 8px;">
+                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                We'll email you a secure download link once complete.
+                            </p>
+                        </div>
                     </div>
-                    <div class="toggle-container">
-                        <label class="switch" aria-label="Toggle AI Generation">
-                          <input type="checkbox" id="transcribeAudio" name="transcribeAudio">
-                          <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
+                </details>
 
-                <div class="input-group" style="margin-bottom: 10px;">
-                    <input type="email" 
-                           id="emailInput" 
-                           placeholder="Enter email here... (Optional)"
-                           aria-label="Email notification input"
-                           autocomplete="on"
-                           style="border-color: #e2e8f0; background: #f8fafc;">
-                </div>
-                
-                <p class="secure-note">
-                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    Don't want to keep this tab open? We can send a download link once ZIP file completes.
-                </p>
-                
-                <div class="button-group">
-                    <button id="convertBtn" aria-label="Start conversion">Process Media</button>
+                <div class="button-group secondary-actions" style="display: none; margin-top: 15px; gap: 12px;" id="actionGroup">
                     <button id="cancelBtn" class="hidden" aria-label="Cancel conversion">Cancel</button> 
-                    <button id="resetBtn" aria-label="Reset form">Reset</button> 
+                    <button id="resetBtn" class="hidden" aria-label="Reset form">Reset</button> 
                 </div>
 
                 <div id="thumbnailContainer" class="hidden" style="margin-top: 20px; text-align: center;">
                     <img id="currentThumbnail" src="" alt="Media Thumbnail" style="max-width: 160px; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 6px 12px rgba(0,0,0,0.15); transition: opacity 0.3s ease;">
                 </div>
 
-                <div id="status" role="status" aria-live="polite" style="margin-top: 15px;">Ready</div>
+                <div id="status" role="status" aria-live="polite" style="margin-top: 20px;">Ready</div>
                 
                 <div id="progressBar" class="hidden" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                     <div id="progressFill"></div>
@@ -192,12 +133,6 @@
 
                 <div id="downloadArea" class="hidden">
                     <div class="download-separator"></div>
-                    <div class="tip-jar-container">
-                        <p style="margin: 0; color: #333; font-size: 0.95rem;">
-                            Enjoyed the Experience? Please consider <a href="https://buymeacoffee.com/jameskocaba" target="_blank" style="color: #ff5500; font-weight: bold; text-decoration: underline;"> buying me a coffee </a> to help keep the server running.
-                        </p>
-                    </div>
-
                     <ul id="downloadList"></ul>
                 </div>
             </section>
@@ -228,27 +163,20 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal('FAQModal')" aria-label="Close modal">&times;</span>
             <h2 id="faqTitle">Frequently Asked Questions</h2>
-            
             <h3>1. How do I back up my media to MP3 or generate notes?</h3>
-            <p>Simply copy the shareable URL, paste it into the search box, set any optional start/end times, toggle "Generate Smart Notes" if desired, and click "Process Media". Our system will process the link and generate a ZIP file containing your files.</p>
-            
+            <p>Simply copy the shareable URL, paste it into the search box, set any optional start/end times via Advanced Options, toggle "Generate Smart Notes" if desired, and click "Process". Our system will process the link and generate a ZIP file.</p>
             <h3>2. What does the "Generate Smart Notes" toggle do?</h3>
-            <p>When activated, our backend uses advanced AI (OpenAI Whisper and GPT-4o) to transcribe the audio file. It then intelligently detects if the audio is a "DIY/Instructional Video" or a "Professional Meeting" and generates a formatted HTML document containing step-by-step instructions, safety warnings, or meeting minutes and action items. These text files are included in your final ZIP download. <strong>Please note: This feature is currently only compatible with Facebook video URLs.</strong></p>
-
+            <p>When activated, our backend uses advanced AI to transcribe the audio file. It then intelligently detects if the audio is a "DIY/Instructional Video" or a "Professional Meeting" and generates formatted HTML notes. <strong>Please note: This feature is currently only compatible with Facebook video URLs.</strong></p>
             <h3>3. How do the Start and End time fields work?</h3>
-            <p>If you only want a specific segment of an audio file, you can input a Start Time (e.g., 01:20) and an End Time (e.g., 05:45). Our processor will clip the audio to those exact timestamps before converting and transcribing it.</p>
-            
+            <p>If you only want a specific segment of an audio file, you can input a Start Time (e.g., 01:20) and an End Time (e.g., 05:45) in the Advanced Options. Our processor will clip the audio to those exact timestamps.</p>
             <h3>4. What audio quality are the MP3 backups?</h3>
-            <p>We prioritize audio fidelity. Our tool attempts to capture the highest available bitrate provided by the shareable link (typically 128kbps) preserving the metadata and frequency response of the original stream.</p>
-            
+            <p>We prioritize audio fidelity. Our tool attempts to capture the highest available bitrate provided by the shareable link (typically 128kbps).</p>
             <h3>5. How many files can I convert at once?</h3>
-            <p>You can process up to 50 files per playlist URL. Files are processed sequentially to ensure maximum reliability. You'll see real-time progress as each track downloads, extracts, and transcribes.</p>
-            
+            <p>You can process up to 50 files per playlist URL. Files are processed sequentially to ensure maximum reliability.</p>
             <h3>6. Do I need to keep the browser tab open?</h3>
-            <p>If you enter your email address before converting, you do not need to keep the tab open. We will email you a secure download link once your ZIP file is ready. Note: <strong>This link automatically expires after 1 hour</strong>.</p>
-            
+            <p>If you enter your email address in the Advanced Options before converting, you do not need to keep the tab open. We will email you a secure download link once your ZIP file is ready. Note: <strong>This link automatically expires after 1 hour</strong>.</p>
             <h3>7. How long will my conversion take?</h3>
-            <p>Because processing high-quality audio and running AI transcription is resource-intensive, conversions are handled in a queue. If the server is busy, you will be given a queue position and an estimated wait time (averaging about 45 seconds per track).</p>
+            <p>Because processing high-quality audio and running AI transcription is resource-intensive, conversions are handled in a queue. If the server is busy, you will be given a queue position and an estimated wait time.</p>
         </div>
     </div>
 
@@ -335,26 +263,18 @@
     <script>
         function openModal(modalId) {
             var modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = "flex";
-            }
+            if (modal) { modal.style.display = "flex"; }
         }
-
         function closeModal(modalId) {
             var modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = "none";
-            }
+            if (modal) { modal.style.display = "none"; }
         }
-
-        // Close modal when clicking outside of the content box
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.style.display = "none";
             }
         }
     </script>
-    
     <script src="script.js"></script>
 </body>
 </html>
