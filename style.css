@@ -52,6 +52,7 @@ body {
    ========================================= */
 .unified-search-bar {
     display: flex;
+    gap: 8px; /* <-- This adds the clean spacing between the input and button */
     background: #ffffff;
     border: 2px solid #e2e8f0;
     border-radius: 12px;
