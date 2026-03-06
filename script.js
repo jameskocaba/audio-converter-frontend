@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cancelBtn.disabled = false;
         cancelBtn.textContent = "Cancel";
         cancelBtn.classList.add('hidden');
-        resetBtn.classList.remove('hidden'); 
+        resetBtn.disabled = false; 
         progressBar.classList.add('hidden');
         if (pollInterval) {
             clearInterval(pollInterval);
@@ -164,8 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // UI Updates for processing state
         convertBtn.disabled = true;
         convertBtn.textContent = "Processing...";
+        resetBtn.disabled = true;
         actionGroup.style.display = 'flex';
-        resetBtn.classList.add('hidden');
         cancelBtn.classList.remove('hidden');
         
         statusDiv.innerHTML = `<div class="spinner"></div><p>Starting...</p>`;

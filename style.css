@@ -107,6 +107,26 @@ body {
     transform: none;
 }
 
+/* Inline Reset Button Styling */
+.unified-search-bar #resetBtn {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0 16px;
+    box-shadow: none;
+}
+
+.unified-search-bar #resetBtn:hover:not(:disabled) {
+    background: #e2e8f0;
+    transform: translateY(-1px);
+}
+
+.unified-search-bar #resetBtn:disabled {
+    background: #f8fafc;
+    color: #cbd5e1;
+    cursor: not-allowed;
+    transform: none;
+}
+
 /* Inline AI Toggle */
 .inline-ai-toggle {
     display: flex;
@@ -224,26 +244,13 @@ input[type="text"]:focus, input[type="email"]:focus {
     box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
 }
 
-#resetBtn, #cancelBtn {
+#cancelBtn {
     flex: 1;
     padding: 12px;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-}
-
-#resetBtn {
-    border: none;
-    background: #e2e8f0;
-    color: #475569;
-}
-
-#resetBtn:hover {
-    background: #cbd5e1;
-}
-
-#cancelBtn {
     border: 2px solid #fee2e2;
     background: #fef2f2;
     color: #ef4444;
