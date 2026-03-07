@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const topConversionsArea = document.getElementById('topConversionsArea');
     const topConversionsList = document.getElementById('topConversionsList');
 
-    // FIXED: Removed markdown formatting from the URL string
-    const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
+    // Backend URL
+    const BACKEND_URL = '[https://audio-converter-backend.onrender.com](https://audio-converter-backend.onrender.com)'; 
     
     let currentSessionId = null;
     let pollInterval = null;
@@ -50,9 +50,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (data.length > 0) {
                     topConversionsList.innerHTML = data.map((item) => {
+                        
+                        // Fallback logic in case ANY image link is broken
+                        const fallbackDiv = `<div style="width: 100%; height: 60px; background: #e2e8f0; border-radius: 4px; margin-bottom: 5px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8;">N/A</div>`;
+                        
                         const thumbHtml = item.thumbnail 
-                            ? `<img src="${item.thumbnail}" alt="thumb" style="width: 100%; height: 60px; object-fit: cover; border-radius: 4px; display: block; margin-bottom: 5px;">` 
-                            : `<div style="width: 100%; height: 60px; background: #e2e8f0; border-radius: 4px; margin-bottom: 5px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8;">N/A</div>`;
+                            ? `<img src="${item.thumbnail}" alt="thumb" onerror="this.outerHTML=this.dataset.fallback" data-fallback='${fallbackDiv}' style="width: 100%; height: 60px; object-fit: cover; border-radius: 4px; display: block; margin-bottom: 5px;">` 
+                            : fallbackDiv;
                         
                         return `
                         <div style="flex: 1; min-width: 0; background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
