@@ -25,17 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSessionId = null;
     let pollInterval = null;
 
-    // --- NEW: Global Helper to Copy URL and Show Feedback ---
     window.copyMediaUrl = function(element, url, count) {
         navigator.clipboard.writeText(url).then(() => {
             const msgBox = element.querySelector('.copy-msg');
             if(msgBox) {
-                // Change text to success message
                 msgBox.innerHTML = '✅ Copied!';
                 msgBox.style.color = '#2ecc71';
                 msgBox.style.fontWeight = 'bold';
                 
-                // Revert back after 2 seconds
                 setTimeout(() => {
                     msgBox.innerHTML = count + ' conversions';
                     msgBox.style.color = '#64748b';
@@ -48,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // --- Fetch Top 3 Conversions ---
     const fetchTopConversions = async () => {
         const slowLoadTimer = setTimeout(() => {
             topConversionsList.innerHTML = `
@@ -61,7 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
 
         try {
-            const response = await fetch(`${BACKEND_URL}/api/top-conversions`);
+            // FIX 1: Cache-Buster added (?t=...) so the browser always fetches fresh data
+            const response = await fetch(`${BACKEND_URL}/api/top-conversions?t=${new Date().getTime()}`);
             
             clearTimeout(slowLoadTimer); 
             
@@ -76,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             ? `<img src="${item.thumbnail}" alt="thumb" onerror="this.outerHTML=this.dataset.fallback" data-fallback='${fallbackDiv}' style="width: 100%; height: 60px; object-fit: cover; border-radius: 4px; display: block; margin-bottom: 5px;">` 
                             : fallbackDiv;
                         
-                        // Card is now a clickable element triggering the copyMediaUrl function
                         return `
                         <div onclick="window.copyMediaUrl(this, '${item.url}', ${item.count})" title="Click to copy original URL" style="flex: 1; min-width: 0; background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; flex-direction: column; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#2980b9'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)';">
                             <div style="display: block; flex-grow: 1;">
@@ -107,7 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchTopConversions();
 
-    // --- Helper Functions ---
     const resetUI = () => {
         convertBtn.disabled = false;
         convertBtn.textContent = "Process";
@@ -140,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         thumbnailContainer.classList.add('hidden'); 
         currentThumbnail.src = '';
         actionGroup.style.display = 'none'; 
+        
         topConversionsArea.classList.remove('hidden');
         fetchTopConversions(); 
         resetUI();
@@ -211,12 +207,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         </a>
                     </li>
                 `;
+                
+                // FIX 2: Un-hide the trending cards automatically at completion
+                topConversionsArea.classList.remove('hidden');
+                fetchTopConversions();
+                
                 currentSessionId = null;
             }
             else if (data.status === 'error' || data.status === 'cancelled') {
                 resetUI();
                 const msg = data.status === 'error' ? 'An error occurred during processing.' : 'Process Cancelled.';
                 statusDiv.innerHTML = `<p style="color: #ef4444; font-weight: bold;">❌ ${msg}</p>`;
+                
+                // Un-hide the trending cards if the job fails/cancels
+                topConversionsArea.classList.remove('hidden');
+                
                 currentSessionId = null;
             }
         } catch (error) {
@@ -281,6 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             resetUI();
             statusDiv.innerHTML = `<p style="color: #ef4444;">❌ ${error.message}</p>`;
+            topConversionsArea.classList.remove('hidden');
         }
     };
 
