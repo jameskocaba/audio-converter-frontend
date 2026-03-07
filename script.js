@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fetchTopConversions = async () => {
         try {
             const response = await fetch(`${BACKEND_URL}/api/top-conversions`);
+            
             if (response.ok) {
                 const data = await response.json();
                 if (data.length > 0) {
@@ -52,12 +53,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>`;
                     }).join('');
                 } else {
-                    topConversionsList.innerHTML = '<div style="color: #94a3b8; font-size: 0.85rem;">No conversions yet. Be the first!</div>';
+                    topConversionsList.innerHTML = '<div style="color: #94a3b8; font-size: 0.85rem; width: 100%; text-align: center;">No conversions yet. Be the first!</div>';
                 }
+            } else {
+                // Handle 502 Bad Gateway while server boots
+                topConversionsList.innerHTML = '<div style="color: #94a3b8; font-size: 0.85rem; width: 100%; text-align: center;">Waking up server... please wait.</div>';
+                // Try again in 5 seconds
+                setTimeout(fetchTopConversions, 5000); 
             }
         } catch (error) {
             console.error("Failed to load top conversions:", error);
-            topConversionsList.innerHTML = '<div style="color: #ef4444; font-size: 0.85rem;">Failed to load data.</div>';
+            topConversionsList.innerHTML = '<div style="color: #ef4444; font-size: 0.85rem; width: 100%; text-align: center;">Cannot connect to server.</div>';
         }
     };
 
