@@ -20,15 +20,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const topConversionsArea = document.getElementById('topConversionsArea');
     const topConversionsList = document.getElementById('topConversionsList');
 
-    // FIXED: Split string bypasses copy/paste markdown corruption!
     const BACKEND_URL = 'https://' + 'audio-converter-backend.onrender.com'; 
     
     let currentSessionId = null;
     let pollInterval = null;
 
+    // --- NEW: Global Helper to Copy URL and Show Feedback ---
+    window.copyMediaUrl = function(element, url, count) {
+        navigator.clipboard.writeText(url).then(() => {
+            const msgBox = element.querySelector('.copy-msg');
+            if(msgBox) {
+                // Change text to success message
+                msgBox.innerHTML = '✅ Copied!';
+                msgBox.style.color = '#2ecc71';
+                msgBox.style.fontWeight = 'bold';
+                
+                // Revert back after 2 seconds
+                setTimeout(() => {
+                    msgBox.innerHTML = count + ' conversions';
+                    msgBox.style.color = '#64748b';
+                    msgBox.style.fontWeight = 'normal';
+                }, 2000);
+            }
+        }).catch(err => {
+            console.error("Clipboard copy failed:", err);
+            alert("Failed to copy URL. Please try again.");
+        });
+    };
+
     // --- Fetch Top 3 Conversions ---
     const fetchTopConversions = async () => {
-        // If the request takes more than 3 seconds, Render is likely asleep.
         const slowLoadTimer = setTimeout(() => {
             topConversionsList.innerHTML = `
                 <div style="width: 100%; text-align: center; color: #64748b; font-size: 0.85rem; padding: 10px;">
@@ -49,22 +70,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.length > 0) {
                     topConversionsList.innerHTML = data.map((item) => {
                         
-                        // Fallback logic in case ANY image link is broken
                         const fallbackDiv = `<div style="width: 100%; height: 60px; background: #e2e8f0; border-radius: 4px; margin-bottom: 5px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8;">N/A</div>`;
                         
                         const thumbHtml = item.thumbnail 
                             ? `<img src="${item.thumbnail}" alt="thumb" onerror="this.outerHTML=this.dataset.fallback" data-fallback='${fallbackDiv}' style="width: 100%; height: 60px; object-fit: cover; border-radius: 4px; display: block; margin-bottom: 5px;">` 
                             : fallbackDiv;
                         
+                        // Card is now a clickable element triggering the copyMediaUrl function
                         return `
-                        <div style="flex: 1; min-width: 0; background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
-                            <a href="${item.url}" target="_blank" title="View Original" style="text-decoration: none; color: inherit; display: block; flex-grow: 1;">
+                        <div onclick="window.copyMediaUrl(this, '${item.url}', ${item.count})" title="Click to copy original URL" style="flex: 1; min-width: 0; background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; flex-direction: column; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#2980b9'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)';">
+                            <div style="display: block; flex-grow: 1;">
                                 ${thumbHtml}
                                 <div style="font-size: 0.7rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; color: #334155;">
                                     ${item.title}
                                 </div>
-                            </a>
-                            <div style="font-size: 0.65rem; color: #64748b; background: #f1f5f9; border-radius: 3px; padding: 2px;">
+                            </div>
+                            <div class="copy-msg" style="font-size: 0.65rem; color: #64748b; background: #f1f5f9; border-radius: 3px; padding: 2px; transition: all 0.3s ease;">
                                 ${item.count} conversions
                             </div>
                         </div>`;
