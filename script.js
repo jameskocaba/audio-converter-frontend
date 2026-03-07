@@ -16,12 +16,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressFill = document.getElementById('progressFill');
     const downloadArea = document.getElementById('downloadArea');
     const downloadList = document.getElementById('downloadList');
+    
+    const topConversionsArea = document.getElementById('topConversionsArea');
+    const topConversionsList = document.getElementById('topConversionsList');
 
     // Backend URL
-    const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
+    const BACKEND_URL = '[https://audio-converter-backend.onrender.com](https://audio-converter-backend.onrender.com)'; 
     
     let currentSessionId = null;
     let pollInterval = null;
+
+    // --- Fetch Top 3 Conversions ---
+    const fetchTopConversions = async () => {
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/top-conversions`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.length > 0) {
+                    topConversionsList.innerHTML = data.map((item) => {
+                        const thumbHtml = item.thumbnail 
+                            ? `<img src="${item.thumbnail}" alt="thumb" style="width: 100%; height: 60px; object-fit: cover; border-radius: 4px; display: block; margin-bottom: 5px;">` 
+                            : `<div style="width: 100%; height: 60px; background: #e2e8f0; border-radius: 4px; margin-bottom: 5px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8;">N/A</div>`;
+                        
+                        return `
+                        <div style="flex: 1; min-width: 0; background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
+                            <a href="${item.url}" target="_blank" title="View Original" style="text-decoration: none; color: inherit; display: block; flex-grow: 1;">
+                                ${thumbHtml}
+                                <div style="font-size: 0.7rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; color: #334155;">
+                                    ${item.title}
+                                </div>
+                            </a>
+                            <div style="font-size: 0.65rem; color: #64748b; background: #f1f5f9; border-radius: 3px; padding: 2px;">
+                                ${item.count} conversions
+                            </div>
+                        </div>`;
+                    }).join('');
+                } else {
+                    topConversionsList.innerHTML = '<div style="color: #94a3b8; font-size: 0.85rem;">No conversions yet. Be the first!</div>';
+                }
+            }
+        } catch (error) {
+            console.error("Failed to load top conversions:", error);
+            topConversionsList.innerHTML = '<div style="color: #ef4444; font-size: 0.85rem;">Failed to load data.</div>';
+        }
+    };
+
+    // Load them immediately on page load
+    fetchTopConversions();
 
     // --- Helper Functions ---
     const resetUI = () => {
@@ -56,6 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
         thumbnailContainer.classList.add('hidden'); 
         currentThumbnail.src = '';
         actionGroup.style.display = 'none'; 
+        topConversionsArea.classList.remove('hidden');
+        fetchTopConversions(); // Refresh the list on reset
         resetUI();
     };
 
@@ -167,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resetBtn.disabled = true;
         actionGroup.style.display = 'flex';
         cancelBtn.classList.remove('hidden');
+        topConversionsArea.classList.add('hidden'); // Hide the trending list while converting
         
         statusDiv.innerHTML = `<div class="spinner"></div><p>Starting...</p>`;
         downloadArea.classList.add('hidden');
