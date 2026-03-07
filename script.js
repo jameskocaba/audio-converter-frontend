@@ -20,16 +20,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const topConversionsArea = document.getElementById('topConversionsArea');
     const topConversionsList = document.getElementById('topConversionsList');
 
-    // Backend URL
-    const BACKEND_URL = '[https://audio-converter-backend.onrender.com](https://audio-converter-backend.onrender.com)'; 
+    // FIXED: Removed markdown formatting from the URL string
+    const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
     
     let currentSessionId = null;
     let pollInterval = null;
 
     // --- Fetch Top 3 Conversions ---
     const fetchTopConversions = async () => {
+        // If the request takes more than 3 seconds, Render is likely asleep.
+        // Update the UI so the user knows what's happening.
+        const slowLoadTimer = setTimeout(() => {
+            topConversionsList.innerHTML = `
+                <div style="width: 100%; text-align: center; color: #64748b; font-size: 0.85rem; padding: 10px;">
+                    <div class="spinner" style="width: 20px; height: 20px; border-width: 2px; margin: 0 auto 8px; border-left-color: #cbd5e1;"></div>
+                    Waking up free-tier server...<br>
+                    <span style="font-size: 0.75rem; color: #94a3b8;">(This can take up to 50 seconds)</span>
+                </div>
+            `;
+        }, 3000);
+
         try {
             const response = await fetch(`${BACKEND_URL}/api/top-conversions`);
+            
+            // Clear the "waking up" message timer once we get a response
+            clearTimeout(slowLoadTimer); 
             
             if (response.ok) {
                 const data = await response.json();
@@ -56,14 +71,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     topConversionsList.innerHTML = '<div style="color: #94a3b8; font-size: 0.85rem; width: 100%; text-align: center;">No conversions yet. Be the first!</div>';
                 }
             } else {
-                // Handle 502 Bad Gateway while server boots
-                topConversionsList.innerHTML = '<div style="color: #94a3b8; font-size: 0.85rem; width: 100%; text-align: center;">Waking up server... please wait.</div>';
-                // Try again in 5 seconds
+                topConversionsList.innerHTML = '<div style="color: #ef4444; font-size: 0.85rem; width: 100%; text-align: center;">Server error. Retrying...</div>';
                 setTimeout(fetchTopConversions, 5000); 
             }
         } catch (error) {
+            clearTimeout(slowLoadTimer);
             console.error("Failed to load top conversions:", error);
-            topConversionsList.innerHTML = '<div style="color: #ef4444; font-size: 0.85rem; width: 100%; text-align: center;">Cannot connect to server.</div>';
+            topConversionsList.innerHTML = '<div style="color: #ef4444; font-size: 0.85rem; width: 100%; text-align: center;">Cannot connect to server. Retrying...</div>';
+            setTimeout(fetchTopConversions, 5000);
         }
     };
 
