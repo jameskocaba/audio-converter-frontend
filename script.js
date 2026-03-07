@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const topConversionsArea = document.getElementById('topConversionsArea');
     const topConversionsList = document.getElementById('topConversionsList');
 
-    // Backend URL
-    const BACKEND_URL = '[https://audio-converter-backend.onrender.com](https://audio-converter-backend.onrender.com)'; 
+    // FIXED: Split string bypasses copy/paste markdown corruption!
+    const BACKEND_URL = 'https://' + 'audio-converter-backend.onrender.com'; 
     
     let currentSessionId = null;
     let pollInterval = null;
@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Fetch Top 3 Conversions ---
     const fetchTopConversions = async () => {
         // If the request takes more than 3 seconds, Render is likely asleep.
-        // Update the UI so the user knows what's happening.
         const slowLoadTimer = setTimeout(() => {
             topConversionsList.innerHTML = `
                 <div style="width: 100%; text-align: center; color: #64748b; font-size: 0.85rem; padding: 10px;">
@@ -43,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`${BACKEND_URL}/api/top-conversions`);
             
-            // Clear the "waking up" message timer once we get a response
             clearTimeout(slowLoadTimer); 
             
             if (response.ok) {
@@ -86,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Load them immediately on page load
     fetchTopConversions();
 
     // --- Helper Functions ---
@@ -123,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentThumbnail.src = '';
         actionGroup.style.display = 'none'; 
         topConversionsArea.classList.remove('hidden');
-        fetchTopConversions(); // Refresh the list on reset
+        fetchTopConversions(); 
         resetUI();
     };
 
@@ -135,7 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
         progressFill.textContent = `${current}/${total} (${percent}%)`;
     };
 
-    // Validates HH:MM:SS or MM:SS format
     const validateTimeFormat = (timeStr) => {
         if (!timeStr) return true; 
         const regex = /^(\d{1,2}:){1,2}[0-5]\d$/;
@@ -150,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Status check failed');
             const data = await response.json();
             
-            // --- STATE: WAITING IN QUEUE ---
             if (data.status === 'queued') {
                 progressBar.classList.add('hidden');
                 const waitText = data.estimated_wait <= 1 ? "< 1 min" : `~${data.estimated_wait} mins`;
@@ -163,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             } 
-            // --- STATE: PROCESSING ---
             else if (data.status === 'processing') {
                 progressBar.classList.remove('hidden');
                 
@@ -180,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p style="margin:5px 0 0 0; font-size:0.85rem; color:#64748b;">${data.current_status || 'Working on your files'}</p>
                 `;
             }
-            // --- STATE: COMPLETED ---
             else if (data.status === 'completed') {
                 resetUI();
                 progressBar.classList.remove('hidden');
@@ -199,7 +192,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 currentSessionId = null;
             }
-            // --- STATE: ERROR / CANCELLED ---
             else if (data.status === 'error' || data.status === 'cancelled') {
                 resetUI();
                 const msg = data.status === 'error' ? 'An error occurred during processing.' : 'Process Cancelled.';
@@ -229,13 +221,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = emailInput ? emailInput.value.trim() : '';
         const transcribeAudio = transcribeInput ? transcribeInput.checked : false;
 
-        // UI Updates for processing state
         convertBtn.disabled = true;
         convertBtn.textContent = "Processing...";
         resetBtn.disabled = true;
         actionGroup.style.display = 'flex';
         cancelBtn.classList.remove('hidden');
-        topConversionsArea.classList.add('hidden'); // Hide the trending list while converting
+        topConversionsArea.classList.add('hidden'); 
         
         statusDiv.innerHTML = `<div class="spinner"></div><p>Starting...</p>`;
         downloadArea.classList.add('hidden');
@@ -289,7 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- Event Listeners ---
     convertBtn.addEventListener('click', startConversion);
     cancelBtn.addEventListener('click', cancelConversion);
     resetBtn.addEventListener('click', fullReset);
