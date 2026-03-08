@@ -486,29 +486,6 @@ footer p { margin: 0 0 10px 0; }
 .social-icons a { color: #64748b; transition: color 0.2s ease; display: flex; align-items: center; }
 .social-icons a:hover { color: #2980b9; }
 
-.top-chart-link {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    text-decoration: none;
-    color: #64748b;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    background: transparent; 
-    border: 1px solid #e2e8f0; 
-    padding: 6px 12px;
-    border-radius: 20px; 
-}
-
-.top-chart-link:hover {
-    color: #2980b9;
-    border-color: #2980b9;
-    background: #fff;
-}
-
-@media (max-width: 380px) { .chart-text { display: none; } }
-
 .secure-note {
     font-size: 0.75rem;
     color: #94a3b8;
