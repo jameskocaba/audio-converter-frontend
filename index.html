@@ -13,31 +13,31 @@
     <meta name="keywords" content="AI audio transcriber, URL to meeting minutes, generate smart notes from audio, convert video to text instructions, AI podcast summarizer, batch MP3 downloader, audio to MP3 and text, online media extractor">
     <meta name="author" content="MP3aud.io">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="[https://mp3aud.io/](https://mp3aud.io/)">
+    <link rel="canonical" href="https://mp3aud.io/">
 
     <meta property="og:type" content="website">
-    <meta property="og:url" content="[https://mp3aud.io/](https://mp3aud.io/)">
+    <meta property="og:url" content="https://mp3aud.io/">
     <meta property="og:site_name" content="MP3aud.io">
     <meta property="og:title" content="AI Audio Transcriber & MP3 Converter | Generate Smart Notes from URLs">
     <meta property="og:description" content="Turn any shareable URL into formatted meeting minutes, DIY guides, and high-quality MP3s. Batch process up to 50 files into one ZIP.">
-    <meta property="og:image" content="[https://mp3aud.io/og-image.jpg](https://mp3aud.io/og-image.jpg)">
+    <meta property="og:image" content="https://mp3aud.io/og-image.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="MP3aud.io - AI Audio Transcriber and Media Converter">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="[https://mp3aud.io/](https://mp3aud.io/)">
+    <meta name="twitter:url" content="https://mp3aud.io/">
     <meta name="twitter:title" content="AI Audio Transcriber & Media Converter | Smart Notes & ZIP Downloads">
     <meta name="twitter:description" content="Convert shareable media URLs to ZIP files. Automatically generate meeting minutes, transcribe audio, and clip specific timestamps instantly.">
-    <meta name="twitter:image" content="[https://mp3aud.io/og-image.jpg](https://mp3aud.io/og-image.jpg)">
+    <meta name="twitter:image" content="https://mp3aud.io/og-image.jpg">
 
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
     <meta name="theme-color" content="#FF5500">
 
-    <link rel="preconnect" href="[https://www.googletagmanager.com](https://www.googletagmanager.com)">
-    <link rel="dns-prefetch" href="[https://audio-converter-backend.onrender.com](https://audio-converter-backend.onrender.com)">
-    <script async src="[https://www.googletagmanager.com/gtag/js?id=G-VGVP90K1M4](https://www.googletagmanager.com/gtag/js?id=G-VGVP90K1M4)"></script>
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://audio-converter-backend.onrender.com">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VGVP90K1M4"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -53,7 +53,7 @@
             
             <div class="utility-bar">
                 <div class="social-icons">
-                    <a href="[https://www.instagram.com/mp3aud.io?igsh=ZXljNzMxaGtqdWwz&utm_source=qr](https://www.instagram.com/mp3aud.io?igsh=ZXljNzMxaGtqdWwz&utm_source=qr)" target="_blank" aria-label="Follow us on Instagram">
+                    <a href="https://www.instagram.com/mp3aud.io?igsh=ZXljNzMxaGtqdWwz&utm_source=qr" target="_blank" aria-label="Follow us on Instagram">
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
                     </a>
                 </div>
@@ -61,7 +61,6 @@
 
             <header class="logo-container">
                 <img src="logo.png" alt="MP3aud.io - Media Tools" class="main-logo" style="max-width: 240px;">
-                <p class="h1-subtext" style="margin-top: 10px;">Turn any audio or video URL into formatted notes and high-quality MP3s.</p>
             </header>
                       
             <section aria-label="Conversion tool">
@@ -72,39 +71,41 @@
                     <button id="resetBtn" aria-label="Reset form">Reset</button>
                 </div>
 
-                <details class="advanced-options">
-                    <summary>Advanced Options (Timestamps & Email Delivery)</summary>
-                    <div class="advanced-content">
-                        <div class="input-group" style="gap: 15px; margin-bottom: 15px;">
-                            <div style="flex: 1; display: flex; flex-direction: column;">
-                                <label for="startTime" class="micro-label">Start Time (e.g. 01:20)</label>
-                                <input type="text" id="startTime" placeholder="00:00" style="width: 100%; box-sizing: border-box;">
+                <div class="options-row">
+                    <details class="advanced-options">
+                        <summary>Advanced Options</summary>
+                        <div class="advanced-content">
+                            <div class="input-group" style="gap: 15px; margin-bottom: 15px;">
+                                <div style="flex: 1; display: flex; flex-direction: column;">
+                                    <label for="startTime" class="micro-label">Start Time (e.g. 01:20)</label>
+                                    <input type="text" id="startTime" placeholder="00:00" style="width: 100%; box-sizing: border-box;">
+                                </div>
+                                <div style="flex: 1; display: flex; flex-direction: column;">
+                                    <label for="endTime" class="micro-label">End Time (e.g. 05:45)</label>
+                                    <input type="text" id="endTime" placeholder="Optional" style="width: 100%; box-sizing: border-box;">
+                                </div>
                             </div>
-                            <div style="flex: 1; display: flex; flex-direction: column;">
-                                <label for="endTime" class="micro-label">End Time (e.g. 05:45)</label>
-                                <input type="text" id="endTime" placeholder="Optional" style="width: 100%; box-sizing: border-box;">
+                            
+                            <div style="display: flex; flex-direction: column;">
+                                <label for="emailInput" class="micro-label">Email Delivery</label>
+                                <input type="email" id="emailInput" placeholder="Enter email for ZIP link..." style="width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px;">
+                                <p class="secure-note" style="margin-top: 8px;">
+                                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    We'll email a secure download link.
+                                </p>
                             </div>
                         </div>
-                        
-                        <div style="display: flex; flex-direction: column;">
-                            <label for="emailInput" class="micro-label">Email Delivery (Optional)</label>
-                            <input type="email" id="emailInput" placeholder="Enter email to receive ZIP link..." style="width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px;">
-                            <p class="secure-note" style="margin-top: 8px;">
-                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                                We'll email you a secure download link once complete.
-                            </p>
+                    </details>
+                
+                    <div class="inline-ai-toggle">
+                        <label class="switch" aria-label="Toggle AI Generation">
+                          <input type="checkbox" id="transcribeAudio" name="transcribeAudio">
+                          <span class="slider round"></span>
+                        </label>
+                        <div class="toggle-text">
+                            <span class="feature-title" style="font-size: 0.90rem; font-weight: 700; color: #1e293b;">Smart Notes</span>
+                            <a href="#" onclick="openModal('exampleModal'); return false;" class="example-link" style="font-size: 0.8rem; color: #2980b9; text-decoration: none; font-weight: 600;">Example</a>
                         </div>
-                    </div>
-                </details>
-
-                <div class="inline-ai-toggle" style="margin-top: 20px;">
-                    <label class="switch" aria-label="Toggle AI Generation">
-                      <input type="checkbox" id="transcribeAudio" name="transcribeAudio">
-                      <span class="slider round"></span>
-                    </label>
-                    <div class="toggle-text">
-                        <span class="feature-title" style="font-size: 0.95rem; font-weight: 700; color: #1e293b;">Generate AI Smart Notes</span>
-                        <a href="#" onclick="openModal('exampleModal'); return false;" class="example-link" style="font-size: 0.8rem; color: #2980b9; text-decoration: none; font-weight: 600;">See example</a>
                     </div>
                 </div>
 
