@@ -16,93 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressFill = document.getElementById('progressFill');
     const downloadArea = document.getElementById('downloadArea');
     const downloadList = document.getElementById('downloadList');
-    
-    const topConversionsArea = document.getElementById('topConversionsArea');
-    const topConversionsList = document.getElementById('topConversionsList');
 
-    const BACKEND_URL = 'https://' + 'audio-converter-backend.onrender.com'; 
+    // Backend URL
+    const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
     
     let currentSessionId = null;
     let pollInterval = null;
 
-    window.copyMediaUrl = function(element, url, count) {
-        navigator.clipboard.writeText(url).then(() => {
-            const msgBox = element.querySelector('.copy-msg');
-            if(msgBox) {
-                msgBox.innerHTML = '✅ Copied!';
-                msgBox.style.color = '#2ecc71';
-                msgBox.style.fontWeight = 'bold';
-                
-                setTimeout(() => {
-                    msgBox.innerHTML = count + ' conversions';
-                    msgBox.style.color = '#64748b';
-                    msgBox.style.fontWeight = 'normal';
-                }, 2000);
-            }
-        }).catch(err => {
-            console.error("Clipboard copy failed:", err);
-            alert("Failed to copy URL. Please try again.");
-        });
-    };
-
-    const fetchTopConversions = async () => {
-        const slowLoadTimer = setTimeout(() => {
-            topConversionsList.innerHTML = `
-                <div style="width: 100%; text-align: center; color: #64748b; font-size: 0.85rem; padding: 10px;">
-                    <div class="spinner" style="width: 20px; height: 20px; border-width: 2px; margin: 0 auto 8px; border-left-color: #cbd5e1;"></div>
-                    Waking up free-tier server...<br>
-                    <span style="font-size: 0.75rem; color: #94a3b8;">(This can take up to 50 seconds)</span>
-                </div>
-            `;
-        }, 3000);
-
-        try {
-            // FIX 1: Cache-Buster added (?t=...) so the browser always fetches fresh data
-            const response = await fetch(`${BACKEND_URL}/api/top-conversions?t=${new Date().getTime()}`);
-            
-            clearTimeout(slowLoadTimer); 
-            
-            if (response.ok) {
-                const data = await response.json();
-                if (data.length > 0) {
-                    topConversionsList.innerHTML = data.map((item) => {
-                        
-                        const fallbackDiv = `<div style="width: 100%; height: 60px; background: #e2e8f0; border-radius: 4px; margin-bottom: 5px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#94a3b8;">N/A</div>`;
-                        
-                        const thumbHtml = item.thumbnail 
-                            ? `<img src="${item.thumbnail}" alt="thumb" onerror="this.outerHTML=this.dataset.fallback" data-fallback='${fallbackDiv}' style="width: 100%; height: 60px; object-fit: cover; border-radius: 4px; display: block; margin-bottom: 5px;">` 
-                            : fallbackDiv;
-                        
-                        return `
-                        <div onclick="window.copyMediaUrl(this, '${item.url}', ${item.count})" title="Click to copy original URL" style="flex: 1; min-width: 0; background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; flex-direction: column; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='#2980b9'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateY(0)';">
-                            <div style="display: block; flex-grow: 1;">
-                                ${thumbHtml}
-                                <div style="font-size: 0.7rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; color: #334155;">
-                                    ${item.title}
-                                </div>
-                            </div>
-                            <div class="copy-msg" style="font-size: 0.65rem; color: #64748b; background: #f1f5f9; border-radius: 3px; padding: 2px; transition: all 0.3s ease;">
-                                ${item.count} conversions
-                            </div>
-                        </div>`;
-                    }).join('');
-                } else {
-                    topConversionsList.innerHTML = '<div style="color: #94a3b8; font-size: 0.85rem; width: 100%; text-align: center;">No conversions yet. Be the first!</div>';
-                }
-            } else {
-                topConversionsList.innerHTML = '<div style="color: #ef4444; font-size: 0.85rem; width: 100%; text-align: center;">Server error. Retrying...</div>';
-                setTimeout(fetchTopConversions, 5000); 
-            }
-        } catch (error) {
-            clearTimeout(slowLoadTimer);
-            console.error("Failed to load top conversions:", error);
-            topConversionsList.innerHTML = '<div style="color: #ef4444; font-size: 0.85rem; width: 100%; text-align: center;">Cannot connect to server. Retrying...</div>';
-            setTimeout(fetchTopConversions, 5000);
-        }
-    };
-
-    fetchTopConversions();
-
+    // --- Helper Functions ---
     const resetUI = () => {
         convertBtn.disabled = false;
         convertBtn.textContent = "Process";
@@ -135,9 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
         thumbnailContainer.classList.add('hidden'); 
         currentThumbnail.src = '';
         actionGroup.style.display = 'none'; 
-        
-        topConversionsArea.classList.remove('hidden');
-        fetchTopConversions(); 
         resetUI();
     };
 
@@ -149,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         progressFill.textContent = `${current}/${total} (${percent}%)`;
     };
 
+    // Validates HH:MM:SS or MM:SS format
     const validateTimeFormat = (timeStr) => {
         if (!timeStr) return true; 
         const regex = /^(\d{1,2}:){1,2}[0-5]\d$/;
@@ -163,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Status check failed');
             const data = await response.json();
             
+            // --- STATE: WAITING IN QUEUE ---
             if (data.status === 'queued') {
                 progressBar.classList.add('hidden');
                 const waitText = data.estimated_wait <= 1 ? "< 1 min" : `~${data.estimated_wait} mins`;
@@ -175,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             } 
+            // --- STATE: PROCESSING ---
             else if (data.status === 'processing') {
                 progressBar.classList.remove('hidden');
                 
@@ -191,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p style="margin:5px 0 0 0; font-size:0.85rem; color:#64748b;">${data.current_status || 'Working on your files'}</p>
                 `;
             }
+            // --- STATE: COMPLETED ---
             else if (data.status === 'completed') {
                 resetUI();
                 progressBar.classList.remove('hidden');
@@ -207,21 +129,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         </a>
                     </li>
                 `;
-                
-                // FIX 2: Un-hide the trending cards automatically at completion
-                topConversionsArea.classList.remove('hidden');
-                fetchTopConversions();
-                
                 currentSessionId = null;
             }
+            // --- STATE: ERROR / CANCELLED ---
             else if (data.status === 'error' || data.status === 'cancelled') {
                 resetUI();
                 const msg = data.status === 'error' ? 'An error occurred during processing.' : 'Process Cancelled.';
                 statusDiv.innerHTML = `<p style="color: #ef4444; font-weight: bold;">❌ ${msg}</p>`;
-                
-                // Un-hide the trending cards if the job fails/cancels
-                topConversionsArea.classList.remove('hidden');
-                
                 currentSessionId = null;
             }
         } catch (error) {
@@ -247,12 +161,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = emailInput ? emailInput.value.trim() : '';
         const transcribeAudio = transcribeInput ? transcribeInput.checked : false;
 
+        // UI Updates for processing state
         convertBtn.disabled = true;
         convertBtn.textContent = "Processing...";
         resetBtn.disabled = true;
         actionGroup.style.display = 'flex';
         cancelBtn.classList.remove('hidden');
-        topConversionsArea.classList.add('hidden'); 
         
         statusDiv.innerHTML = `<div class="spinner"></div><p>Starting...</p>`;
         downloadArea.classList.add('hidden');
@@ -286,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             resetUI();
             statusDiv.innerHTML = `<p style="color: #ef4444;">❌ ${error.message}</p>`;
-            topConversionsArea.classList.remove('hidden');
         }
     };
 
@@ -307,6 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // --- Event Listeners ---
     convertBtn.addEventListener('click', startConversion);
     cancelBtn.addEventListener('click', cancelConversion);
     resetBtn.addEventListener('click', fullReset);
