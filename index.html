@@ -57,7 +57,10 @@
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
                     </a>
                 </div>
-                <a href="#" class="top-five-link" style="font-size: 0.9rem; font-weight: 600; color: #2980b9; text-decoration: none;">Top Five</a>
+                <a href="top-five.html" class="top-five-link" style="font-size: 0.9rem; font-weight: 600; color: #2980b9; text-decoration: none; display: flex; align-items: center; gap: 6px;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Top 5
+                </a>
             </div>
 
             <header class="logo-container">
@@ -74,6 +77,17 @@
                 </div>
 
                 <div class="options-row">
+                    <div class="inline-ai-toggle">
+                        <label class="switch" aria-label="Toggle AI Generation">
+                          <input type="checkbox" id="transcribeAudio" name="transcribeAudio">
+                          <span class="slider round"></span>
+                        </label>
+                        <div class="toggle-text">
+                            <span class="feature-title" style="font-size: 0.90rem; font-weight: 700; color: #1e293b;">Smart Notes</span>
+                            <a href="#" onclick="openModal('exampleModal'); return false;" class="example-link" style="font-size: 0.8rem; color: #2980b9; text-decoration: none; font-weight: 600;">Example</a>
+                        </div>
+                    </div>
+
                     <details class="advanced-options">
                         <summary>Advanced Options</summary>
                         <div class="advanced-content">
@@ -98,17 +112,6 @@
                             </div>
                         </div>
                     </details>
-                
-                    <div class="inline-ai-toggle">
-                        <label class="switch" aria-label="Toggle AI Generation">
-                          <input type="checkbox" id="transcribeAudio" name="transcribeAudio">
-                          <span class="slider round"></span>
-                        </label>
-                        <div class="toggle-text">
-                            <span class="feature-title" style="font-size: 0.90rem; font-weight: 700; color: #1e293b;">Smart Notes</span>
-                            <a href="#" onclick="openModal('exampleModal'); return false;" class="example-link" style="font-size: 0.8rem; color: #2980b9; text-decoration: none; font-weight: 600;">Example</a>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="button-group secondary-actions" style="display: none; margin-top: 15px; gap: 12px;" id="actionGroup">
