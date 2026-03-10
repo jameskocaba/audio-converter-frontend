@@ -131,11 +131,17 @@ body {
 .inline-ai-toggle {
     display: flex;
     align-items: center;
-    gap: 8px; /* Slightly tighter gap for the row */
-    margin-top: 6px !important; /* Overrides previous inline styles to align nicely with the summary text */
-    margin-bottom: 0;
-    flex-shrink: 0; /* Prevents the toggle from being squeezed out of shape */
+    gap: 12px; 
+    margin: 0;
+    flex: 1; 
     justify-content: center;
+
+    /* New styles to match Advanced Options */
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 9px 16px; 
+    box-sizing: border-box;
 }
 
 .inline-ai-toggle .toggle-text {
