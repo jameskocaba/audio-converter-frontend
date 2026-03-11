@@ -88,30 +88,9 @@
                         </div>
                     </div>
 
-                    <details class="advanced-options">
-                        <summary>Advanced Options</summary>
-                        <div class="advanced-content">
-                            <div class="input-group" style="gap: 15px; margin-bottom: 15px;">
-                                <div style="flex: 1; display: flex; flex-direction: column;">
-                                    <label for="startTime" class="micro-label">Start Time (e.g. 01:20)</label>
-                                    <input type="text" id="startTime" placeholder="00:00" style="width: 100%; box-sizing: border-box;">
-                                </div>
-                                <div style="flex: 1; display: flex; flex-direction: column;">
-                                    <label for="endTime" class="micro-label">End Time (e.g. 05:45)</label>
-                                    <input type="text" id="endTime" placeholder="Optional" style="width: 100%; box-sizing: border-box;">
-                                </div>
-                            </div>
-                            
-                            <div style="display: flex; flex-direction: column;">
-                                <label for="emailInput" class="micro-label">Email Delivery</label>
-                                <input type="email" id="emailInput" placeholder="Enter email for ZIP link..." style="width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px;">
-                                <p class="secure-note" style="margin-top: 8px;">
-                                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                                    We'll email a secure download link.
-                                </p>
-                            </div>
-                        </div>
-                    </details>
+                    <button class="advanced-btn" onclick="openModal('advancedModal'); return false;" aria-label="Open advanced options">
+                        ⚙️ Advanced
+                    </button>
                 </div>
 
                 <div class="button-group secondary-actions" style="display: none; margin-top: 15px; gap: 12px;" id="actionGroup">
@@ -146,6 +125,35 @@
             </footer>
         </div>
     </main>
+
+    <div id="advancedModal" class="modal" role="dialog" aria-labelledby="advancedTitle" aria-hidden="true">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('advancedModal')" aria-label="Close modal">&times;</span>
+            <h2 id="advancedTitle">Advanced Options</h2>
+            
+            <div class="input-group" style="display: flex; gap: 15px; margin-bottom: 20px; margin-top: 15px;">
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                    <label for="startTime" class="micro-label">Start Time (e.g. 01:20)</label>
+                    <input type="text" id="startTime" placeholder="00:00" style="width: 100%; box-sizing: border-box;">
+                </div>
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                    <label for="endTime" class="micro-label">End Time (e.g. 05:45)</label>
+                    <input type="text" id="endTime" placeholder="Optional" style="width: 100%; box-sizing: border-box;">
+                </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; margin-bottom: 10px;">
+                <label for="emailInput" class="micro-label">Email Delivery</label>
+                <input type="email" id="emailInput" placeholder="Enter email for ZIP link..." style="width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px;">
+                <p class="secure-note" style="margin-top: 8px;">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    We'll email a secure download link.
+                </p>
+            </div>
+
+            <button onclick="closeModal('advancedModal')" style="width: 100%; padding: 12px; background: #2980b9; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px;">Save & Close</button>
+        </div>
+    </div>
 
     <div id="aboutModal" class="modal" role="dialog" aria-labelledby="aboutTitle" aria-hidden="true">
         <div class="modal-content">
