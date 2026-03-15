@@ -1,69 +1,40 @@
 import os
 from yt_dlp import YoutubeDL
 
-# Top 50 Platforms
-# We heavily use "skip_test": True for sites that block GitHub's datacenter IPs 
-# or where finding a permanent, un-deletable test URL is difficult.
+# Top 25 Platforms
 PLATFORMS_TO_TEST = {
     # --- Major Video & Social ---
     "YouTube": {"desc": "Public videos, music tracks, Shorts, and podcasts.", "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw", "skip_test": False},
     "Vimeo": {"desc": "Publicly accessible videos.", "url": "https://vimeo.com/76979871", "skip_test": False},
-    "TikTok": {"desc": "Public videos and trending sounds.", "url": "https://www.tiktok.com/@tiktok/video/7106594312292453675", "skip_test": True},
-    "Instagram": {"desc": "Public Reels and video posts.", "url": "https://www.instagram.com/p/C0O-1234567/", "skip_test": True},
-    "Facebook": {"desc": "Publicly shared videos and Watch content.", "url": "https://www.facebook.com/facebook/videos/1234567/", "skip_test": True},
-    "Twitter / X": {"desc": "Embedded video clips and public Spaces.", "url": "https://twitter.com/X/status/123456789", "skip_test": True},
-    "Reddit": {"desc": "Native video and audio embeds.", "url": "https://www.reddit.com/r/videos/comments/1/", "skip_test": True},
-    "Twitch": {"desc": "Public Clips and VODs.", "url": "https://www.twitch.tv/videos/123456789", "skip_test": True},
-    "Dailymotion": {"desc": "Public video uploads.", "url": "https://www.dailymotion.com/video/x8l31w1", "skip_test": True},
-    "Rumble": {"desc": "Public video uploads and streams.", "url": "https://rumble.com/c/c-12345", "skip_test": True},
+    "TikTok": {"desc": "Public videos and trending sounds.", "url": "https://www.tiktok.com/@tiktok/video/7106594312292453675", "skip_test": False},
+    "Instagram": {"desc": "Public Reels and video posts.", "url": "https://www.instagram.com/p/C0O-1234567/", "skip_test": False},
+    "Facebook": {"desc": "Publicly shared videos and Watch content.", "url": "https://www.facebook.com/facebook/videos/1234567/", "skip_test": False},
+    "Twitter / X": {"desc": "Embedded video clips and public Spaces.", "url": "https://twitter.com/X/status/123456789", "skip_test": False},
+    "Reddit": {"desc": "Native video and audio embeds.", "url": "https://www.reddit.com/r/videos/comments/1/", "skip_test": False},
+    "Twitch": {"desc": "Public Clips and VODs.", "url": "https://www.twitch.tv/videos/123456789", "skip_test": False},
+    "Dailymotion": {"desc": "Public video uploads.", "url": "https://www.dailymotion.com/video/x8l31w1", "skip_test": False},
+    "Rumble": {"desc": "Public video uploads and streams.", "url": "https://rumble.com/c/c-12345", "skip_test": False},
 
     # --- Audio & Music ---
     "SoundCloud": {"desc": "Individual tracks, mixes, and public playlists.", "url": "https://soundcloud.com/soundcloud/sets/soundcloud-weekly", "skip_test": True},
     "Bandcamp": {"desc": "Public tracks and albums.", "url": "https://bandcamp.com/track/1", "skip_test": False},
-    "Mixcloud": {"desc": "DJ mixes, radio shows, and podcasts.", "url": "https://www.mixcloud.com/Mixcloud/", "skip_test": True},
-    "Audiomack": {"desc": "Music streams and mixtapes.", "url": "https://audiomack.com/song/1", "skip_test": True},
-    "ReverbNation": {"desc": "Indie music tracks.", "url": "https://www.reverbnation.com/1", "skip_test": True},
-    "Freesound": {"desc": "Creative Commons audio samples.", "url": "https://freesound.org/people/1/sounds/1/", "skip_test": True},
-    "Apple Podcasts": {"desc": "Public web player podcast episodes.", "url": "https://podcasts.apple.com/us/podcast/1", "skip_test": True},
-    "TuneIn": {"desc": "Archived podcast episodes.", "url": "https://tunein.com/podcasts/1", "skip_test": True},
-    "iHeartRadio": {"desc": "Publicly available podcast streams.", "url": "https://www.iheart.com/podcast/1", "skip_test": True},
-    "Patreon": {"desc": "Public, unlocked audio and video posts.", "url": "https://www.patreon.com/posts/1", "skip_test": True},
+    "Mixcloud": {"desc": "DJ mixes, radio shows, and podcasts.", "url": "https://www.mixcloud.com/Mixcloud/", "skip_test": False},
+    "Audiomack": {"desc": "Music streams and mixtapes.", "url": "https://audiomack.com/song/1", "skip_test": False},
+    "ReverbNation": {"desc": "Indie music tracks.", "url": "https://www.reverbnation.com/1", "skip_test": False},
 
-    # --- Education & Talks ---
+    # --- Education, News & Media ---
     "TED": {"desc": "TED Talks and educational lectures.", "url": "https://www.ted.com/talks/ken_robinson_says_schools_kill_creativity", "skip_test": False},
-    "Khan Academy": {"desc": "Educational tutorials and course videos.", "url": "https://www.khanacademy.org/math/algebra", "skip_test": True},
-    "MIT OpenCourseWare": {"desc": "Public university lecture videos.", "url": "https://ocw.mit.edu/courses/1", "skip_test": True},
-    "Coursera": {"desc": "Public course previews and lecture samples.", "url": "https://www.coursera.org/learn/1", "skip_test": True},
-    "Udemy": {"desc": "Free course previews and promotional videos.", "url": "https://www.udemy.com/course/1/", "skip_test": True},
-    "Stanford Online": {"desc": "Public lecture snippets and courses.", "url": "https://online.stanford.edu/courses/1", "skip_test": True},
-    "PBS": {"desc": "Public broadcasting documentaries and clips.", "url": "https://www.pbs.org/video/1/", "skip_test": True},
-    "NPR": {"desc": "National Public Radio stories and podcasts.", "url": "https://www.npr.org/2024/1/1/1/", "skip_test": True},
-    "BBC": {"desc": "Public news clips and documentaries.", "url": "https://www.bbc.co.uk/news/1", "skip_test": True},
-    "C-SPAN": {"desc": "Government proceedings and public affairs video.", "url": "https://www.c-span.org/video/?1", "skip_test": True},
-
-    # --- News & Media ---
-    "CNN": {"desc": "News clips and video reports.", "url": "https://www.cnn.com/videos/1", "skip_test": True},
-    "Fox News": {"desc": "News clips and broadcast segments.", "url": "https://video.foxnews.com/v/1", "skip_test": True},
-    "The New York Times": {"desc": "Embedded article videos and mini-docs.", "url": "https://www.nytimes.com/video/1", "skip_test": True},
-    "The Washington Post": {"desc": "Embedded news video coverage.", "url": "https://www.washingtonpost.com/video/1", "skip_test": True},
-    "The Guardian": {"desc": "News video and documentary shorts.", "url": "https://www.theguardian.com/video/1", "skip_test": True},
-    "Reuters": {"desc": "Global news agency video reports.", "url": "https://www.reuters.com/video/1", "skip_test": True},
-    "Vice": {"desc": "Documentaries and investigative reports.", "url": "https://www.vice.com/en/video/1", "skip_test": True},
-    "Buzzfeed": {"desc": "Entertainment and news video embeds.", "url": "https://www.buzzfeed.com/video/1", "skip_test": True},
-    "ABC News": {"desc": "Broadcast clips and news segments.", "url": "https://abcnews.go.com/video/1", "skip_test": True},
-    "NBC News": {"desc": "Broadcast clips and news segments.", "url": "https://www.nbcnews.com/video/1", "skip_test": True},
+    "Khan Academy": {"desc": "Educational tutorials and course videos.", "url": "https://www.khanacademy.org/math/algebra", "skip_test": False},
+    "PBS": {"desc": "Public broadcasting documentaries and clips.", "url": "https://www.pbs.org/video/1/", "skip_test": False},
+    "NPR": {"desc": "National Public Radio stories and podcasts.", "url": "https://www.npr.org/2024/1/1/1/", "skip_test": False},
+    "BBC": {"desc": "Public news clips and documentaries.", "url": "https://www.bbc.co.uk/news/1", "skip_test": False},
+    "CNN": {"desc": "News clips and video reports.", "url": "https://www.cnn.com/videos/1", "skip_test": False},
 
     # --- Misc & Specialty ---
     "Internet Archive": {"desc": "Archived audio, video, and historical media.", "url": "https://archive.org/details/CEP114", "skip_test": False},
-    "Kickstarter": {"desc": "Project pitch videos.", "url": "https://www.kickstarter.com/projects/1/1", "skip_test": True},
-    "Indiegogo": {"desc": "Campaign and product demonstration videos.", "url": "https://www.indiegogo.com/projects/1", "skip_test": True},
-    "Imgur": {"desc": "GIFs with sound and short video uploads.", "url": "https://imgur.com/gallery/1", "skip_test": True},
-    "Streamable": {"desc": "Short-form video hosting clips.", "url": "https://streamable.com/1", "skip_test": True},
-    "Odysee": {"desc": "Blockchain-based video sharing.", "url": "https://odysee.com/@1:1/1:1", "skip_test": True},
-    "PeerTube": {"desc": "Decentralized video platform instances.", "url": "https://peertube.tv/w/1", "skip_test": True},
-    "VK": {"desc": "Public videos and audio tracks.", "url": "https://vk.com/video-1_1", "skip_test": True},
-    "Pinterest": {"desc": "Video pins and tutorial clips.", "url": "https://www.pinterest.com/pin/1/", "skip_test": True},
-    "ESPN": {"desc": "Sports highlights and analysis clips.", "url": "https://www.espn.com/video/clip/_/id/1", "skip_test": True}
+    "Kickstarter": {"desc": "Project pitch videos.", "url": "https://www.kickstarter.com/projects/1/1", "skip_test": False},
+    "Imgur": {"desc": "GIFs with sound and short video uploads.", "url": "https://imgur.com/gallery/1", "skip_test": False},
+    "Streamable": {"desc": "Short-form video hosting clips.", "url": "https://streamable.com/1", "skip_test": False}
 }
 
 def check_platform(name, data):
@@ -98,7 +69,7 @@ def generate_html(supported_platforms):
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supported Platforms | MP3aud.io</title>
-    <meta name="description" content="A list of the top 50 platforms currently supported by MP3aud.io for audio extraction.">
+    <meta name="description" content="A list of the top 25 platforms currently supported by MP3aud.io for audio extraction.">
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
     <meta name="theme-color" content="#FF5500">
@@ -106,7 +77,8 @@ def generate_html(supported_platforms):
 </head>
 <body>
     <main>
-        <div class="container" style="max-width: 600px;"> <div class="utility-bar">
+        <div class="container" style="max-width: 600px;"> 
+            <div class="utility-bar">
                 <div class="social-icons">
                     <a href="https://www.instagram.com/mp3aud.io?igsh=ZXljNzMxaGtqdWwz&utm_source=qr" target="_blank" aria-label="Follow us on Instagram">
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
@@ -125,7 +97,7 @@ def generate_html(supported_platforms):
                 <a href="index.html">
                     <img src="logo.png" alt="MP3aud.io - Media Tools" class="main-logo" style="max-width: 240px; margin-bottom: 10px;">
                 </a>
-                <h1 class="main-headline">Top 50 Supported Platforms</h1>
+                <h1 class="main-headline">Top 25 Supported Platforms</h1>
                 <p class="h1-subtext">Our extraction technology supports over 1,000 websites. Below is an alphabetical list of the most popular platforms you can process today.</p>
             </header>
                       
@@ -155,7 +127,7 @@ def generate_html(supported_platforms):
     
     with open("supported-sites.html", "w", encoding="utf-8") as file:
         file.write(html_content)
-    print("\n✅ Successfully updated supported-sites.html with 50 platforms.")
+    print("\n✅ Successfully updated supported-sites.html with 25 platforms.")
 
 if __name__ == "__main__":
     print("Starting platform health check...\n")
