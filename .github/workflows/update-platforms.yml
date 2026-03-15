@@ -1,15 +1,16 @@
 name: Update Supported Platforms
 
 on:
-  # Runs automatically at midnight every Sunday
   schedule:
     - cron: '0 0 * * 0' 
-  # Adds a button to the GitHub UI so you can run it manually anytime
   workflow_dispatch: 
 
-# Grants the action permission to push the updated HTML file back to your repo
 permissions:
   contents: write 
+
+# Opts into Node.js 24 early to silence the deprecation warning
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   update-html:
@@ -34,12 +35,9 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          # Set up bot identity for the commit
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Stage the newly named HTML file
           git add supported-sites.html
           
-          # Check if there are actual changes. If yes, commit and push. If no, do nothing.
           git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update supported-sites.html with active platforms" && git push)
