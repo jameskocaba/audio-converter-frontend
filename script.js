@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
         actionGroup.style.display = 'flex';
         cancelBtn.classList.remove('hidden');
         
-        statusDiv.innerHTML = `<div class="spinner"></div><p>Starting...</p>`;
+        statusDiv.innerHTML = `<div class="spinner"></div><p>Spinning up the server. Please be patient...</p>`;
         downloadArea.classList.add('hidden');
         thumbnailContainer.classList.add('hidden');
         progressBar.classList.add('hidden');
