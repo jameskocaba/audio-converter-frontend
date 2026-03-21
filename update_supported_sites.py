@@ -1,5 +1,6 @@
 import os
 import time
+from datetime import datetime
 from yt_dlp import YoutubeDL
 
 # Top 50 Platforms with Stable, Hardcoded URLs
@@ -81,11 +82,9 @@ def check_platform(name, data):
         return True
     except Exception as e:
         error_msg = str(e)
-        # Check specifically for a 403 Forbidden status
         if '403' in error_msg or 'Forbidden' in error_msg or 'HTTP Error 403' in error_msg:
             print(f"  🚨 {name} returned a 403 Forbidden error. Removing from supported list.")
         else:
-            # For 404s, geo-blocks, or other generic failures
             print(f"  ❌ {name} failed or is currently blocked. Removing from supported list.")
         return False
 
@@ -93,6 +92,9 @@ def generate_html(supported_platforms):
     list_items_html = ""
     for name, desc in supported_platforms.items():
         list_items_html += f"                    <li><strong>{name}</strong> &ndash; {desc}</li>\n"
+
+    # Grab the current UTC time to stamp the file
+    current_time = datetime.now().strftime("%B %d, %Y at %H:%M UTC")
 
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
@@ -145,12 +147,13 @@ def generate_html(supported_platforms):
                 </div>
             </section>
 
-            <footer style="margin-top: 30px;">
+            <footer style="margin-top: 30px; text-align: center; font-size: 0.85rem; color: #64748b;">
                 <p>&copy; 2026 MP3aud.io. All Rights Reserved.</p>
                 <nav class="footer-links" aria-label="Footer navigation">
                     <a href="index.html">Home</a> | 
                     <a href="mailto:jameskocaba@gmail.com">Contact</a>
                 </nav>
+                <p style="margin-top: 15px; font-size: 0.75rem;"><em>Status List Last Auto-Updated: {current_time}</em></p>
             </footer>
         </div>
     </main>
@@ -175,7 +178,6 @@ if __name__ == "__main__":
         else:
             is_working = check_platform(platform_name, data)
             if is_working:
-                # Only add to the final dictionary if it didn't crash/403
                 active_platforms[platform_name] = data['desc']
             
             # Add a 1-second delay between requests to avoid rate limiting
