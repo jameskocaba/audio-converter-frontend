@@ -111,4 +111,84 @@ def generate_html(supported_platforms):
 </head>
 <body>
     <main>
-        <div class="container" style="max-width
+        <div class="container" style="max-width: 600px;"> 
+            <div class="utility-bar">
+                <div class="social-icons">
+                    <a href="https://www.instagram.com/mp3aud.io?igsh=ZXljNzMxaGtqdWwz&utm_source=qr" target="_blank" aria-label="Follow us on Instagram">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </a>
+                </div>
+                
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <a href="index.html" style="font-size: 0.9rem; font-weight: 600; color: #64748b; text-decoration: none; display: flex; align-items: center; gap: 4px; transition: color 0.2s ease;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        Back
+                    </a>
+                </div>
+            </div>
+
+            <header class="logo-container">
+                <a href="index.html">
+                    <img src="logo.png" alt="MP3aud.io - Media Tools" class="main-logo" style="max-width: 240px; margin-bottom: 10px;">
+                </a>
+                <h1 class="main-headline">Top Supported Platforms</h1>
+                <p class="h1-subtext">Our extraction technology supports over 1,000 websites. Below is an alphabetical list of the most popular platforms you can process today.</p>
+            </header>
+                      
+            <section aria-label="Supported Websites" style="text-align: left; margin-top: 10px;">
+                <ol style="padding-left: 20px; color: #334155; line-height: 1.8; font-size: 0.90rem; margin-bottom: 30px;">
+{list_items_html}                </ol>
+
+                <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 15px; border-radius: 8px; font-size: 0.85rem; color: #1e40af; line-height: 1.5;">
+                    <p style="margin: 0; display: flex; align-items: flex-start; gap: 8px;">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        <strong>Note on Restrictions:</strong> Platforms that utilize heavy DRM (such as Spotify, Apple Music, and Netflix) are strictly protected and cannot be processed.
+                    </p>
+                </div>
+            </section>
+
+            <footer style="margin-top: 30px; text-align: center; font-size: 0.85rem; color: #64748b;">
+                <p>&copy; 2026 MP3aud.io. All Rights Reserved.</p>
+                <nav class="footer-links" aria-label="Footer navigation">
+                    <a href="index.html">Home</a> | 
+                    <a href="mailto:jameskocaba@gmail.com">Contact</a>
+                </nav>
+                <p style="margin-top: 15px; font-size: 0.75rem;"><em>Status List Last Auto-Updated: {current_time}</em></p>
+            </footer>
+        </div>
+    </main>
+</body>
+</html>"""
+    
+    with open("supported-sites.html", "w", encoding="utf-8") as file:
+        file.write(html_content)
+    print(f"\n✅ Successfully updated supported-sites.html. Filtered down to {len(supported_platforms)} active platforms.")
+
+if __name__ == "__main__":
+    print("Starting platform health check...\n")
+    active_platforms = {}
+    
+    for platform_name, data in PLATFORMS_TO_TEST.items():
+        if data.get("skip_test", False):
+            print(f"Skipping test for {platform_name} (Forced inclusion). Adding to list.")
+            active_platforms[platform_name] = data['desc']
+        else:
+            is_working = check_platform(platform_name, data)
+            if is_working:
+                active_platforms[platform_name] = data['desc']
+            
+            # Add a 1-second delay between requests to avoid rate limiting
+            time.sleep(1)
+            
+    # Restructure active_platforms: Ensure SoundCloud is first, then sort the rest alphabetically
+    ordered_platforms = {}
+    
+    # 1. Pop SoundCloud and place it at the very top (if it successfully validated)
+    if "SoundCloud" in active_platforms:
+        ordered_platforms["SoundCloud"] = active_platforms.pop("SoundCloud")
+        
+    # 2. Sort the remaining platforms alphabetically and append them
+    for key in sorted(active_platforms.keys()):
+        ordered_platforms[key] = active_platforms[key]
+        
+    generate_html(ordered_platforms)
