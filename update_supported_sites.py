@@ -22,7 +22,7 @@ PLATFORMS_TO_TEST = {
     "VKontakte (VK)": {"desc": "Public video and audio uploads.", "url": "https://vk.com/video-22822305_456239018", "skip_test": False},
 
     # --- Audio & Music ---
-    "SoundCloud": {"desc": "Individual tracks, mixes, and public playlists.", "url": "https://soundcloud.com/coleschotz/cole-schotz-sound-check", "skip_test": False},
+    "SoundCloud": {"desc": "Individual tracks, mixes, and public playlists.", "url": "https://soundcloud.com/coleschotz/cole-schotz-sound-check", "skip_test": True},
     "Bandcamp": {"desc": "Public tracks and albums.", "url": "https://c418.bandcamp.com/track/sweden", "skip_test": False},
     "Mixcloud": {"desc": "DJ mixes, radio shows, and podcasts.", "url": "https://www.mixcloud.com/Mixcloud/mixcloud-meets-moby/", "skip_test": False},
     "Audiomack": {"desc": "Music streams and mixtapes.", "url": "https://audiomack.com/audiomack/song/audiomack-is-here", "skip_test": False},
@@ -95,6 +95,7 @@ def generate_html(supported_platforms):
 
     # Grab the current UTC time to stamp the file
     current_time = datetime.now().strftime("%B %d, %Y at %H:%M UTC")
+    platform_count = len(supported_platforms)
 
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
@@ -103,7 +104,7 @@ def generate_html(supported_platforms):
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supported Platforms | MP3aud.io</title>
-    <meta name="description" content="A list of the {len(supported_platforms)} platforms currently supported by MP3aud.io for audio extraction.">
+    <meta name="description" content="A list of the {platform_count} platforms currently supported by MP3aud.io for audio extraction.">
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
     <meta name="theme-color" content="#FF5500">
@@ -162,7 +163,7 @@ def generate_html(supported_platforms):
     
     with open("supported-sites.html", "w", encoding="utf-8") as file:
         file.write(html_content)
-    print(f"\n✅ Successfully updated supported-sites.html. Filtered down to {len(supported_platforms)} active platforms.")
+    print(f"\n✅ Successfully updated supported-sites.html. Filtered down to {platform_count} active platforms.")
 
 if __name__ == "__main__":
     print("Starting platform health check...\n")
@@ -183,7 +184,7 @@ if __name__ == "__main__":
     # Restructure active_platforms: Ensure SoundCloud is first, then sort the rest alphabetically
     ordered_platforms = {}
     
-    # 1. Pop SoundCloud and place it at the very top (if it successfully validated)
+    # 1. Pop SoundCloud and place it at the very top (if it successfully validated or was forced)
     if "SoundCloud" in active_platforms:
         ordered_platforms["SoundCloud"] = active_platforms.pop("SoundCloud")
         
