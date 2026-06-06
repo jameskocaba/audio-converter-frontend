@@ -5,11 +5,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SoundCloud to MP3 | Convert, Zip & Backup Playlists | MP3aud.io</title>
-    <meta name="title" content="SoundCloud to MP3 | Convert, Zip & Backup Playlists | MP3aud.io">
-    
+    <title>SoundCloud to MP3 | Convert, Zip & Backup Playlists for Free | MP3aud.io</title>
+    <meta name="title" content="SoundCloud to MP3 | Convert, Zip & Backup Playlists for Free| MP3aud.io">
     <meta name="description" content="Fast and free tool to convert SoundCloud tracks and playlists to MP3. Zip your favorite music for easy backup and offline listening. No registration required.">
-    
     <meta name="keywords" content="SoundCloud downloader, SoundCloud to MP3, AI meeting minutes generator, high-fidelity audio extractor, batch MP3 downloader, AI audio transcriber, SoundCloud playlist converter, meeting action items">
     <meta name="author" content="MP3aud.io">
     <meta name="robots" content="index, follow">
@@ -36,7 +34,7 @@
     <meta name="theme-color" content="#FF5500">
 
     <link rel="preconnect" href="https://www.googletagmanager.com">
-    <link rel="dns-prefetch" href="https://audio-converter-backend.onrender.com">
+    <link rel="dns-prefetch" href="https://mp3audio-staging.onrender.com">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-VGVP90K1M4"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -95,14 +93,14 @@
             </div>
 
             <header class="logo-container">
-            <img src="logo.png" alt="MP3aud.io - Free SoundCloud to MP3 Converter and AI Transcriber" class="main-logo" style="max-width: 240px;">
-    
-            <h1 class="main-headline">Soundcloud Playlist and Audio Media Converter</h1>
-    
-           <p class="h1-subtext">Skip the ad-heavy downloaders. Securely archive high-fidelity MP3s from SoundCloud, batch convert entire playlists, and turn meeting URLs into actionable minutes. Keep this tab open during conversion or enter email (advanced settings) for zip file. To conserve server bandwidth and prepare for the future fee based model, free conversions are now limited to five (5) tracks per playlist. <br><br> <strong>Update: To keep the servers running as traffic grows, we’re moving soon to a minimal fee model. Up to five (5) conversions are always free; after that, a small crypto-payment applies.</strong></p>
-           </header>
-                      
-            <section aria-label="Conversion tool">
+                <img src="logo.png" alt="MP3aud.io - Free SoundCloud to MP3 Converter and AI Transcriber" class="main-logo" style="max-width: 240px;">
+                <h1 class="main-headline">Free SoundCloud to MP3 Converter & Playlist Downloader</h1>
+                <h2 class="h1-subtext" style="font-weight: 400; margin-top: 0;">Securely archive high-fidelity MP3s, <strong>batch convert SoundCloud playlists</strong>, and turn audio URLs into actionable AI meeting minutes. Up to five (5) track conversions are always free. Thousands of sites supported. <em>Guest users must keep this tab open while conversions process.</em></h2>
+            </header>
+            
+            <div id="urlMessage" class="hidden"></div>
+
+            <section id="conversionToolContainer" class="process-card" aria-label="Conversion tool" style="margin-top: 10px;">
                 
                 <div class="unified-search-bar">
                     <input type="text" id="urlInput" placeholder="Paste URL here..." aria-label="Media URL input" autocomplete="off">
@@ -143,9 +141,37 @@
 
                 <div id="downloadArea" class="hidden">
                     <div class="download-separator"></div>
+                    <div id="conversionSummary"></div>
+                    
                     <ul id="downloadList"></ul>
                 </div>
             </section>
+
+            <div id="userDashboard" class="dashboard-box hidden">
+                <div class="dashboard-header">
+                    <span style="font-size: 0.85rem; color: #64748b;">Status: <strong id="userEmailDisplay" style="color: #1e293b;">...</strong></span>
+                    <button id="logoutBtn" class="text-btn hidden">Logout</button>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-pill">Paid Credits: <strong id="paidCreditsDisplay">0</strong></div>
+                </div>
+
+                <button id="buyCreditsBtn" class="premium-btn hidden">Buy 350 Credits for $5.00</button>
+                <div id="billingMessage" style="font-size: 0.85rem; color: #ef4444; font-weight: bold; margin-top: 10px; display: none;"></div>
+            </div>
+
+            <div id="loginFormContainer" class="auth-box" style="border: 2px solid #fde68a; background: #fffbeb; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.15); margin-top: 30px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="#d97706" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    <h3 style="margin: 0; color: #92400e; font-size: 1.15rem; font-weight: 800;">Log In & Buy Credits</h3>
+                </div>
+                <p style="font-size: 0.9rem; color: #92400e; margin-bottom: 18px; line-height: 1.5;"><strong>Need more than 5 tracks?</strong> Enter your email below to receive a secure login link. Once inside, you can purchase credits with crypto (350 tracks for $5.00) or check your existing balance. <br><br><em>Please note: All crypto sales are final. Because cryptocurrency transactions are completed on the blockchain and cannot be reversed, we do not offer automated chargebacks or simple reversals.</em></p>
+                <div class="unified-search-bar" style="margin-bottom: 5px; border-color: #fcd34d;">
+                    <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email" style="background: white;">
+                    <button id="sendLinkBtn" style="background: linear-gradient(90deg, #f59e0b 0%, #ea580c 100%);">Send Login Link</button>
+                </div>
+                <div id="authMessage" style="font-size: 0.85rem; font-weight: bold; text-align: center; margin-top: 10px;"></div>
+            </div>
 
             <footer>
                 <p>&copy; 2026 MP3aud.io. All Rights Reserved.</p>
@@ -175,15 +201,6 @@
                     <input type="text" id="endTime" placeholder="Optional" style="width: 100%; box-sizing: border-box;">
                 </div>
             </div>
-            
-            <div style="display: flex; flex-direction: column; margin-bottom: 10px;">
-                <label for="emailInput" class="micro-label">Email Delivery</label>
-                <input type="email" id="emailInput" placeholder="Enter email for ZIP link..." style="width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px;">
-                <p class="secure-note" style="margin-top: 8px;">
-                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    We'll email a secure download link.
-                </p>
-            </div>
 
             <button onclick="closeModal('advancedModal')" style="width: 100%; padding: 12px; background: #2980b9; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px;">Save & Close</button>
         </div>
@@ -192,7 +209,7 @@
     <div id="aboutModal" class="modal" role="dialog" aria-labelledby="aboutTitle" aria-hidden="true">
         <div class="modal-content">
             <span class="close" onclick="closeModal('aboutModal')" aria-label="Close modal">&times;</span>
-            <h2 id="aboutTitle">About MP3aud.io</h2>
+            <h2 id="aboutTitle">About MP3aud.io - Audio Extractor & AI Transcriber</h2>
             <p>MP3aud.io was originally developed as a specialized utility for digital audio preservation, ensuring your favorite media is securely archived offline. Today, it has evolved into a comprehensive media processing suite. Alongside high-fidelity MP3 extraction, we now offer advanced AI-powered transcription and formatting.</p>
             <p>Whether you are saving a music playlist, extracting a specific clip using our timestamp tools, or converting a recorded meeting or DIY tutorial into structured HTML notes, MP3aud.io handles it all in the cloud. We believe in "Media Permanence" and accessibility, providing a fast, browser-based, and privacy-focused tool to securely build your digital library and text archives.</p>
         </div>
@@ -211,11 +228,11 @@
             <h3>4. What audio quality are the MP3 backups?</h3>
             <p>We prioritize audio fidelity. Our tool attempts to capture the highest available bitrate provided by the shareable link (typically 128kbps).</p>
             <h3>5. How many files can I convert at once?</h3>
-            <p>You can process up to 50 files per playlist URL. Files are processed sequentially to ensure maximum reliability.</p>
+            <p>You can always process up to five (5) tracks completely for free. Additionally, with a $5.00 cryptocurrency payment, you can process up to 350 files per playlist URL. Paid users get top priority and skip the queue. Otherwise, files are processed sequentially to ensure maximum reliability.</p>
             <h3>6. Do I need to keep the browser tab open?</h3>
-            <p>If you enter your email address in the Advanced Options before converting, you do not need to keep the tab open. We will email you a secure download link once your ZIP file is ready. Note: <strong>This link automatically expires after 1 hour</strong>.</p>
+            <p>If you are signed into an account, you do not need to keep the tab open. We will automatically email you a secure download link once your ZIP file is ready. Note: <strong>This link automatically expires after 1 hour</strong>.</p>
             <h3>7. How long will my conversion take?</h3>
-            <p>Because processing high-quality audio and running AI transcription is resource-intensive, conversions are handled in a queue. If the server is busy, you will be given a queue position and an estimated wait time.</p>
+            <p>Because processing high-quality audio and running AI transcription is resource-intensive, conversions are handled in a queue. If the server is busy, you will be given a queue position and an estimated wait time. <strong>Premium Priority:</strong> Jobs processed using paid credits automatically skip ahead of free users in the queue.</p>
         </div>
     </div>
 
@@ -314,6 +331,7 @@
             }
         }
     </script>
-    <script src="script.js?v=2"></script>
+    
+    <script src="script.js?v=6"></script>
 </body>
 </html>
