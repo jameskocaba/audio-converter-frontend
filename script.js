@@ -82,6 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const urlParams = new URLSearchParams(window.location.search);
+
     // --- STRIPE CHECKOUT REDIRECT HANDLER ---
     const successParam = urlParams.get('success');
     const canceledParam = urlParams.get('canceled');
@@ -299,7 +301,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- MAGIC LINK VERIFICATION ---
-    const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
 
     if (token) {
