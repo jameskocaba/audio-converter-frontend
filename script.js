@@ -42,9 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadList = document.getElementById('downloadList');
     const conversionSummary = document.getElementById('conversionSummary'); 
 
-    // Point this to your staging backend URL
-    // Ensure this EXACTLY matches your Render web service URL
-    const BACKEND_URL = 'https://mp3audio-staging.onrender.com'; 
+    // Point this to your PRODUCTION backend URL
+    // Ensure this EXACTLY matches your Render PROD web service URL
+    const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
     let currentSessionId = null;
     let pollTimeout = null;
     let isGuestUser = true;
@@ -358,6 +358,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         authMessage.textContent = '';
                     }
                     showToast('Link sent! Check your email inbox.', 'success');
+                    sendLinkBtn.disabled = false;
+                    sendLinkBtn.textContent = 'Send Link';
                 } else {
                     showToast('Failed to send link.', 'error');
                     sendLinkBtn.disabled = false;
