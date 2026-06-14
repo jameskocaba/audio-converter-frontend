@@ -350,9 +350,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
+                console.log("Attempting to send magic link to:", `${BACKEND_URL}/auth/login`);
                 const response = await fetch(`${BACKEND_URL}/auth/login`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email })
                 });
+                
+                console.log("Backend Response Status:", response.status);
+
                 if (response.ok) {
                     if (authMessage) {
                         authMessage.textContent = '';
@@ -361,11 +365,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     sendLinkBtn.disabled = false;
                     sendLinkBtn.textContent = 'Send Link';
                 } else {
-                    showToast('Failed to send link.', 'error');
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error("Backend Error Data:", errorData);
+                    showToast(errorData.error || 'Failed to send link.', 'error');
                     sendLinkBtn.disabled = false;
                     sendLinkBtn.textContent = 'Send Link';
                 }
             } catch (error) {
+                console.error("Fetch/Network Error:", error);
                 showToast('Network error. Try again.', 'error');
                 sendLinkBtn.disabled = false;
                 sendLinkBtn.textContent = 'Send Link';
