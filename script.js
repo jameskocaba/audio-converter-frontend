@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- GLOBAL DRAG PREVENT DEFAULT ---
+    // This prevents the browser from accidentally opening dropped files if dropped outside the target zone
+    window.addEventListener('dragover', (e) => e.preventDefault(), false);
+    window.addEventListener('drop', (e) => e.preventDefault(), false);
+
     // 1. User Dashboard & Auth UI Elements
     const userDashboard = document.getElementById('userDashboard');
     const loginFormContainer = document.getElementById('loginFormContainer');
@@ -10,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const paidCreditsDisplay = document.getElementById('paidCreditsDisplay');
     const logoutBtn = document.getElementById('logoutBtn');
     const buyCreditsBtn = document.getElementById('buyCreditsBtn');
+    const subscribeBtn = document.getElementById('subscribeBtn');
     const billingMessage = document.getElementById('billingMessage');
     const urlMessage = document.getElementById('urlMessage');
 
@@ -18,6 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const startTimeInput = document.getElementById('startTime'); 
     const endTimeInput = document.getElementById('endTime');     
     const transcribeInput = document.getElementById('transcribeAudio'); 
+    const fileInput = document.getElementById('fileInput'); 
+    const increaseQualityInput = document.getElementById('increaseQuality');
+    const attachLyricsInput = document.getElementById('attachLyrics');
+    const organizeGenreInput = document.getElementById('organizeGenre');
+    const fileInputText = document.getElementById('fileInputText');
     const thumbnailContainer = document.getElementById('thumbnailContainer'); 
     const currentThumbnail = document.getElementById('currentThumbnail');     
     const convertBtn = document.getElementById('convertBtn');
@@ -31,8 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadList = document.getElementById('downloadList');
     const conversionSummary = document.getElementById('conversionSummary'); 
 
-    // Point this to your production backend URL
-    const BACKEND_URL = 'https://audio-converter-backend.onrender.com'; 
+    // Point this to your staging backend URL
+    // Ensure this EXACTLY matches your Render web service URL
+    const BACKEND_URL = 'https://mp3audio-staging.onrender.com'; 
     let currentSessionId = null;
     let pollTimeout = null;
     let isGuestUser = true;
@@ -70,6 +82,181 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- STRIPE CHECKOUT REDIRECT HANDLER ---
+    const successParam = urlParams.get('success');
+    const canceledParam = urlParams.get('canceled');
+    if (successParam) {
+        showToast('Payment successful! Your account has been updated.', 'success');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (canceledParam) {
+        showToast('Payment was canceled.', 'info');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // --- CUSTOM FILE INPUT UI ---
+    if (fileInput && fileInputText) {
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                // Enforce maximum file size limit instantly on selection
+                const MAX_PER_FILE_SIZE = 50 * 1024 * 1024; // 50MB in bytes
+                const oversizedFiles = Array.from(fileInput.files).filter(file => file.size > MAX_PER_FILE_SIZE);
+                
+                if (oversizedFiles.length > 0) {
+                    showToast('One or more files exceed the 50MB limit per track. Please select smaller files.', 'error');
+                    fileInput.value = ''; // Instantly clear the invalid selection
+                    fileInputText.textContent = 'Click to select files, or drag & drop here...';
+                    fileInputText.style.fontWeight = 'normal';
+                    fileInputText.style.color = '#64748b';
+                    return;
+                }
+
+                const fileCount = fileInput.files.length;
+                
+                // Calculate total size
+                let totalBytes = 0;
+                for (let i = 0; i < fileCount; i++) {
+                    totalBytes += fileInput.files[i].size;
+                }
+                
+                const formatSize = (bytes) => {
+                    if (bytes === 0) return '0 Bytes';
+                    const k = 1024;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                };
+                
+                const sizeText = formatSize(totalBytes);
+
+                // Check if a directory was selected by inspecting the path of the first file
+                const isDirectory = fileInput.files[0].webkitRelativePath !== "";
+                if (isDirectory && fileCount > 1) {
+                    fileInputText.textContent = `Folder with ${fileCount} files selected (${sizeText})`;
+                } else if (fileCount === 1) {
+                    fileInputText.textContent = `${fileInput.files[0].name} (${sizeText})`;
+                } else {
+                    fileInputText.textContent = `${fileCount} files selected (${sizeText})`;
+                }
+                fileInputText.style.fontWeight = '600';
+                fileInputText.style.color = '#1e293b';
+            } else {
+                // This case handles when the user opens the file dialog and cancels it.
+                fileInputText.textContent = 'Click to select files, or drag & drop here...';
+                fileInputText.style.fontWeight = 'normal';
+                fileInputText.style.color = '#64748b';
+            }
+        });
+    }
+
+    // --- DRAG AND DROP ZONE LOGIC ---
+    const dropZone = document.getElementById('dropZone');
+    if (dropZone && fileInput && fileInputText) {
+        // Add dragover and dragenter highlights
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.style.borderColor = '#2980b9';
+                dropZone.style.backgroundColor = 'rgba(41, 128, 185, 0.05)';
+            }, false);
+        });
+
+        // Remove highlight on leave
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.style.borderColor = '';
+                dropZone.style.backgroundColor = '';
+            }, false);
+        });
+
+        // Process dropped items
+        dropZone.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const items = e.dataTransfer.items;
+            const dtFiles = e.dataTransfer.files;
+            if (!items && !dtFiles) return;
+            
+            fileInputText.textContent = "Scanning dropped files...";
+            const files = [];
+            const queue = [];
+            
+            // Valid audio and video extensions/mime types to accept
+            const isValidMedia = (file) => {
+                if (!file || !file.name) return false;
+                if (file.name.startsWith('._')) return false; // Ignore macOS metadata files
+                if (file.type && typeof file.type === 'string' && (file.type.startsWith('audio/') || file.type.startsWith('video/'))) return true;
+                // Fallback for files without a recognized mime type
+                const ext = file.name.split('.').pop().toLowerCase();
+                const validExts = ['mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'm4b', 'm4r', 'm4v', 'wma', 'mp4', 'mov', 'avi', 'mkv', 'webm', 'ts', 'aiff', 'alac'];
+                return validExts.includes(ext);
+            };
+
+            // Helper to recursively read files and folders
+            const readEntry = (entry) => {
+                return new Promise((resolve, reject) => {
+                    if (entry.isFile) {
+                        entry.file(f => {
+                            if (isValidMedia(f)) files.push(f);
+                            resolve();
+                        }, err => reject(err));
+                    } else if (entry.isDirectory) {
+                        const reader = entry.createReader();
+                        reader.readEntries(async (entries) => {
+                            const promises = entries.map(e => readEntry(e).catch(() => {}));
+                            await Promise.all(promises);
+                            resolve();
+                        }, err => reject(err));
+                    } else {
+                        resolve();
+                    }
+                });
+            };
+
+            if (items && items.length > 0) {
+                // Scan all dropped items
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    
+                    if (item.kind === 'file') {
+                        if (typeof item.webkitGetAsEntry === 'function') {
+                            const entry = item.webkitGetAsEntry();
+                            if (entry) {
+                                queue.push(readEntry(entry).catch(() => {
+                                    const f = item.getAsFile();
+                                    if (f && isValidMedia(f)) files.push(f);
+                                }));
+                                continue;
+                            }
+                        }
+                        const f = item.getAsFile();
+                        if (f && isValidMedia(f)) files.push(f);
+                    }
+                }
+                await Promise.all(queue);
+            } else if (dtFiles && dtFiles.length > 0) {
+                for (let i = 0; i < dtFiles.length; i++) {
+                    if (isValidMedia(dtFiles[i])) files.push(dtFiles[i]);
+                }
+            }
+
+            if (files.length > 0) {
+                // Create a new DataTransfer to populate our file input programmatically
+                const dt = new DataTransfer();
+                files.forEach(f => dt.items.add(f));
+                fileInput.files = dt.files;
+                
+                // Trigger change event to update UI
+                fileInput.dispatchEvent(new Event('change'));
+            } else {
+                fileInputText.textContent = 'Click to select files, or drag & drop here...';
+                showToast('No valid audio or video files found in the dropped items.', 'error');
+            }
+        });
+    }
+
     // --- AUTHENTICATION LOGIC ---
     const checkAuth = async () => {
         if (conversionToolContainer) conversionToolContainer.classList.remove('hidden');
@@ -88,6 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (userEmailDisplay) userEmailDisplay.textContent = data.email;
                 if (logoutBtn) logoutBtn.classList.remove('hidden');
                 if (buyCreditsBtn) buyCreditsBtn.classList.remove('hidden');  
+                if (subscribeBtn) subscribeBtn.classList.remove('hidden');
                 if (loginFormContainer) loginFormContainer.classList.add('hidden'); 
             } else {
                 isGuestUser = true;
@@ -194,18 +382,52 @@ document.addEventListener('DOMContentLoaded', () => {
         buyCreditsBtn.addEventListener('click', async (e) => {
             if (e && e.preventDefault) e.preventDefault();
             buyCreditsBtn.disabled = true;
-            buyCreditsBtn.textContent = 'Generating Invoice...';
+            buyCreditsBtn.textContent = 'Processing...';
             try {
-                const response = await fetch(`${BACKEND_URL}/buy-credits`, { method: 'POST', credentials: 'include' });
+                const response = await fetch(`${BACKEND_URL}/create-checkout-session`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'credits' }),
+                    credentials: 'include' 
+                });
                 const data = await response.json();
-                if (response.ok && data.invoice_url) window.location.href = data.invoice_url;
+                if (response.ok && data.url) window.location.href = data.url;
                 else {
-                    showToast('Checkout error. Please try again later.', 'error');
+                    showToast(data.error || 'Checkout error. Please try again later.', 'error');
                     buyCreditsBtn.disabled = false;
+                    buyCreditsBtn.textContent = 'Buy Credits';
                 }
             } catch (error) {
                 showToast('Network error. Please try again.', 'error');
                 buyCreditsBtn.disabled = false;
+                buyCreditsBtn.textContent = 'Buy Credits';
+            }
+        });
+    }
+    
+    if (subscribeBtn) {
+        subscribeBtn.addEventListener('click', async (e) => {
+            if (e && e.preventDefault) e.preventDefault();
+            subscribeBtn.disabled = true;
+            subscribeBtn.textContent = 'Processing...';
+            try {
+                const response = await fetch(`${BACKEND_URL}/create-checkout-session`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'subscription' }),
+                    credentials: 'include' 
+                });
+                const data = await response.json();
+                if (response.ok && data.url) window.location.href = data.url;
+                else {
+                    showToast(data.error || 'Checkout error. Please try again later.', 'error');
+                    subscribeBtn.disabled = false;
+                    subscribeBtn.textContent = 'Subscribe Now';
+                }
+            } catch (error) {
+                showToast('Network error. Please try again.', 'error');
+                subscribeBtn.disabled = false;
+                subscribeBtn.textContent = 'Subscribe Now';
             }
         });
     }
@@ -237,6 +459,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (startTimeInput) startTimeInput.value = ''; 
         if (endTimeInput) endTimeInput.value = '';  
         if (transcribeInput) transcribeInput.checked = false;   
+        if (fileInput) fileInput.value = '';
+        if (increaseQualityInput) increaseQualityInput.checked = false;
+        if (attachLyricsInput) attachLyricsInput.checked = false;
+        if (organizeGenreInput) organizeGenreInput.checked = false;
+        if (fileInputText) {
+            fileInputText.textContent = 'Click to select files, or drag & drop here...';
+            fileInputText.style.fontWeight = 'normal';
+            fileInputText.style.color = '#64748b';
+        }
         if (statusDiv) statusDiv.innerHTML = "Ready";
         if (conversionSummary) conversionSummary.innerHTML = '';
         if (downloadList) downloadList.innerHTML = '';
@@ -339,11 +570,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateProgress(data.total, data.total, 100);
                 
                 if (data.completed > 0) {
-                    statusDiv.innerHTML = `<p style="color: #2ecc71; font-weight: bold; font-size: 1.1rem;">✅ Success! Converted ${data.completed} of ${data.total} tracks.</p>`;
-                    showToast(`Success! Converted ${data.completed} of ${data.total} tracks.`, 'success');
+                    statusDiv.innerHTML = `<p style="color: #2ecc71; font-weight: bold; font-size: 1.1rem;">✅ Success! Processed ${data.completed} of ${data.total} tracks.</p>`;
+                    showToast(`Success! Processed ${data.completed} of ${data.total} tracks.`, 'success');
                 } else {
-                    statusDiv.innerHTML = `<p style="color: #ef4444; font-weight: bold; font-size: 1.1rem;">⚠️ Process Finished: 0 tracks converted.</p>`;
-                    showToast(`No tracks could be converted.`, 'error');
+                    statusDiv.innerHTML = `<p style="color: #ef4444; font-weight: bold; font-size: 1.1rem;">⚠️ Process Finished: 0 tracks processed.</p>`;
+                    showToast(`No tracks could be processed.`, 'error');
                 }
                 
                 if (downloadArea && downloadList) {
@@ -399,10 +630,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const startConversion = async (e) => {
         if (e && e.preventDefault) e.preventDefault();
         try {
-            if (!urlInput || !statusDiv) return;
-            const url = urlInput.value.trim();
-            if (!url) {
-                showToast('Please enter a valid URL.', 'error');
+            if (!statusDiv) return;
+            
+            const hasFiles = fileInput && fileInput.files.length > 0;
+            const url = urlInput ? urlInput.value.trim() : '';
+            
+            if (!hasFiles && !url) {
+                showToast('Please select files to upload or enter a URL.', 'error');
                 return;
             }
 
@@ -414,7 +648,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (actionGroup) actionGroup.style.display = 'flex';
             if (cancelBtn) cancelBtn.classList.remove('hidden');
 
-            statusDiv.innerHTML = `<div class="spinner"></div><p style="font-weight:bold; color:#2980b9;">Spinning up server and analyzing link...</p><p style="font-size:0.85rem; color:#64748b;">(Playlists can take 10-15 seconds to fetch from SoundCloud)</p>`;
+            statusDiv.innerHTML = `<div class="spinner"></div><p style="font-weight:bold; color:#2980b9;">Spinning up server...</p><p style="font-size:0.85rem; color:#64748b;">(This may take up to 50 seconds if the server is asleep)</p>`;
+            showToast('Spinning up server. This may take up to 50 seconds...', 'info');
+            
+            // Ping the backend to wake it up before sending a potentially large payload
+            try {
+                await fetch(`${BACKEND_URL}/health`);
+            } catch (err) {
+                console.warn("Pre-flight wake up ping failed or timed out, continuing anyway...", err);
+            }
+
+            if (hasFiles) {
+                statusDiv.innerHTML = `<div class="spinner"></div><p style="font-weight:bold; color:#2980b9;">Uploading files to server...</p><p style="font-size:0.85rem; color:#64748b;">(Please keep this tab open during upload)</p>`;
+            } else {
+                statusDiv.innerHTML = `<div class="spinner"></div><p style="font-weight:bold; color:#2980b9;">Analyzing link...</p><p style="font-size:0.85rem; color:#64748b;">(Playlists can take 10-15 seconds to fetch from SoundCloud)</p>`;
+            }
             
             if (downloadArea) downloadArea.classList.add('hidden');
             if (conversionSummary) conversionSummary.innerHTML = '';
@@ -425,21 +673,50 @@ document.addEventListener('DOMContentLoaded', () => {
                 progressFill.textContent = 'Initializing...';
             }
 
-            const startTime = startTimeInput ? startTimeInput.value.trim() : '';
-            const endTime = endTimeInput ? endTimeInput.value.trim() : '';
-            const transcribeAudio = transcribeInput ? transcribeInput.checked : false;
+            let response;
+            
+            if (hasFiles) {
+                // Enforce a maximum file size limit of 50MB per file
+                const MAX_PER_FILE_SIZE = 50 * 1024 * 1024; // 50MB in bytes
+                const oversizedFiles = Array.from(fileInput.files).filter(file => file.size > MAX_PER_FILE_SIZE);
+                
+                if (oversizedFiles.length > 0) {
+                    showToast('One or more files exceed the 50MB limit per track. Please remove them and try again.', 'error');
+                    resetUI();
+                    statusDiv.innerHTML = `Ready`;
+                    return;
+                }
 
-            const response = await fetch(`${BACKEND_URL}/start_conversion`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    url, 
-                    start_time: startTime, 
-                    end_time: endTime, 
-                    transcribe_audio: transcribeAudio
-                })
-            });
+                const formData = new FormData();
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    formData.append('files', fileInput.files[i]);
+                }
+                if (increaseQualityInput && increaseQualityInput.checked) formData.append('increase_quality', 'true');
+                if (attachLyricsInput && attachLyricsInput.checked) formData.append('attach_lyrics', 'true');
+                if (organizeGenreInput && organizeGenreInput.checked) formData.append('organize_genre', 'true');
+                
+                response = await fetch(`${BACKEND_URL}/process_local_files`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+            } else {
+                const startTime = startTimeInput ? startTimeInput.value.trim() : '';
+                const endTime = endTimeInput ? endTimeInput.value.trim() : '';
+                const transcribeAudio = transcribeInput ? transcribeInput.checked : false;
+
+                response = await fetch(`${BACKEND_URL}/start_conversion`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        url, 
+                        start_time: startTime, 
+                        end_time: endTime, 
+                        transcribe_audio: transcribeAudio
+                    })
+                });
+            }
 
             const data = await response.json();
 
@@ -448,7 +725,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusDiv.innerHTML = `
                     <div style="background: #fffbeb; border: 1px solid #fde68a; padding: 15px; border-radius: 8px; text-align: left;">
                         <p style="color: #b45309; font-weight: bold; margin-top: 0; margin-bottom: 8px;">⚠️ Limit Reached</p>
-                        <p style="font-size: 0.9rem; color: #92400e; margin: 0; line-height: 1.4;">${data.error || 'Conversion Blocked: You have reached the limit for this request.'}</p>
+                        <p style="font-size: 0.9rem; color: #92400e; margin: 0; line-height: 1.4;">${data.error || 'Processing Blocked: You have reached the limit for this request.'}</p>
                     </div>
                 `;
                 
@@ -462,7 +739,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (!response.ok) {
-                throw new Error(data.error || 'Failed to start conversion');
+                throw new Error(data.error || 'Failed to start processing');
             }
 
             currentSessionId = data.session_id;
@@ -472,7 +749,12 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
             resetUI();
             statusDiv.innerHTML = `Ready`;
-            showToast(error.message, 'error');
+            
+            let errorMsg = error.message;
+            if (errorMsg.toLowerCase().includes('failed to fetch')) {
+                errorMsg = "Network Error: Cannot reach the backend. Check your BACKEND_URL or CORS settings.";
+            }
+            showToast(errorMsg, 'error');
         }
     };
 
@@ -490,7 +772,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ session_id: currentSessionId })
             });
-            showToast('Conversion cancelled.', 'info');
+            showToast('Processing cancelled.', 'info');
         } catch (error) {
             console.error('Failed to cancel:', error);
             resetUI();
