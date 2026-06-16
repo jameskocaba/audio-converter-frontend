@@ -22,6 +22,7 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="MP3aud.io - SoundCloud Downloader and AI Audio Transcriber">
+    <meta property="og:locale" content="en_US">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://mp3aud.io/">
@@ -63,6 +64,38 @@
         "Automatic genre organization",
         "AI lyric transcription and embedding",
         "Audio fidelity normalization"
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I process my local audio files?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Simply drag and drop your music files or folders into the dropzone, select your desired enhancements (like Attach Lyrics or Organize by Genre), and click 'Process'. Our system will process the files and generate an organized ZIP file."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What does the Attach Lyrics toggle do?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "When activated, our backend uses advanced AI to physically listen to the audio track and transcribe the lyrics. It then takes those lyrics and physically embeds them into the metadata tag of your final audio file so it shows up in media players!"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Will this tool convert my files to MP3?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No! By default, this tool preserves your original file format (e.g., WAV stays WAV). However, if you explicitly toggle 'Increase Bitrate (320k)', the system will upsample your audio and convert it to a standard high-fidelity MP3."
+          }
+        }
       ]
     }
     </script>
