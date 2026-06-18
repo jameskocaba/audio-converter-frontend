@@ -180,7 +180,9 @@ body {
 
 .inline-ai-toggle .toggle-text {
     display: flex;
-    align-items: baseline;
+    align-items: center;
+    justify-content: space-between;
+    flex-grow: 1;
     gap: 8px;
 }
 
