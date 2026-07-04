@@ -185,7 +185,7 @@ body {
 
 .content-container {
     width: 100%;
-    max-width: 900px;
+    max-width: 1040px;
     display: flex;
     flex-direction: column;
 }
@@ -1247,5 +1247,43 @@ footer p { margin: 0 0 10px 0; }
     
     .sidebar-nav .auth-box::before {
         display: block;
+    }
+}
+
+/* =========================================
+   16. WORKSPACE TWO-COLUMN LAYOUT
+   ========================================= */
+.workspace-layout {
+    display: flex;
+    gap: 24px;
+    width: 100%;
+    align-items: flex-start;
+    margin-top: 15px;
+}
+
+#conversionToolContainer {
+    flex: 1;
+    min-width: 0;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+#loginFormContainer {
+    width: 360px;
+    flex-shrink: 0;
+    margin: 0 !important;
+    box-sizing: border-box;
+}
+
+@media (max-width: 992px) {
+    .workspace-layout {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    #loginFormContainer {
+        width: 100%;
+        max-width: 600px;
+        margin: 20px auto 0 auto !important;
     }
 }
