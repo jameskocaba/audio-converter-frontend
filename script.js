@@ -806,4 +806,53 @@ document.addEventListener('DOMContentLoaded', () => {
             e.returnValue = ''; // Required by modern browsers to trigger the warning popup
         }
     });
+
+    // --- MOBILE SIDEBAR DRAWER TOGGLE ---
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebarNav = document.querySelector('.sidebar-nav');
+    if (menuToggle && sidebarNav) {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sidebarNav.classList.toggle('open');
+        });
+        
+        // Close sidebar if user clicks outside of it on mobile
+        document.addEventListener('click', (e) => {
+            if (sidebarNav.classList.contains('open') && !sidebarNav.contains(e.target) && e.target !== menuToggle) {
+                sidebarNav.classList.remove('open');
+            }
+        });
+    }
+
+    // --- FAQ ACCORDION TOGGLE LOGIC ---
+    const faqTriggers = document.querySelectorAll('.faq-trigger');
+    faqTriggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+            const faqItem = trigger.parentElement;
+            const panel = faqItem.querySelector('.faq-panel');
+            const isActive = faqItem.classList.contains('active');
+            
+            // Close all other panels for accordion effect
+            document.querySelectorAll('.faq-item').forEach(item => {
+                if (item !== faqItem) {
+                    item.classList.remove('active');
+                    const otherPanel = item.querySelector('.faq-panel');
+                    if (otherPanel) otherPanel.style.maxHeight = null;
+                    const otherTrigger = item.querySelector('.faq-trigger');
+                    if (otherTrigger) otherTrigger.setAttribute('aria-expanded', 'false');
+                }
+            });
+            
+            // Toggle active state
+            faqItem.classList.toggle('active');
+            
+            if (isActive) {
+                panel.style.maxHeight = null;
+                trigger.setAttribute('aria-expanded', 'false');
+            } else {
+                panel.style.maxHeight = panel.scrollHeight + 'px';
+                trigger.setAttribute('aria-expanded', 'true');
+            }
+        });
+    });
 });
