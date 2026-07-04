@@ -1257,7 +1257,7 @@ footer p { margin: 0 0 10px 0; }
     display: flex;
     gap: 24px;
     width: 100%;
-    align-items: flex-start;
+    align-items: stretch;
     margin-top: 15px;
 }
 
