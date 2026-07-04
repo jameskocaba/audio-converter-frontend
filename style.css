@@ -948,3 +948,62 @@ footer p { margin: 0 0 10px 0; }
     from { transform: translateX(0); opacity: 1; }
     to { transform: translateX(150%); opacity: 0; }
 }
+
+/* =========================================
+   13. SEO FEATURES SECTION
+   ========================================= */
+.seo-features-section {
+    margin-top: 35px;
+    margin-bottom: 20px;
+    text-align: left;
+    border-top: 1px dashed #cbd5e1;
+    padding-top: 30px;
+}
+
+.seo-section-title {
+    font-size: 1.05rem;
+    color: #1e293b;
+    font-weight: 800;
+    margin-bottom: 22px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.seo-feature-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.seo-feature-card {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.seo-feature-icon {
+    flex-shrink: 0;
+    background: #f0fdf4;
+    color: #16a34a;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(22, 163, 74, 0.08);
+}
+
+.seo-feature-card h3 {
+    font-size: 0.92rem;
+    color: #1e293b;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+}
+
+.seo-feature-card p {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.45;
+}
