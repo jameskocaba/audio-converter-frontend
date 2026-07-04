@@ -1269,8 +1269,8 @@ footer p { margin: 0 0 10px 0; }
 }
 
 #loginFormContainer {
-    width: 360px;
-    flex-shrink: 0;
+    flex: 1;
+    min-width: 0;
     margin: 0 !important;
     box-sizing: border-box;
 }
