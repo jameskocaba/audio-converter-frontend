@@ -355,6 +355,13 @@ body {
     white-space: nowrap;
 }
 
+.premium-badge.free-badge {
+    background: #2ecc71;
+    box-shadow: 0 2px 4px rgba(46, 204, 113, 0.3);
+    white-space: normal;
+    text-align: center;
+}
+
 .inline-ai-toggle .toggle-text {
     display: flex;
     align-items: center;
