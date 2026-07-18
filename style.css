@@ -436,6 +436,65 @@ input:checked + .slider:before { transform: translateX(20px); }
     border-color: #94a3b8;
 }
 
+.file-counter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.file-counter.hidden {
+    display: none;
+}
+
+.counter-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.counter-badge.hidden {
+    display: none;
+}
+
+/* Global Stats Badge (Slate Palette) */
+.global-badge {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    box-shadow: 0 4px 12px rgba(71, 85, 105, 0.06);
+}
+
+.global-badge svg {
+    color: #64748b;
+}
+
+/* Selected Tracks Badge (Sky Palette) */
+.selected-badge {
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    border: 1px solid #7dd3fc;
+    color: #0369a1;
+    box-shadow: 0 4px 12px rgba(3, 105, 161, 0.08);
+}
+
+.selected-badge svg {
+    color: #0284c7;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .action-buttons {
     display: flex;
     gap: 10px;
