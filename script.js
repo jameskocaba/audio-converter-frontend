@@ -950,19 +950,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- FETCH GLOBAL STATS ON LOAD ---
-    const fetchGlobalStats = async () => {
+    // --- FETCH GLOBAL STATS ON LOAD (WITH LOCALSTORAGE CACHING & RETRY ON COLD START) ---
+    const globalCountVal = document.getElementById('globalCountVal');
+    const cachedStats = localStorage.getItem('cached_total_tracks');
+    if (cachedStats && globalCountVal) {
+        globalCountVal.textContent = Number(cachedStats).toLocaleString();
+    }
+
+    const fetchGlobalStats = async (retryCount = 0) => {
         try {
-            const res = await fetch(`${BACKEND_URL}/api/stats`);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+            const res = await fetch(`${BACKEND_URL}/api/stats`, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
             const data = await res.json();
             if (data.success && data.total_tracks) {
-                const globalCountVal = document.getElementById('globalCountVal');
                 if (globalCountVal) {
                     globalCountVal.textContent = data.total_tracks.toLocaleString();
                 }
+                localStorage.setItem('cached_total_tracks', data.total_tracks);
             }
         } catch (err) {
             console.error("Failed to fetch global stats:", err);
+            // If server is spinning up on Render (takes ~30s), retry up to 4 times every 6 seconds
+            if (retryCount < 4) {
+                setTimeout(() => fetchGlobalStats(retryCount + 1), 6000);
+            }
         }
     };
 
