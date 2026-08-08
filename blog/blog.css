@@ -134,7 +134,7 @@
     padding: 9px 18px;
     border-radius: 8px;
     text-decoration: none;
-    align-self: center;
+    align-self: flex-start;
     margin-top: 4px;
     transition: all 0.2s ease;
     box-shadow: 0 4px 10px rgba(245, 158, 11, 0.15);
