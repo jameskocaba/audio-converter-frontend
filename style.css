@@ -1313,7 +1313,11 @@ footer p { margin: 0 0 10px 0; }
     
     .main-content {
         margin-left: 0;
-        padding: 30px 16px;
+        padding: 20px 12px;
+        width: 100%;
+        max-width: 100vw;
+        box-sizing: border-box;
+        overflow-x: hidden;
     }
     
     /* Reset sidebar elements back to card layouts on mobile */
