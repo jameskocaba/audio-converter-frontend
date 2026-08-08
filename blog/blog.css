@@ -1,9 +1,8 @@
 /* =========================================
    BLOG SHARED STYLES - MP3aud.io
+   (style.css is loaded first and provides
+    font, body, header, and sidebar rules)
    ========================================= */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
-*, *::before, *::after { box-sizing: border-box; }
 
 :root {
     --brand: #FF5500;
@@ -20,16 +19,10 @@
     --shadow-hover: 0 8px 40px rgba(0,0,0,0.12);
 }
 
-body {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif;
-    background: var(--bg);
-    color: var(--text-primary);
-    margin: 0;
-    line-height: 1.65;
-}
+/* Scope link color override to blog content only — NOT the sidebar */
+.main-content a { color: var(--brand); }
+.main-content a:hover { text-decoration: underline; }
 
-a { color: var(--brand); text-decoration: none; }
-a:hover { text-decoration: underline; }
 
 /* =========================================
    HEADER
