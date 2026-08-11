@@ -668,10 +668,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const currentTrackDisplay = Math.min(data.completed + 1, data.total);
 
-                // Show and update the currently processing badge
+                // Update the currently processing badge
                 if (currentlyProcessingBadge && currentlyProcessingVal) {
                     currentlyProcessingVal.textContent = data.total;
-                    currentlyProcessingBadge.classList.remove('hidden');
                 }
 
                 statusDiv.innerHTML = `
@@ -685,8 +684,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (progressBar) progressBar.classList.remove('hidden');
                 updateProgress(data.total, data.total, 100);
 
-                // Hide the currently processing badge on completion
-                if (currentlyProcessingBadge) currentlyProcessingBadge.classList.add('hidden');
+                // Reset the currently processing badge to 0 on completion
+                if (currentlyProcessingVal) currentlyProcessingVal.textContent = '0';
 
                 if (data.completed > 0) {
                     statusDiv.innerHTML = `<p style="color: #2ecc71; font-weight: bold; font-size: 1.1rem;">✅ Success! Processed ${data.completed} of ${data.total} tracks.</p>`;
@@ -722,8 +721,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             else if (data.status === 'error' || data.status === 'cancelled') {
                 resetUI();
-                // Hide the currently processing badge on error/cancel
-                if (currentlyProcessingBadge) currentlyProcessingBadge.classList.add('hidden');
+                // Reset the currently processing badge to 0 on error/cancel
+                if (currentlyProcessingVal) currentlyProcessingVal.textContent = '0';
                 const msg = data.status === 'error' ? (data.error || 'An error occurred during processing.') : 'Process Cancelled.';
                 statusDiv.innerHTML = `<p style="color: #ef4444; font-weight: bold; font-size: 1.1rem;">❌ Action Failed</p>`;
                 if (data.status === 'error') showToast(msg, 'error');
