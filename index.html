@@ -307,6 +307,14 @@
                                 or drag & drop here...</span>
                         </label>
                         <div id="fileCounter" class="file-counter">
+                            <div id="currentlyProcessingBadge" class="counter-badge processing-badge hidden">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                <span><strong id="currentlyProcessingVal">0</strong> Currently Processing</span>
+                            </div>
                             <div class="counter-badge global-badge">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
                                     stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
