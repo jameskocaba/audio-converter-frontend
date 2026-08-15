@@ -1380,6 +1380,17 @@ document.addEventListener('DOMContentLoaded', () => {
             return `${m}:${s < 10 ? '0' : ''}${s}`;
         }
 
+        function resizeCanvas() {
+            if (!canvas) return;
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) {
+                canvas.width = Math.round(rect.width);
+                canvas.height = Math.round(rect.height);
+            }
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
         // Real-Time Canvas Spectrum Visualizer Loop
         function startVisualizerLoop() {
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
