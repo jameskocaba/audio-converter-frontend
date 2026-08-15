@@ -676,52 +676,123 @@
         </div>
     </div>
 
-    <!-- 3. LIVE INTERACTIVE AUDIO ENHANCER PREVIEW -->
-    <section class="preview-enhancer-section" style="background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); border: 1.5px solid #bfdbfe; border-radius: 20px; padding: 35px; box-shadow: 0 15px 35px rgba(37, 99, 235, 0.08); margin-top: 15px; text-align: center;">
-        <div style="display: inline-flex; align-items: center; gap: 8px; background: #eff6ff; color: #1d4ed8; font-size: 0.8rem; font-weight: 800; padding: 5px 14px; border-radius: 20px; margin-bottom: 12px; border: 1px solid #bfdbfe;">
-            <span style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; display: inline-block;"></span>
-            <span>LIVE INTERACTIVE AUDIO PREVIEW</span>
+    <!-- 3. LIVE INTERACTIVE AUDIO ENHANCER PREVIEW (Modern Distinct Studio Deck) -->
+    <section class="preview-enhancer-section" style="background: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 24px; padding: 40px 30px; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.4), 0 0 30px rgba(56, 189, 248, 0.1); margin-top: 25px; color: white; text-align: center;">
+        
+        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; font-size: 0.8rem; font-weight: 800; padding: 6px 16px; border-radius: 30px; margin-bottom: 16px; letter-spacing: 0.5px;">
+            <span style="width: 8px; height: 8px; background: #38bdf8; border-radius: 50%; box-shadow: 0 0 10px #38bdf8; animation: pulse 2s infinite;"></span>
+            <span>STUDIO SOUND LAB • LIVE A/B COMPARISON</span>
         </div>
-        <h2 style="font-size: 1.75rem; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Hear the AI Audio Enhancement Difference</h2>
-        <p style="color: #64748b; font-size: 0.95rem; max-width: 680px; margin: 0 auto 24px auto;">
-            Toggle in real-time between raw, muffled 96kbps audio and studio-grade 320kbps AI-restored output.
+
+        <h2 style="font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            Hear the AI Audio Restoration in Real-Time
+        </h2>
+        <p style="color: #94a3b8; font-size: 1rem; max-width: 650px; margin: 0 auto 28px auto; line-height: 1.6;">
+            Listen to how our neural model recovers truncated high frequencies, cleans up muddiness, and restores full studio dynamics.
         </p>
 
-        <div style="background: #0f172a; border-radius: 16px; padding: 24px; color: white; max-width: 780px; margin: 0 auto; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.25);">
-            <!-- Mode Indicator -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 0.85rem;">
-                <span style="color: #38bdf8; font-weight: 700; display: flex; align-items: center; gap: 6px;">
-                    <span style="width: 8px; height: 8px; background: #38bdf8; border-radius: 50%; display: inline-block;"></span>
-                    AI ENHANCED (320kbps Studio HD)
-                </span>
-                <span style="color: #94a3b8; font-size: 0.75rem;">Full Dynamic Range 20Hz – 20kHz</span>
+        <!-- Studio Control Deck Card -->
+        <div style="background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 28px; max-width: 880px; margin: 0 auto; text-align: left;">
+            
+            <!-- Genre Preset Selector Pills -->
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+                <span style="font-size: 0.82rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Audio Presets:</span>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button type="button" class="preset-pill active-pill" style="background: #2563eb; color: white; border: none; padding: 7px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        🎙️ Vocals &amp; Speech
+                    </button>
+                    <button type="button" class="preset-pill" style="background: rgba(255, 255, 255, 0.05); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.1); padding: 7px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">
+                        🎧 Bass &amp; Beats
+                    </button>
+                    <button type="button" class="preset-pill" style="background: rgba(255, 255, 255, 0.05); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.1); padding: 7px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">
+                        🎸 Acoustic &amp; Live
+                    </button>
+                    <button type="button" class="preset-pill" style="background: rgba(255, 255, 255, 0.05); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.1); padding: 7px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">
+                        📼 90s MP3/Tape Rip
+                    </button>
+                </div>
             </div>
 
-            <!-- Simulated Visualizer Waves -->
-            <div style="height: 70px; display: flex; align-items: center; justify-content: center; gap: 4px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 20px; padding: 0 15px;">
-                <div style="width: 4px; height: 25px; background: #38bdf8; border-radius: 2px;"></div>
-                <div style="width: 4px; height: 45px; background: #38bdf8; border-radius: 2px;"></div>
-                <div style="width: 4px; height: 30px; background: #38bdf8; border-radius: 2px;"></div>
-                <div style="width: 4px; height: 60px; background: #60a5fa; border-radius: 2px;"></div>
-                <div style="width: 4px; height: 40px; background: #60a5fa; border-radius: 2px;"></div>
-                <div style="width: 4px; height: 50px; background: #818cf8; border-radius: 2px;"></div>
-                <div style="width: 4px; height: 20px; background: #818cf8; border-radius: 2px;"></div>
-                <div style="width: 4px; height: 55px; background: #38bdf8; border-radius: 2px;"></div>
-                <div style="width: 4px; height: 35px; background: #60a5fa; border-radius: 2px;"></div>
-                <div style="width: 4px; height: 45px; background: #818cf8; border-radius: 2px;"></div>
-                <div style="width: 4px; height: 25px; background: #38bdf8; border-radius: 2px;"></div>
+            <!-- Dual Split-Waveform Visualizer Box -->
+            <div style="background: #020617; border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 14px; padding: 20px; margin-bottom: 24px; position: relative; overflow: hidden;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e;"></span>
+                        <span style="font-weight: 800; font-size: 0.88rem; color: #f8fafc;">ACTIVE MODE: <span id="activeModeLabel" style="color: #38bdf8;">AI STUDIO 320KBPS HD</span></span>
+                    </div>
+                    <div style="display: flex; gap: 14px; font-size: 0.75rem; color: #64748b;">
+                        <span>Dynamic Floor: <strong>-14 LUFS</strong></span>
+                        <span>Sample Rate: <strong>48.0 kHz</strong></span>
+                    </div>
+                </div>
+
+                <!-- Visual Waveform Display -->
+                <div style="height: 100px; display: flex; align-items: flex-end; justify-content: space-between; gap: 3px; padding: 10px 0; background: linear-gradient(180deg, rgba(56, 189, 248, 0.03) 0%, rgba(2, 6, 23, 1) 100%);">
+                    <!-- Simulated Waveform Bars -->
+                    <div style="flex: 1; height: 30%; background: #38bdf8; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 55%; background: #38bdf8; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 40%; background: #38bdf8; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 80%; background: #60a5fa; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 65%; background: #60a5fa; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 95%; background: #818cf8; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 75%; background: #818cf8; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 90%; background: #60a5fa; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 50%; background: #38bdf8; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 70%; background: #38bdf8; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 85%; background: #60a5fa; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 100%; background: #818cf8; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 60%; background: #60a5fa; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 45%; background: #38bdf8; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 75%; background: #38bdf8; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 90%; background: #60a5fa; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 65%; background: #818cf8; border-radius: 2px;"></div>
+                    <div style="flex: 1; height: 40%; background: #38bdf8; border-radius: 2px;"></div>
+                </div>
+
+                <!-- Frequency Boost Meter Strip -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.78rem;">
+                    <div style="background: rgba(255, 255, 255, 0.03); padding: 8px 12px; border-radius: 8px;">
+                        <span style="color: #64748b; display: block;">Low Sub Restoration</span>
+                        <strong style="color: #38bdf8;">+3.8 dB (40Hz - 120Hz)</strong>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.03); padding: 8px 12px; border-radius: 8px;">
+                        <span style="color: #64748b; display: block;">Vocal De-Muffle Clarity</span>
+                        <strong style="color: #60a5fa;">+4.5 dB (2.5kHz - 6kHz)</strong>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.03); padding: 8px 12px; border-radius: 8px;">
+                        <span style="color: #64748b; display: block;">Air &amp; High-Frequency Air</span>
+                        <strong style="color: #a78bfa;">+6.2 dB (14kHz - 20kHz)</strong>
+                    </div>
+                </div>
             </div>
 
-            <!-- A/B Switcher -->
-            <div style="display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;">
-                <button type="button" style="padding: 10px 18px; border-radius: 10px; background: rgba(255,255,255,0.1); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.2); font-weight: 700; font-size: 0.85rem; cursor: pointer;">
-                    BEFORE: Original 128k Muffled
+            <!-- Precision A/B Toggle & Transport Controls -->
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <!-- Play / Pause Button -->
+                <button type="button" style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 800; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                        <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                    </svg>
+                    <span>Play Demo Audio</span>
                 </button>
-                <span style="color: #64748b; font-size: 0.85rem;">⟷</span>
-                <button type="button" style="padding: 10px 18px; border-radius: 10px; background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); color: white; border: none; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);">
-                    AFTER: AI Enhanced 320k Studio
-                </button>
+
+                <!-- Interactive A/B Switch Pill -->
+                <div style="background: rgba(255, 255, 255, 0.06); padding: 4px; border-radius: 14px; display: inline-flex; border: 1px solid rgba(255, 255, 255, 0.12);">
+                    <button type="button" id="demoBtnBefore" style="padding: 10px 18px; border-radius: 10px; background: transparent; color: #94a3b8; border: none; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;">
+                        BEFORE (96k Muffled)
+                    </button>
+                    <button type="button" id="demoBtnAfter" style="padding: 10px 18px; border-radius: 10px; background: #2563eb; color: white; border: none; font-weight: 800; font-size: 0.85rem; cursor: pointer; box-shadow: 0 2px 10px rgba(37, 99, 235, 0.5); transition: all 0.2s;">
+                        AFTER (320k Studio HD) ✨
+                    </button>
+                </div>
+
+                <!-- CTA to jump to dropzone -->
+                <a href="#demoDropzone" style="color: #38bdf8; text-decoration: none; font-weight: 700; font-size: 0.88rem; display: flex; align-items: center; gap: 6px;">
+                    <span>Enhance My Tracks Now</span>
+                    <span>↑</span>
+                </a>
             </div>
+
         </div>
     </section>
 
@@ -863,6 +934,53 @@
             trigger.querySelector('span:last-child').textContent = isOpen ? '+' : '−';
             trigger.parentElement.style.background = isOpen ? '#f8fafc' : '#ffffff';
             trigger.parentElement.style.borderColor = isOpen ? 'var(--border-light)' : '#2563eb';
+        });
+    });
+
+    // Audio Enhancer Studio Deck A/B Interaction
+    const btnBefore = document.getElementById('demoBtnBefore');
+    const btnAfter = document.getElementById('demoBtnAfter');
+    const modeLabel = document.getElementById('activeModeLabel');
+
+    if (btnBefore && btnAfter) {
+        btnBefore.addEventListener('click', () => {
+            btnBefore.style.background = '#e11d48';
+            btnBefore.style.color = 'white';
+            btnBefore.style.boxShadow = '0 2px 10px rgba(225, 29, 72, 0.5)';
+            btnAfter.style.background = 'transparent';
+            btnAfter.style.color = '#94a3b8';
+            btnAfter.style.boxShadow = 'none';
+            if (modeLabel) {
+                modeLabel.textContent = 'RAW 96KBPS MUFFLED (ORIGINAL)';
+                modeLabel.style.color = '#fb7185';
+            }
+        });
+
+        btnAfter.addEventListener('click', () => {
+            btnAfter.style.background = '#2563eb';
+            btnAfter.style.color = 'white';
+            btnAfter.style.boxShadow = '0 2px 10px rgba(37, 99, 235, 0.5)';
+            btnBefore.style.background = 'transparent';
+            btnBefore.style.color = '#94a3b8';
+            btnBefore.style.boxShadow = 'none';
+            if (modeLabel) {
+                modeLabel.textContent = 'AI STUDIO 320KBPS HD (ENHANCED)';
+                modeLabel.style.color = '#38bdf8';
+            }
+        });
+    }
+
+    // Preset Pills Active Switch
+    document.querySelectorAll('.preset-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            document.querySelectorAll('.preset-pill').forEach(p => {
+                p.style.background = 'rgba(255, 255, 255, 0.05)';
+                p.style.color = '#94a3b8';
+                p.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            });
+            pill.style.background = '#2563eb';
+            pill.style.color = 'white';
+            pill.style.borderColor = '#2563eb';
         });
     });
 </script>
