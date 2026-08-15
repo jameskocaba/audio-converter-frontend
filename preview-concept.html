@@ -730,12 +730,91 @@
             </tbody>
         </table>
     </section>
+
+    <!-- 4. FAQ SECTION -->
+    <section class="faq-section" id="faqSection" style="background: white; border: 1px solid var(--border-light); border-radius: 20px; padding: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.04); margin-top: 30px;">
+        <div style="text-align: center; margin-bottom: 25px;">
+            <div style="display: inline-flex; align-items: center; gap: 6px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; font-size: 0.8rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px;">
+                <span>💬 HELPFUL ANSWERS</span>
+            </div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Frequently Asked Questions</h2>
+            <p style="color: #64748b; font-size: 0.95rem;">Everything you need to know about tagging, AI upscaling, formats, and privacy.</p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; max-width: 850px; margin: 0 auto;">
+            <div class="preview-faq-item" style="border: 1px solid var(--border-light); border-radius: 12px; overflow: hidden; background: #f8fafc; transition: all 0.2s;">
+                <button class="preview-faq-trigger" style="width: 100%; text-align: left; padding: 16px 20px; background: none; border: none; font-size: 0.98rem; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Is MP3aud.io completely free to use?</span>
+                    <span style="font-size: 1.2rem; color: #2563eb; font-weight: 800;">+</span>
+                </button>
+                <div class="preview-faq-content" style="padding: 0 20px 16px 20px; color: #64748b; font-size: 0.9rem; line-height: 1.6; display: none;">
+                    Yes! Your first 5 track conversions are always 100% free with no account or credit card required. If you need to batch process large archives or music libraries, you can purchase pay-as-you-go credits ($2.00 for 350 tracks).
+                </div>
+            </div>
+
+            <div class="preview-faq-item" style="border: 1px solid var(--border-light); border-radius: 12px; overflow: hidden; background: #f8fafc; transition: all 0.2s;">
+                <button class="preview-faq-trigger" style="width: 100%; text-align: left; padding: 16px 20px; background: none; border: none; font-size: 0.98rem; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                    <span>How does the 3000px Apple Music artwork fetching work?</span>
+                    <span style="font-size: 1.2rem; color: #2563eb; font-weight: 800;">+</span>
+                </button>
+                <div class="preview-faq-content" style="padding: 0 20px 16px 20px; color: #64748b; font-size: 0.9rem; line-height: 1.6; display: none;">
+                    When you drop your audio files, our system matches the track name and artist against Apple Music’s official database, downloads uncompressed high-resolution 3000×3000px cover art, and physically writes it directly into the ID3 metadata tags.
+                </div>
+            </div>
+
+            <div class="preview-faq-item" style="border: 1px solid var(--border-light); border-radius: 12px; overflow: hidden; background: #f8fafc; transition: all 0.2s;">
+                <button class="preview-faq-trigger" style="width: 100%; text-align: left; padding: 16px 20px; background: none; border: none; font-size: 0.98rem; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Are my music files kept private and secure?</span>
+                    <span style="font-size: 1.2rem; color: #2563eb; font-weight: 800;">+</span>
+                </button>
+                <div class="preview-faq-content" style="padding: 0 20px 16px 20px; color: #64748b; font-size: 0.9rem; line-height: 1.6; display: none;">
+                    100% yes. Your uploaded tracks and generated ZIP archives are processed in secure isolated temporary storage and are permanently and automatically deleted 1 hour after processing. We never share or sell your audio data.
+                </div>
+            </div>
+
+            <div class="preview-faq-item" style="border: 1px solid var(--border-light); border-radius: 12px; overflow: hidden; background: #f8fafc; transition: all 0.2s;">
+                <button class="preview-faq-trigger" style="width: 100%; text-align: left; padding: 16px 20px; background: none; border: none; font-size: 0.98rem; font-weight: 700; color: #1e293b; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                    <span>What audio formats are supported?</span>
+                    <span style="font-size: 1.2rem; color: #2563eb; font-weight: 800;">+</span>
+                </button>
+                <div class="preview-faq-content" style="padding: 0 20px 16px 20px; color: #64748b; font-size: 0.9rem; line-height: 1.6; display: none;">
+                    MP3aud.io supports MP3, WAV, FLAC, M4A, AAC, OGG, and WMA. You can upload single tracks or drag entire folders with hundreds of files.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer style="margin-top: 40px; text-align: center; color: #94a3b8; font-size: 0.85rem; padding-bottom: 20px;">
+        <p>&copy; 2026 MP3aud.io. All Rights Reserved.</p>
+        <div style="margin-top: 8px; display: flex; justify-content: center; gap: 14px;">
+            <a href="mailto:jameskocaba@gmail.com" style="color: #64748b; text-decoration: none;">Contact</a>
+            <span>•</span>
+            <a href="#faqSection" style="color: #64748b; text-decoration: none;">FAQs</a>
+            <span>•</span>
+            <a href="supported-sites.html" style="color: #64748b; text-decoration: none;">Supported Sites</a>
+            <span>•</span>
+            <a href="blog/index.html" style="color: #64748b; text-decoration: none;">Blog</a>
+        </div>
+    </footer>
 </div>
 </main>
 
 <script>
     document.getElementById('btnLoadDemo').addEventListener('click', function() {
         document.getElementById('sampleQueue').style.display = 'block';
+    });
+
+    // Accordion Logic
+    document.querySelectorAll('.preview-faq-trigger').forEach(trigger => {
+        trigger.addEventListener('click', () => {
+            const content = trigger.nextElementSibling;
+            const isOpen = content.style.display === 'block';
+            content.style.display = isOpen ? 'none' : 'block';
+            trigger.querySelector('span:last-child').textContent = isOpen ? '+' : '−';
+            trigger.parentElement.style.background = isOpen ? '#f8fafc' : '#ffffff';
+            trigger.parentElement.style.borderColor = isOpen ? 'var(--border-light)' : '#2563eb';
+        });
     });
 </script>
 
