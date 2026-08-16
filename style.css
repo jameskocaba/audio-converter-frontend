@@ -1882,7 +1882,60 @@ footer p { margin: 0 0 10px 0; }
 
 .custom-tab {
     cursor: pointer;
-    border-style: dashed;
+    border: 1.5px dashed rgba(56, 189, 248, 0.35);
+    background: rgba(56, 189, 248, 0.05);
+    position: relative;
+}
+
+.custom-tab:hover {
+    border-color: rgba(56, 189, 248, 0.75);
+    background: rgba(56, 189, 248, 0.12);
+    color: #ffffff;
+}
+
+.custom-tab.drag-over {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.22);
+    transform: scale(1.02);
+}
+
+.custom-tab.has-file {
+    border-style: solid;
+    border-color: rgba(34, 197, 94, 0.5);
+    background: rgba(34, 197, 94, 0.12);
+}
+
+.custom-tab.has-file.active {
+    border-color: #22c55e;
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(14, 165, 233, 0.2) 100%);
+    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.25);
+    color: #ffffff;
+}
+
+.custom-tab .tab-clear-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #f87171;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.15s;
+    padding: 0;
+}
+
+.custom-tab .tab-clear-btn:hover {
+    background: rgba(239, 68, 68, 0.35);
+    color: #ffffff;
+    border-color: #ef4444;
 }
 
 /* Visualizer Container */

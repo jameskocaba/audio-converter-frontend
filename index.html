@@ -464,28 +464,15 @@
                 <p class="preview-subtitle">Toggle between the original low-quality rip and the AI-enhanced 320kbps version. Drag the crossfade slider to blend between them.</p>
 
                 <div class="preview-player-card">
-                    <!-- Test Your Own File -->
-                    <div id="testFileZone" class="test-file-zone">
-                        <input type="file" id="testFileInput" accept="audio/*,.mp3,.wav,.flac,.aac,.ogg,.m4a" style="display:none" aria-label="Upload audio file for preview">
-                        <label for="testFileInput" class="test-file-label" id="testFileLabel">
-                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7;flex-shrink:0">
-                                <path d="M9 18V5l12-2v13"/>
-                                <circle cx="6" cy="18" r="3"/>
-                                <circle cx="18" cy="16" r="3"/>
-                            </svg>
-                            <span id="testFileText">Drop your own track here to test &mdash; or click to browse</span>
-                        </label>
-                        <div id="testFileInfo" class="test-file-info hidden">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#22c55e;flex-shrink:0">
-                                <polyline points="20 6 9 17 4 12"/>
-                            </svg>
-                            <span id="testFileName">track.mp3</span>
-                            <button id="testFileClearBtn" class="test-file-clear" aria-label="Remove file">&times;</button>
-                        </div>
-                    </div>
-
-                    <!-- Preset Song Tabs -->
+                    <!-- Preset Song Tabs (with Test Your File on Far Left) -->
                     <div class="preset-tabs" id="presetTabs">
+                        <label class="preset-tab custom-tab" id="testFileTab" title="Test with your own MP3 or audio file">
+                            <span class="tab-icon">📁</span>
+                            <span class="tab-label" id="testFileTabLabel">Test Your File</span>
+                            <span class="tab-sub" id="testFileTabSub">Drop or Browse</span>
+                            <button id="testFileClearBtn" class="tab-clear-btn hidden" aria-label="Remove uploaded file" title="Remove file">&times;</button>
+                            <input type="file" id="testFileInput" accept="audio/*,.mp3,.wav,.flac,.aac,.ogg,.m4a" style="display:none" aria-label="Upload audio file for preview">
+                        </label>
                         <button class="preset-tab active" data-preset="0">
                             <span class="tab-icon">🎸</span>
                             <span class="tab-label">Rock Classic</span>
@@ -1539,23 +1526,44 @@
                 updateABMode();
             });
 
-            /* ---- Preset Song Tabs ---- */
+            /* ---- Preset Song Tabs & Test File Tab Handling ---- */
+            var testFileTab = document.getElementById('testFileTab');
+            var testFileTabLabel = document.getElementById('testFileTabLabel');
+            var testFileTabSub = document.getElementById('testFileTabSub');
+            var userAudioBuffer = null;
+
             document.querySelectorAll('.preset-tab').forEach(function(tab) {
-                tab.addEventListener('click', function() {
-                    if (userFileLoaded) return;
-                    document.querySelectorAll('.preset-tab').forEach(function(t) { t.classList.remove('active'); });
-                    this.classList.add('active');
+                tab.addEventListener('click', function(e) {
+                    if (this === testFileTab && userFileLoaded) {
+                        // Reselect user file
+                        document.querySelectorAll('.preset-tab').forEach(function(t) { t.classList.remove('active'); });
+                        testFileTab.classList.add('active');
+                        currentBuffer = userAudioBuffer;
+                        currentDuration = currentBuffer.duration;
+                        pausedAt = 0;
+                        fill.style.width = '0%';
+                        timeDisplay.textContent = '0:00 / ' + fmtTime(currentDuration);
+                        updateABMode();
+                        if (isPlaying) buildAndPlaySource(0);
+                        return;
+                    }
 
-                    var pIdx = parseInt(this.getAttribute('data-preset') || 0);
-                    currentPresetIndex = pIdx;
-                    currentBuffer = createPresetAudioBuffer(pIdx);
-                    currentDuration = currentBuffer.duration;
-                    pausedAt = 0;
-                    fill.style.width = '0%';
-                    timeDisplay.textContent = '0:00 / ' + fmtTime(currentDuration);
+                    if (this.hasAttribute('data-preset')) {
+                        document.querySelectorAll('.preset-tab').forEach(function(t) { t.classList.remove('active'); });
+                        this.classList.add('active');
 
-                    if (isPlaying) {
-                        buildAndPlaySource(0);
+                        var pIdx = parseInt(this.getAttribute('data-preset') || 0);
+                        currentPresetIndex = pIdx;
+                        currentBuffer = createPresetAudioBuffer(pIdx);
+                        currentDuration = currentBuffer.duration;
+                        pausedAt = 0;
+                        fill.style.width = '0%';
+                        timeDisplay.textContent = '0:00 / ' + fmtTime(currentDuration);
+                        updateABMode();
+
+                        if (isPlaying) {
+                            buildAndPlaySource(0);
+                        }
                     }
                 });
             });
@@ -1567,8 +1575,8 @@
                     return;
                 }
                 var name = file.name;
-                testFileText.textContent = 'Loading & Decoding…';
-                testFileLabel.style.opacity = '0.6';
+                testFileTabLabel.textContent = 'Loading…';
+                testFileTabSub.textContent = 'Decoding audio';
 
                 if (isPlaying) pauseAudio();
                 pausedAt = 0;
@@ -1577,19 +1585,18 @@
                 reader.onload = function(e) {
                     initAudioCtx();
                     audioCtx.decodeAudioData(e.target.result.slice(0), function(buf) {
+                        userAudioBuffer = buf;
                         currentBuffer = buf;
                         currentDuration = buf.duration;
                         userFileLoaded = true;
 
-                        testFileLabel.style.display = 'none';
-                        testFileInfo.classList.remove('hidden');
-                        testFileName.textContent = name;
-
-                        document.querySelectorAll('.preset-tab').forEach(function(t) {
-                            t.classList.remove('active');
-                            t.style.opacity = '0.35';
-                            t.style.pointerEvents = 'none';
-                        });
+                        // Highlight Test Tab
+                        document.querySelectorAll('.preset-tab').forEach(function(t) { t.classList.remove('active'); });
+                        testFileTab.classList.add('has-file', 'active');
+                        var displayName = name.length > 14 ? (name.substring(0, 11) + '…') : name;
+                        testFileTabLabel.textContent = displayName;
+                        testFileTabSub.textContent = 'Custom Audio';
+                        testFileClearBtn.classList.remove('hidden');
 
                         timeDisplay.textContent = '0:00 / ' + fmtTime(currentDuration);
                         fill.style.width = '0%';
@@ -1597,60 +1604,67 @@
                         playAudio();
                     }, function() {
                         alert('Could not decode this audio file. Please try an MP3 or WAV.');
-                        testFileText.textContent = 'Drop your own track here to test — or click to browse';
-                        testFileLabel.style.opacity = '1';
+                        testFileTabLabel.textContent = 'Test Your File';
+                        testFileTabSub.textContent = 'Drop or Browse';
                     });
                 };
                 reader.readAsArrayBuffer(file);
             }
 
-            testFileInput.addEventListener('change', function() {
-                if (this.files && this.files[0]) loadAudioFile(this.files[0]);
-            });
-
-            testFileZone.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                this.classList.add('drag-over');
-            });
-            testFileZone.addEventListener('dragleave', function() {
-                this.classList.remove('drag-over');
-            });
-            testFileZone.addEventListener('drop', function(e) {
-                e.preventDefault();
-                this.classList.remove('drag-over');
-                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    loadAudioFile(e.dataTransfer.files[0]);
-                }
-            });
-
-            testFileClearBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                if (isPlaying) pauseAudio();
-                userFileLoaded = false;
-                pausedAt = 0;
-                currentBuffer = createPresetAudioBuffer(currentPresetIndex);
-                currentDuration = currentBuffer.duration;
-
-                testFileInfo.classList.add('hidden');
-                testFileLabel.style.display = '';
-                testFileText.textContent = 'Drop your own track here to test — or click to browse';
-                testFileLabel.style.opacity = '1';
-                testFileName.textContent = '';
-                testFileInput.value = '';
-
-                document.querySelectorAll('.preset-tab').forEach(function(t, i) {
-                    t.style.opacity = '';
-                    t.style.pointerEvents = '';
-                    if (i === currentPresetIndex) t.classList.add('active');
-                    else t.classList.remove('active');
+            if (testFileInput) {
+                testFileInput.addEventListener('change', function() {
+                    if (this.files && this.files[0]) loadAudioFile(this.files[0]);
                 });
+            }
 
-                fill.style.width = '0%';
-                timeDisplay.textContent = '0:00 / ' + fmtTime(currentDuration);
-                updateABMode();
-                idle();
-            });
+            if (testFileTab) {
+                testFileTab.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('drag-over');
+                });
+                testFileTab.addEventListener('dragleave', function() {
+                    this.classList.remove('drag-over');
+                });
+                testFileTab.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('drag-over');
+                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                        loadAudioFile(e.dataTransfer.files[0]);
+                    }
+                });
+            }
+
+            if (testFileClearBtn) {
+                testFileClearBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (isPlaying) pauseAudio();
+                    userFileLoaded = false;
+                    userAudioBuffer = null;
+                    pausedAt = 0;
+                    currentBuffer = createPresetAudioBuffer(currentPresetIndex);
+                    currentDuration = currentBuffer.duration;
+
+                    testFileTab.classList.remove('has-file', 'active');
+                    testFileTabLabel.textContent = 'Test Your File';
+                    testFileTabSub.textContent = 'Drop or Browse';
+                    testFileClearBtn.classList.add('hidden');
+                    if (testFileInput) testFileInput.value = '';
+
+                    document.querySelectorAll('.preset-tab').forEach(function(t) {
+                        if (parseInt(t.getAttribute('data-preset')) === currentPresetIndex) {
+                            t.classList.add('active');
+                        } else {
+                            t.classList.remove('active');
+                        }
+                    });
+
+                    fill.style.width = '0%';
+                    timeDisplay.textContent = '0:00 / ' + fmtTime(currentDuration);
+                    updateABMode();
+                    idle();
+                });
+            }
 
             window.addEventListener('resize', function() {
                 resizeCanvas();
