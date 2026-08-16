@@ -905,13 +905,14 @@
             });
         });
 
-        /* ── Before/After Audio Preview ── */
+        /* ── Before/After Audio Preview (100% Interactive & Sound-Reactive) ── */
         (function() {
             var canvas = document.getElementById('enhancerVisualizerCanvas');
             var playBtn = document.getElementById('previewPlayBtn');
             var playIcon = document.getElementById('playIcon');
             var pauseIcon = document.getElementById('pauseIcon');
             var fill = document.getElementById('waveformFill');
+            var waveformBar = document.getElementById('waveformBar');
             var timeDisplay = document.getElementById('previewTimeDisplay');
             var slider = document.getElementById('abCrossfadeSlider');
             var btnBefore = document.getElementById('btnBefore');
@@ -929,7 +930,7 @@
 
             if (!canvas) return;
 
-            /* ---- canvas setup ---- */
+            /* ---- Canvas setup ---- */
             function resizeCanvas() {
                 canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
                 canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
@@ -937,55 +938,297 @@
             resizeCanvas();
             var ctx2d = canvas.getContext('2d');
 
-            /* ---- state ---- */
+            /* ---- State ---- */
             var isPlaying = false;
-            var animFrame;
-            var simStartTime = null;
-            var simElapsed = 0;
-            var simDuration = 30;
+            var animFrame = null;
             var userFileLoaded = false;
+            var currentPresetIndex = 0;
+            var currentBuffer = null;
+            var presetBuffers = {};
+            var startedAt = 0;
+            var pausedAt = 0;
+            var currentDuration = 16;
+            var isScrubbing = false;
 
-            /* ---- Web Audio state ---- */
+            /* ---- Web Audio Graph ---- */
             var audioCtx = null;
             var analyser = null;
             var freqData = null;
-            var rawBuffer = null;         // decoded AudioBuffer
-            var sourceNode = null;        // current BufferSourceNode
-            var gainNode = null;
-            var eqFilter = null;          // biquad for 'After' mode
-            var startedAt = 0;            // audioCtx.currentTime when play began
-            var pausedAt = 0;             // track position when paused
-            var fileDuration = 0;
+            var sourceNode = null;
+            var masterGain = null;
+            var beforeFilter = null;
+            var beforeGain = null;
+            var afterFilter = null;
+            var afterGain = null;
 
             function initAudioCtx() {
-                if (audioCtx) return;
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx) {
+                    if (audioCtx.state === 'suspended') audioCtx.resume();
+                    return;
+                }
+                var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContextClass();
+
                 analyser = audioCtx.createAnalyser();
-                analyser.fftSize = 256;
+                analyser.fftSize = 512;
+                analyser.smoothingTimeConstant = 0.82;
                 freqData = new Uint8Array(analyser.frequencyBinCount);
-                gainNode = audioCtx.createGain();
-                gainNode.gain.value = 1;
-                // EQ filter for "After" — gentle high-shelf boost to simulate enhancement
-                eqFilter = audioCtx.createBiquadFilter();
-                eqFilter.type = 'highshelf';
-                eqFilter.frequency.value = 5000;
-                eqFilter.gain.value = 4;  // +4 dB high shelf
-                gainNode.connect(analyser);
+
+                masterGain = audioCtx.createGain();
+                masterGain.gain.value = 0.85;
+
+                // Before Path: 10.5kHz lowpass filter (simulating lossy/muffled low bitrate MP3)
+                beforeFilter = audioCtx.createBiquadFilter();
+                beforeFilter.type = 'lowpass';
+                beforeFilter.frequency.value = 10200;
+                beforeFilter.Q.value = 1.0;
+                beforeGain = audioCtx.createGain();
+
+                // After Path: High-shelf brightness enhancer (+4.5dB at 5.5kHz)
+                afterFilter = audioCtx.createBiquadFilter();
+                afterFilter.type = 'highshelf';
+                afterFilter.frequency.value = 5500;
+                afterFilter.gain.value = 4.5;
+                afterGain = audioCtx.createGain();
+
+                // Connect to master -> analyser -> speakers
+                beforeGain.connect(masterGain);
+                afterGain.connect(masterGain);
+                masterGain.connect(analyser);
                 analyser.connect(audioCtx.destination);
+
+                updateFilterGains();
             }
 
             function getAfterRatio() {
                 return parseInt(slider ? slider.value : 100) / 100;
             }
 
-            /* ---- Visualizer & Peak tracking ---- */
+            function updateFilterGains() {
+                if (!beforeGain || !afterGain || !audioCtx) return;
+                var ratio = getAfterRatio();
+                var now = audioCtx.currentTime;
+                // Smooth equal-power crossfade
+                var beforeVol = Math.cos(ratio * 0.5 * Math.PI);
+                var afterVol = Math.sin(ratio * 0.5 * Math.PI);
+                beforeGain.gain.setValueAtTime(beforeVol, now);
+                afterGain.gain.setValueAtTime(afterVol, now);
+            }
+
+            /* ---- Procedural High-Fidelity Audio Synth (Zero External MP3 Deps) ---- */
+            function createPresetAudioBuffer(presetIdx) {
+                if (presetBuffers[presetIdx]) return presetBuffers[presetIdx];
+                initAudioCtx();
+
+                var sampleRate = audioCtx.sampleRate || 44100;
+                var dur = (presetIdx === 2) ? 18 : 16;
+                var totalSamples = Math.floor(sampleRate * dur);
+                var buf = audioCtx.createBuffer(2, totalSamples, sampleRate);
+                var left = buf.getChannelData(0);
+                var right = buf.getChannelData(1);
+
+                function noteFreq(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
+
+                if (presetIdx === 0) {
+                    // PRESET 0: ROCK CLASSIC (120 BPM)
+                    var bpm = 120;
+                    var beatSec = 60 / bpm;
+                    var totalBeats = Math.floor(dur / beatSec);
+
+                    for (var beat = 0; beat < totalBeats; beat++) {
+                        var beatStart = Math.floor(beat * beatSec * sampleRate);
+                        var isKick = (beat % 4 === 0 || beat % 4 === 2 || (beat % 8 === 6));
+                        var isSnare = (beat % 4 === 1 || beat % 4 === 3);
+
+                        // Kick drum
+                        if (isKick) {
+                            var kLen = Math.floor(0.35 * sampleRate);
+                            for (var s = 0; s < kLen && (beatStart + s) < totalSamples; s++) {
+                                var t = s / sampleRate;
+                                var f = 130 * Math.exp(-t * 22) + 45;
+                                var env = Math.exp(-t * 12);
+                                var val = Math.sin(2 * Math.PI * f * t) * env * 0.9;
+                                left[beatStart + s] += val;
+                                right[beatStart + s] += val;
+                            }
+                        }
+
+                        // Snare drum
+                        if (isSnare) {
+                            var sLen = Math.floor(0.28 * sampleRate);
+                            for (var s = 0; s < sLen && (beatStart + s) < totalSamples; s++) {
+                                var t = s / sampleRate;
+                                var noise = (Math.random() * 2 - 1) * Math.exp(-t * 18) * 0.45;
+                                var tone = Math.sin(2 * Math.PI * 185 * t) * Math.exp(-t * 24) * 0.4;
+                                var val = noise + tone;
+                                left[beatStart + s] += val;
+                                right[beatStart + s] += val;
+                            }
+                        }
+
+                        // 8th-note Hi-hats
+                        for (var sub = 0; sub < 2; sub++) {
+                            var hStart = beatStart + Math.floor(sub * 0.5 * beatSec * sampleRate);
+                            var hLen = Math.floor(0.06 * sampleRate);
+                            for (var s = 0; s < hLen && (hStart + s) < totalSamples; s++) {
+                                var t = s / sampleRate;
+                                var hVal = (Math.random() * 2 - 1) * Math.exp(-t * 70) * (sub === 1 ? 0.16 : 0.22);
+                                left[hStart + s] += hVal * 0.7;
+                                right[hStart + s] += hVal * 1.0;
+                            }
+                        }
+                    }
+
+                    // Rock Bass & Electric Guitar Riff
+                    var bassNotes = [40, 40, 43, 45, 38, 38, 40, 43]; // E, E, G, A, D, D, E, G
+                    var leadNotes = [64, 67, 69, 71, 67, 69, 64, 62]; // E, G, A, B, G, A, E, D
+
+                    for (var b = 0; b < totalBeats; b++) {
+                        var bStart = Math.floor(b * beatSec * sampleRate);
+                        var bLen = Math.floor(beatSec * sampleRate);
+                        var bFreq = noteFreq(bassNotes[b % bassNotes.length]);
+                        var lFreq = noteFreq(leadNotes[b % leadNotes.length]);
+
+                        for (var s = 0; s < bLen && (bStart + s) < totalSamples; s++) {
+                            var t = s / sampleRate;
+                            // Driving bass (saw + sub)
+                            var bassEnv = Math.exp(-t * 3.5);
+                            var bWave = (Math.sin(2 * Math.PI * bFreq * t) + 0.5 * Math.sin(4 * Math.PI * bFreq * t)) * bassEnv * 0.35;
+                            // Lead guitar with harmonics & drive
+                            var lEnv = Math.exp(-t * 2.2);
+                            var lWave = (Math.sin(2 * Math.PI * lFreq * t) + 0.4 * Math.sin(6 * Math.PI * lFreq * t) + 0.25 * Math.sin(10 * Math.PI * lFreq * t)) * lEnv * 0.22;
+                            // Slight overdrive distortion
+                            lWave = Math.tanh(lWave * 2.2) * 0.25;
+
+                            left[bStart + s] += bWave + lWave * 0.85;
+                            right[bStart + s] += bWave + lWave * 1.15;
+                        }
+                    }
+
+                } else if (presetIdx === 1) {
+                    // PRESET 1: JAZZ SESSION (96 BPM)
+                    var bpm = 96;
+                    var beatSec = 60 / bpm;
+                    var totalBeats = Math.floor(dur / beatSec);
+
+                    // Swing ride cymbal & acoustic brush
+                    for (var b = 0; b < totalBeats; b++) {
+                        var bStart = Math.floor(b * beatSec * sampleRate);
+                        var swingOffset = Math.floor(0.66 * beatSec * sampleRate);
+
+                        // Swing ride taps
+                        [0, swingOffset].forEach(function(offset, idx) {
+                            var rStart = bStart + offset;
+                            var rLen = Math.floor(0.18 * sampleRate);
+                            for (var s = 0; s < rLen && (rStart + s) < totalSamples; s++) {
+                                var t = s / sampleRate;
+                                var val = (Math.random() * 2 - 1) * Math.exp(-t * 35) * (idx === 1 ? 0.15 : 0.22);
+                                left[rStart + s] += val * 0.9;
+                                right[rStart + s] += val * 0.6;
+                            }
+                        });
+
+                        // Walking bass line
+                        var jazzBass = [38, 41, 43, 44, 45, 43, 41, 38];
+                        var freq = noteFreq(jazzBass[b % jazzBass.length]);
+                        var bLen = Math.floor(beatSec * sampleRate);
+                        for (var s = 0; s < bLen && (bStart + s) < totalSamples; s++) {
+                            var t = s / sampleRate;
+                            var val = Math.sin(2 * Math.PI * freq * t) * Math.exp(-t * 2.8) * 0.45;
+                            left[bStart + s] += val;
+                            right[bStart + s] += val;
+                        }
+                    }
+
+                    // Electric Rhodes 7th Chords
+                    var chords = [
+                        [50, 53, 57, 60], // Dm7
+                        [43, 47, 50, 53], // G7
+                        [48, 52, 55, 59], // Cmaj7
+                        [45, 49, 52, 55]  // A7
+                    ];
+
+                    for (var c = 0; c < Math.floor(totalBeats / 2); c++) {
+                        var cStart = Math.floor(c * 2 * beatSec * sampleRate);
+                        var chord = chords[c % chords.length];
+                        var cLen = Math.floor(2 * beatSec * sampleRate);
+
+                        chord.forEach(function(n, nIdx) {
+                            var f = noteFreq(n);
+                            for (var s = 0; s < cLen && (cStart + s) < totalSamples; s++) {
+                                var t = s / sampleRate;
+                                var tremolo = 1 + 0.15 * Math.sin(2 * Math.PI * 4.5 * t);
+                                var val = (Math.sin(2 * Math.PI * f * t) + 0.3 * Math.sin(4 * Math.PI * f * t)) * Math.exp(-t * 1.5) * 0.12 * tremolo;
+                                var pan = (nIdx % 2 === 0) ? 0.7 : 1.3;
+                                left[cStart + s] += val * pan;
+                                right[cStart + s] += val * (2 - pan);
+                            }
+                        });
+                    }
+
+                } else {
+                    // PRESET 2: PIANO BALLAD (72 BPM)
+                    var bpm = 72;
+                    var beatSec = 60 / bpm;
+                    var totalBeats = Math.floor(dur / beatSec);
+
+                    var pianoProgression = [
+                        [48, 55, 60, 64, 67], // C major
+                        [47, 55, 59, 62, 67], // G/B
+                        [45, 52, 57, 60, 64], // Am
+                        [41, 48, 53, 57, 60]  // F
+                    ];
+
+                    for (var bar = 0; bar < Math.floor(totalBeats / 4); bar++) {
+                        var barStart = Math.floor(bar * 4 * beatSec * sampleRate);
+                        var chord = pianoProgression[bar % pianoProgression.length];
+
+                        // Arpeggiated acoustic piano notes
+                        for (var a = 0; a < 8; a++) {
+                            var nStart = barStart + Math.floor(a * 0.5 * beatSec * sampleRate);
+                            var n = chord[a % chord.length] + (a >= 4 ? 12 : 0);
+                            var f = noteFreq(n);
+                            var nLen = Math.floor(2.5 * sampleRate);
+
+                            for (var s = 0; s < nLen && (nStart + s) < totalSamples; s++) {
+                                var t = s / sampleRate;
+                                // Acoustic piano decay with rich overtones
+                                var val = (Math.sin(2 * Math.PI * f * t) * 0.7
+                                         + Math.sin(4 * Math.PI * f * t) * 0.25
+                                         + Math.sin(6 * Math.PI * f * t) * 0.1) * Math.exp(-t * 2.2) * 0.18;
+                                var pan = 0.8 + (a / 8) * 0.4;
+                                left[nStart + s] += val * pan;
+                                right[nStart + s] += val * (2 - pan);
+                            }
+                        }
+                    }
+                }
+
+                // Master Normalization & Soft Limiter
+                var maxPeak = 0;
+                for (var i = 0; i < totalSamples; i++) {
+                    if (Math.abs(left[i]) > maxPeak) maxPeak = Math.abs(left[i]);
+                    if (Math.abs(right[i]) > maxPeak) maxPeak = Math.abs(right[i]);
+                }
+                if (maxPeak > 0) {
+                    var gainMult = 0.82 / maxPeak;
+                    for (var i = 0; i < totalSamples; i++) {
+                        left[i] = Math.tanh(left[i] * gainMult);
+                        right[i] = Math.tanh(right[i] * gainMult);
+                    }
+                }
+
+                presetBuffers[presetIdx] = buf;
+                return buf;
+            }
+
+            /* ---- Vertical Spectrum Equalizer Visualizer ---- */
             var NUM_BARS = 48;
             var peaks = new Float32Array(NUM_BARS);
             var barHeights = new Float32Array(NUM_BARS);
 
             function getSpectrumGradient(h, afterRatio) {
                 var grad = ctx2d.createLinearGradient(0, h, 0, 0);
-                // Amber/Orange (Before) vs Electric Cyan/Sky (After)
                 var r1 = Math.round(217 + (2 - 217) * afterRatio);
                 var g1 = Math.round(119 + (132 - 119) * afterRatio);
                 var b1 = Math.round(6 + (199 - 6) * afterRatio);
@@ -1011,7 +1254,6 @@
                 return 'rgba(' + r + ',' + g + ',' + b + ', 0.95)';
             }
 
-            /* Draw vertical equalizer bars with peak caps */
             function renderVerticalBars(targetHeights, afterRatio) {
                 var w = canvas.width, h = canvas.height;
                 ctx2d.clearRect(0, 0, w, h);
@@ -1024,21 +1266,18 @@
                 var peakColor = getPeakColor(afterRatio);
 
                 for (var i = 0; i < numBars; i++) {
-                    // Smooth interpolation of bar heights
-                    barHeights[i] = barHeights[i] * 0.7 + targetHeights[i] * 0.3;
+                    barHeights[i] = barHeights[i] * 0.65 + targetHeights[i] * 0.35;
                     var val = barHeights[i];
                     var barH = Math.max(3, val * (h - 12));
                     var x = i * (barWidth + gap);
                     var y = h - barH;
 
-                    // Update peaks
                     if (barH >= peaks[i]) {
                         peaks[i] = barH;
                     } else {
-                        peaks[i] = Math.max(3, peaks[i] - 1.2 * (window.devicePixelRatio || 1));
+                        peaks[i] = Math.max(3, peaks[i] - 1.4 * (window.devicePixelRatio || 1));
                     }
 
-                    // Draw vertical bar rising from bottom
                     ctx2d.fillStyle = grad;
                     ctx2d.beginPath();
                     var radius = Math.min(barWidth / 2, 3);
@@ -1049,7 +1288,6 @@
                     }
                     ctx2d.fill();
 
-                    // Draw peak cap
                     var peakY = h - peaks[i] - 2;
                     if (peakY < h - 4) {
                         ctx2d.fillStyle = peakColor;
@@ -1058,81 +1296,46 @@
                 }
             }
 
-            /* Simulated vertical bars (for presets) */
-            function drawSimBars(t) {
-                var afterRatio = getAfterRatio();
-                var targets = new Float32Array(NUM_BARS);
-
-                for (var i = 0; i < NUM_BARS; i++) {
-                    var normX = i / NUM_BARS;
-                    // Bass pulse (left), Mid rhythm (center), High shimmer (right)
-                    var bass = Math.pow(Math.max(0, Math.sin(t * 3.5)), 3) * (1 - normX * 0.8) * 0.85;
-                    var mids = (Math.sin(i * 0.4 + t * 4.2) * 0.3 + 0.35) * Math.sin(normX * Math.PI) * 0.7;
-                    var highs = (Math.cos(i * 0.7 - t * 6.0) * 0.25 + 0.25) * (normX * 0.75);
-                    var noise = (Math.sin(i * 12.3 + t * 8.1) * 0.08);
-
-                    var combined = Math.max(0.04, bass + mids + highs + noise);
-
-                    // If "Before" mode (original low bitrate): high frequency roll-off above 14kHz
-                    if (normX > 0.65) {
-                        var rolloff = Math.max(0.15, 1 - (1 - afterRatio) * ((normX - 0.65) / 0.35) * 0.85);
-                        combined *= rolloff;
-                    }
-
-                    // Enhance boost factor
-                    combined *= (0.65 + afterRatio * 0.45);
-                    targets[i] = Math.min(0.95, combined);
-                }
-
-                renderVerticalBars(targets, afterRatio);
-            }
-
-            /* Real Web Audio FFT vertical bars */
-            function drawFreqBars() {
-                if (!analyser) return;
-                analyser.getByteFrequencyData(freqData);
-                var afterRatio = getAfterRatio();
-                var targets = new Float32Array(NUM_BARS);
-
-                // Group FFT bins logarithmically across NUM_BARS
-                var binCount = freqData.length;
-                for (var i = 0; i < NUM_BARS; i++) {
-                    var startBin = Math.floor(Math.pow(i / NUM_BARS, 1.8) * (binCount - 2));
-                    var endBin = Math.max(startBin + 1, Math.floor(Math.pow((i + 1) / NUM_BARS, 1.8) * (binCount - 1)));
-                    var sum = 0;
-                    var count = 0;
-                    for (var b = startBin; b <= endBin && b < binCount; b++) {
-                        sum += freqData[b];
-                        count++;
-                    }
-                    var avg = (count > 0 ? (sum / count) : 0) / 255;
-                    // Scale high frequencies slightly for balanced visual look
-                    var freqScale = 1 + (i / NUM_BARS) * 0.6;
-                    targets[i] = Math.min(0.98, avg * freqScale);
-                }
-
-                renderVerticalBars(targets, afterRatio);
-            }
-
-            /* ---- Simulation loop (no file loaded) ---- */
-            function simLoop(ts) {
-                if (!simStartTime) simStartTime = ts;
-                simElapsed = (ts - simStartTime) / 1000;
-                if (simElapsed >= simDuration) { simElapsed = 0; simStartTime = ts; }
-                drawSimBars(simElapsed);
-                fill.style.width = (simElapsed / simDuration * 100) + '%';
-                timeDisplay.textContent = fmtTime(simElapsed) + ' / ' + fmtTime(simDuration);
-                animFrame = requestAnimationFrame(simLoop);
-            }
-
-            /* ---- Real audio loop ---- */
+            /* Live FFT Sound-Reactive Animation Loop */
             function realLoop() {
-                drawFreqBars();
-                var pos = audioCtx.currentTime - startedAt + pausedAt;
-                if (pos >= fileDuration) { pos = fileDuration; stopAudio(); }
-                fill.style.width = (pos / fileDuration * 100) + '%';
-                timeDisplay.textContent = fmtTime(pos) + ' / ' + fmtTime(fileDuration);
-                if (isPlaying) animFrame = requestAnimationFrame(realLoop);
+                if (analyser && isPlaying) {
+                    analyser.getByteFrequencyData(freqData);
+                    var afterRatio = getAfterRatio();
+                    var targets = new Float32Array(NUM_BARS);
+                    var binCount = freqData.length;
+
+                    for (var i = 0; i < NUM_BARS; i++) {
+                        var startBin = Math.floor(Math.pow(i / NUM_BARS, 1.8) * (binCount - 2));
+                        var endBin = Math.max(startBin + 1, Math.floor(Math.pow((i + 1) / NUM_BARS, 1.8) * (binCount - 1)));
+                        var sum = 0;
+                        var count = 0;
+                        for (var b = startBin; b <= endBin && b < binCount; b++) {
+                            sum += freqData[b];
+                            count++;
+                        }
+                        var avg = (count > 0 ? (sum / count) : 0) / 255;
+                        var freqScale = 1 + (i / NUM_BARS) * 0.75;
+                        targets[i] = Math.min(0.98, avg * freqScale);
+                    }
+                    renderVerticalBars(targets, afterRatio);
+
+                    // Update Progress & Time
+                    if (!isScrubbing) {
+                        var pos = audioCtx.currentTime - startedAt + pausedAt;
+                        if (pos >= currentDuration) {
+                            pos = 0;
+                            pausedAt = 0;
+                            startedAt = audioCtx.currentTime;
+                            buildAndPlaySource(0);
+                        }
+                        fill.style.width = ((pos / currentDuration) * 100) + '%';
+                        timeDisplay.textContent = fmtTime(pos) + ' / ' + fmtTime(currentDuration);
+                    }
+                }
+
+                if (isPlaying) {
+                    animFrame = requestAnimationFrame(realLoop);
+                }
             }
 
             function fmtTime(s) {
@@ -1146,181 +1349,234 @@
                 var afterRatio = getAfterRatio();
                 var idleTargets = new Float32Array(NUM_BARS);
                 for (var i = 0; i < NUM_BARS; i++) {
-                    idleTargets[i] = 0.05 + Math.sin(i * 0.2) * 0.02;
+                    idleTargets[i] = 0.04 + Math.sin(i * 0.25) * 0.02;
                 }
                 renderVerticalBars(idleTargets, afterRatio);
             }
             idle();
 
-            /* ---- Play/Pause ---- */
-            function startSim() {
-                simStartTime = null;
-                animFrame = requestAnimationFrame(simLoop);
-            }
-
-            function stopSim() {
-                cancelAnimationFrame(animFrame);
-            }
-
-            function stopAudio() {
+            /* ---- Playback Control ---- */
+            function buildAndPlaySource(offset) {
+                initAudioCtx();
                 if (sourceNode) {
                     try { sourceNode.stop(); } catch(e) {}
                     sourceNode.disconnect();
                     sourceNode = null;
                 }
+
+                if (!currentBuffer) {
+                    currentBuffer = userFileLoaded ? currentBuffer : createPresetAudioBuffer(currentPresetIndex);
+                }
+                currentDuration = currentBuffer.duration;
+
+                sourceNode = audioCtx.createBufferSource();
+                sourceNode.buffer = currentBuffer;
+                sourceNode.loop = false;
+
+                // Split signal into Before (lowpass) and After (highshelf) paths
+                sourceNode.connect(beforeFilter);
+                beforeFilter.connect(beforeGain);
+
+                sourceNode.connect(afterFilter);
+                afterFilter.connect(afterGain);
+
+                updateFilterGains();
+
+                sourceNode.start(0, offset);
+                startedAt = audioCtx.currentTime - offset;
+            }
+
+            function playAudio() {
+                initAudioCtx();
+                buildAndPlaySource(pausedAt);
+                isPlaying = true;
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = '';
+                animFrame = requestAnimationFrame(realLoop);
+            }
+
+            function pauseAudio() {
+                if (audioCtx) {
+                    pausedAt = audioCtx.currentTime - startedAt + pausedAt;
+                    if (pausedAt >= currentDuration) pausedAt = 0;
+                }
+                if (sourceNode) {
+                    try { sourceNode.stop(); } catch(e) {}
+                    sourceNode = null;
+                }
                 isPlaying = false;
                 playIcon.style.display = '';
                 pauseIcon.style.display = 'none';
-                cancelAnimationFrame(animFrame);
-                pausedAt = 0;
-                fill.style.width = '0%';
-                timeDisplay.textContent = fmtTime(0) + ' / ' + fmtTime(fileDuration);
-                drawFreqBars();
-            }
-
-            function buildAndPlaySource(offset) {
-                initAudioCtx();
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                var afterRatio = getAfterRatio();
-                // disconnect old nodes cleanly
-                try { if (eqFilter) { eqFilter.disconnect(); } } catch(e) {}
-                try { gainNode.disconnect(); } catch(e) {}
-                gainNode.connect(analyser);
-                analyser.connect(audioCtx.destination);
-
-                sourceNode = audioCtx.createBufferSource();
-                sourceNode.buffer = rawBuffer;
-                // route: source -> (eqFilter?) -> gainNode -> analyser -> destination
-                if (afterRatio > 0.5) {
-                    sourceNode.connect(eqFilter);
-                    eqFilter.connect(gainNode);
-                } else {
-                    sourceNode.connect(gainNode);
-                }
-                sourceNode.start(0, offset);
-                startedAt = audioCtx.currentTime - offset;
-                sourceNode.onended = function() {
-                    if (isPlaying && audioCtx.currentTime - startedAt + pausedAt >= fileDuration - 0.1) {
-                        stopAudio();
-                    }
-                };
+                if (animFrame) cancelAnimationFrame(animFrame);
+                idle();
             }
 
             playBtn.addEventListener('click', function() {
-                if (userFileLoaded) {
-                    if (!isPlaying) {
-                        initAudioCtx();
-                        if (audioCtx.state === 'suspended') audioCtx.resume();
-                        buildAndPlaySource(pausedAt);
-                        isPlaying = true;
-                        playIcon.style.display = 'none';
-                        pauseIcon.style.display = '';
-                        animFrame = requestAnimationFrame(realLoop);
-                    } else {
-                        // pause
-                        pausedAt = audioCtx.currentTime - startedAt + pausedAt;
-                        if (sourceNode) { try { sourceNode.stop(); } catch(e) {} sourceNode = null; }
-                        cancelAnimationFrame(animFrame);
-                        isPlaying = false;
-                        playIcon.style.display = '';
-                        pauseIcon.style.display = 'none';
-                    }
+                if (isPlaying) {
+                    pauseAudio();
                 } else {
-                    // Sim mode
-                    isPlaying = !isPlaying;
-                    if (isPlaying) {
-                        startSim();
-                        playIcon.style.display = 'none';
-                        pauseIcon.style.display = '';
-                    } else {
-                        stopSim();
-                        playIcon.style.display = '';
-                        pauseIcon.style.display = 'none';
-                    }
+                    playAudio();
                 }
             });
 
-            /* ---- A/B mode ---- */
-            function updateABMode(restartAudio) {
+            /* ---- Interactive Seeking on Soundwave & Progress Bar ---- */
+            function seekToRatio(ratio) {
+                ratio = Math.max(0, Math.min(1, ratio));
+                if (!currentBuffer) {
+                    currentBuffer = userFileLoaded ? currentBuffer : createPresetAudioBuffer(currentPresetIndex);
+                    currentDuration = currentBuffer.duration;
+                }
+                var newPos = ratio * currentDuration;
+                pausedAt = newPos;
+                fill.style.width = (ratio * 100) + '%';
+                timeDisplay.textContent = fmtTime(newPos) + ' / ' + fmtTime(currentDuration);
+
+                if (isPlaying) {
+                    buildAndPlaySource(newPos);
+                }
+            }
+
+            function handleScrubEvent(e, elem) {
+                var rect = elem.getBoundingClientRect();
+                var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                var ratio = (clientX - rect.left) / rect.width;
+                seekToRatio(ratio);
+            }
+
+            // Click/drag on progress bar
+            waveformBar.addEventListener('click', function(e) { handleScrubEvent(e, this); });
+            waveformBar.addEventListener('mousedown', function(e) {
+                isScrubbing = true;
+                handleScrubEvent(e, this);
+                function onMove(me) { handleScrubEvent(me, waveformBar); }
+                function onUp() {
+                    isScrubbing = false;
+                    window.removeEventListener('mousemove', onMove);
+                    window.removeEventListener('mouseup', onUp);
+                }
+                window.addEventListener('mousemove', onMove);
+                window.addEventListener('mouseup', onUp);
+            });
+
+            // Click/drag directly on the vertical bar visualizer canvas
+            canvas.addEventListener('click', function(e) { handleScrubEvent(e, this); });
+            canvas.addEventListener('mousedown', function(e) {
+                isScrubbing = true;
+                handleScrubEvent(e, this);
+                function onMove(me) { handleScrubEvent(me, canvas); }
+                function onUp() {
+                    isScrubbing = false;
+                    window.removeEventListener('mousemove', onMove);
+                    window.removeEventListener('mouseup', onUp);
+                }
+                window.addEventListener('mousemove', onMove);
+                window.addEventListener('mouseup', onUp);
+            });
+
+            // Touch support for mobile seeking
+            [waveformBar, canvas].forEach(function(el) {
+                el.addEventListener('touchstart', function(e) {
+                    isScrubbing = true;
+                    handleScrubEvent(e, this);
+                }, { passive: true });
+                el.addEventListener('touchmove', function(e) {
+                    if (isScrubbing) handleScrubEvent(e, this);
+                }, { passive: true });
+                el.addEventListener('touchend', function() {
+                    isScrubbing = false;
+                });
+            });
+
+            /* ---- A/B Mode & Crossfader ---- */
+            function updateABMode() {
                 var val = parseInt(slider.value);
                 var isAfter = val >= 50;
                 btnBefore.classList.toggle('active', !isAfter);
                 btnAfter.classList.toggle('active', isAfter);
+
                 if (isAfter) {
-                    modeLabel.textContent = userFileLoaded ? 'ENHANCED (EQ BOOST)' : 'ENHANCED 320K';
+                    modeLabel.textContent = userFileLoaded ? 'ENHANCED (HD EQ)' : 'ENHANCED 320K';
                     indicatorDot.classList.remove('original');
                     modeIndicator.classList.remove('original');
                 } else {
-                    modeLabel.textContent = 'ORIGINAL';
+                    modeLabel.textContent = 'ORIGINAL (128K)';
                     indicatorDot.classList.add('original');
                     modeIndicator.classList.add('original');
                 }
-                // If real audio is playing, rebuild source with new routing
-                if (userFileLoaded && isPlaying && restartAudio) {
-                    var pos = audioCtx.currentTime - startedAt + pausedAt;
-                    pausedAt = pos;
-                    if (sourceNode) { try { sourceNode.stop(); } catch(e) {} sourceNode = null; }
-                    cancelAnimationFrame(animFrame);
-                    buildAndPlaySource(pausedAt);
-                    animFrame = requestAnimationFrame(realLoop);
-                }
-                if (!userFileLoaded && !isPlaying) idle();
+
+                updateFilterGains();
+                if (!isPlaying) idle();
             }
 
-            if (slider) slider.addEventListener('input', function() { updateABMode(true); });
+            if (slider) slider.addEventListener('input', updateABMode);
 
-            btnBefore.addEventListener('click', function() { slider.value = 0; updateABMode(true); });
-            btnAfter.addEventListener('click', function() { slider.value = 100; updateABMode(true); });
+            btnBefore.addEventListener('click', function() {
+                slider.value = 0;
+                updateABMode();
+            });
+            btnAfter.addEventListener('click', function() {
+                slider.value = 100;
+                updateABMode();
+            });
 
-            /* ---- Preset tabs (decorative) ---- */
+            /* ---- Preset Song Tabs ---- */
             document.querySelectorAll('.preset-tab').forEach(function(tab) {
                 tab.addEventListener('click', function() {
-                    if (userFileLoaded) return; // ignore when user file is loaded
+                    if (userFileLoaded) return;
                     document.querySelectorAll('.preset-tab').forEach(function(t) { t.classList.remove('active'); });
                     this.classList.add('active');
+
+                    var pIdx = parseInt(this.getAttribute('data-preset') || 0);
+                    currentPresetIndex = pIdx;
+                    currentBuffer = createPresetAudioBuffer(pIdx);
+                    currentDuration = currentBuffer.duration;
+                    pausedAt = 0;
+                    fill.style.width = '0%';
+                    timeDisplay.textContent = '0:00 / ' + fmtTime(currentDuration);
+
+                    if (isPlaying) {
+                        buildAndPlaySource(0);
+                    }
                 });
             });
 
-            /* ---- File upload ---- */
+            /* ---- Test User File Upload ---- */
             function loadAudioFile(file) {
                 if (!file || !file.type.match(/audio/)) {
                     alert('Please select an audio file (MP3, WAV, FLAC, AAC, etc.)');
                     return;
                 }
                 var name = file.name;
-                testFileText.textContent = 'Loading…';
+                testFileText.textContent = 'Loading & Decoding…';
                 testFileLabel.style.opacity = '0.6';
 
-                // Stop any current playback
-                if (isPlaying) {
-                    if (userFileLoaded) stopAudio();
-                    else { stopSim(); isPlaying = false; playIcon.style.display = ''; pauseIcon.style.display = 'none'; }
-                }
+                if (isPlaying) pauseAudio();
                 pausedAt = 0;
 
                 var reader = new FileReader();
                 reader.onload = function(e) {
                     initAudioCtx();
                     audioCtx.decodeAudioData(e.target.result.slice(0), function(buf) {
-                        rawBuffer = buf;
-                        fileDuration = buf.duration;
+                        currentBuffer = buf;
+                        currentDuration = buf.duration;
                         userFileLoaded = true;
-                        // Update UI
+
                         testFileLabel.style.display = 'none';
                         testFileInfo.classList.remove('hidden');
                         testFileName.textContent = name;
-                        // Disable preset tabs visually
+
                         document.querySelectorAll('.preset-tab').forEach(function(t) {
                             t.classList.remove('active');
                             t.style.opacity = '0.35';
                             t.style.pointerEvents = 'none';
                         });
-                        timeDisplay.textContent = fmtTime(0) + ' / ' + fmtTime(fileDuration);
+
+                        timeDisplay.textContent = '0:00 / ' + fmtTime(currentDuration);
                         fill.style.width = '0%';
-                        drawFreqBars();
-                        updateABMode(false);
+                        updateABMode();
+                        playAudio();
                     }, function() {
-                        alert('Could not decode audio. Please try a different file.');
+                        alert('Could not decode this audio file. Please try an MP3 or WAV.');
                         testFileText.textContent = 'Drop your own track here to test — or click to browse';
                         testFileLabel.style.opacity = '1';
                     });
@@ -1332,7 +1588,6 @@
                 if (this.files && this.files[0]) loadAudioFile(this.files[0]);
             });
 
-            // Drag & drop onto the test zone
             testFileZone.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 this.classList.add('drag-over');
@@ -1343,39 +1598,43 @@
             testFileZone.addEventListener('drop', function(e) {
                 e.preventDefault();
                 this.classList.remove('drag-over');
-                var f = e.dataTransfer.files[0];
-                if (f) loadAudioFile(f);
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    loadAudioFile(e.dataTransfer.files[0]);
+                }
             });
 
-            // Clear file
             testFileClearBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 e.preventDefault();
-                if (isPlaying) stopAudio();
-                rawBuffer = null;
+                if (isPlaying) pauseAudio();
                 userFileLoaded = false;
                 pausedAt = 0;
-                isPlaying = false;
-                playIcon.style.display = '';
-                pauseIcon.style.display = 'none';
-                cancelAnimationFrame(animFrame);
-                // Reset UI
+                currentBuffer = createPresetAudioBuffer(currentPresetIndex);
+                currentDuration = currentBuffer.duration;
+
                 testFileInfo.classList.add('hidden');
                 testFileLabel.style.display = '';
+                testFileText.textContent = 'Drop your own track here to test — or click to browse';
+                testFileLabel.style.opacity = '1';
                 testFileName.textContent = '';
                 testFileInput.value = '';
+
                 document.querySelectorAll('.preset-tab').forEach(function(t, i) {
-                    t.style.opacity = ''; t.style.pointerEvents = '';
-                    if (i === 0) t.classList.add('active'); else t.classList.remove('active');
+                    t.style.opacity = '';
+                    t.style.pointerEvents = '';
+                    if (i === currentPresetIndex) t.classList.add('active');
+                    else t.classList.remove('active');
                 });
+
                 fill.style.width = '0%';
-                timeDisplay.textContent = '0:00 / 0:30';
+                timeDisplay.textContent = '0:00 / ' + fmtTime(currentDuration);
+                updateABMode();
                 idle();
             });
 
             window.addEventListener('resize', function() {
                 resizeCanvas();
-                if (!isPlaying) { if (userFileLoaded) drawFreqBars(); else idle(); }
+                if (!isPlaying) idle();
             });
         })();
     </script>
