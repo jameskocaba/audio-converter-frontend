@@ -373,20 +373,23 @@
                     <div id="loginFormContainer" class="auth-box"
                         style="border: 2px solid #fde68a; background: #fffbeb; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.15); border-radius: 12px; padding: 25px; box-sizing: border-box;">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                            <svg viewBox="0 0 24 24" width="24" height="24" stroke="#d97706" stroke-width="2" fill="none"
-                                stroke-linecap="round" stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" width="24" height="24" stroke="#d97706" stroke-width="2"
+                                fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                             </svg>
-                            <h3 style="margin: 0; color: #92400e; font-size: 1.15rem; font-weight: 800;">Log In &amp; Buy
+                            <h3 style="margin: 0; color: #92400e; font-size: 1.15rem; font-weight: 800;">Log In &amp;
+                                Buy
                                 Credits
                             </h3>
                         </div>
-                        <p style="font-size: 0.9rem; color: #92400e; margin-bottom: 10px; line-height: 1.5;"><strong>Convert
+                        <p style="font-size: 0.9rem; color: #92400e; margin-bottom: 10px; line-height: 1.5;">
+                            <strong>Convert
                                 your music collections with Pay-As-You-Go credits.</strong> Enter your email below to
                             receive a secure login link. Once inside, you can purchase track credits:</p>
                         <ul
                             style="font-size: 0.9rem; color: #92400e; margin-bottom: 18px; line-height: 1.5; padding-left: 20px;">
-                            <li style="margin-bottom: 5px;"><strong>Pay As You Go ($2.00):</strong> 350 Track Credits, no
+                            <li style="margin-bottom: 5px;"><strong>Pay As You Go ($2.00):</strong> 350 Track Credits,
+                                no
                                 expiration.</li>
                         </ul>
                         <div class="unified-search-bar" style="margin-bottom: 5px; border-color: #fcd34d;">
@@ -438,9 +441,11 @@
 
                         <div class="workspace-tier-card pay-as-you-go-card"
                             style="margin: 0 auto; max-width: 320px; width: 100%;">
-                            <h4 style="margin: 0 0 10px 0; color: #334155; font-size: 1.15rem; font-weight: 800;">Pay As You
+                            <h4 style="margin: 0 0 10px 0; color: #334155; font-size: 1.15rem; font-weight: 800;">Pay As
+                                You
                                 Go</h4>
-                            <div style="font-size: 1.8rem; font-weight: bold; color: #0f172a; margin-bottom: 15px;">$2.00
+                            <div style="font-size: 1.8rem; font-weight: bold; color: #0f172a; margin-bottom: 15px;">
+                                $2.00
                             </div>
                             <p
                                 style="font-size: 0.9rem; color: #64748b; margin-bottom: 20px; line-height: 1.6; flex-grow: 1;">
@@ -457,19 +462,8 @@
             <!-- =========================================
                  INTERACTIVE BEFORE / AFTER AUDIO PREVIEWER DECK
                  ========================================= -->
-            <section class="audio-preview-section" id="audioEnhancerPreviewer" aria-label="Interactive Audio Enhancer Demo">
-                <div class="preview-header">
-                    <div class="preview-badge">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                        </svg>
-                        <span>Interactive Audio Enhancer Demo</span>
-                    </div>
-                    <h2 class="preview-title">Hear the Before &amp; After Difference</h2>
-                    <p class="preview-subtitle">Listen to real-time audio samples or upload your own tracks. Toggle between muffled 96–128kbps originals and crystal-clear 320kbps AI-enhanced masters.</p>
-                </div>
-
+            <section class="audio-preview-section" id="audioEnhancerPreviewer"
+                aria-label="Interactive Audio Enhancer Demo">
                 <div class="preview-player-card">
                     <!-- Preset Selection Tabs -->
                     <div class="preset-tabs" role="tablist" aria-label="Audio sample presets">
@@ -488,11 +482,13 @@
                             <span class="tab-label">Piano &amp; Acoustic</span>
                             <span class="tab-sub">Resonance &amp; Dynamic Range</span>
                         </button>
-                        <label class="preset-tab custom-tab" id="testFileTab" title="Test with your own MP3 or audio file">
+                        <label class="preset-tab custom-tab" id="testFileTab"
+                            title="Test with your own MP3 or audio file">
                             <span class="tab-icon">📁</span>
                             <span class="tab-label" id="testFileTabLabel">Test Your File</span>
                             <span class="tab-sub" id="testFileTabSub">Instant Live Demo</span>
-                            <button id="testFileClearBtn" class="tab-clear-btn hidden" aria-label="Remove uploaded file" title="Remove file">&times;</button>
+                            <button id="testFileClearBtn" class="tab-clear-btn hidden" aria-label="Remove uploaded file"
+                                title="Remove file">&times;</button>
                             <input type="file" id="previewCustomAudioInput" accept="audio/*" style="display: none;">
                         </label>
                     </div>
@@ -529,7 +525,8 @@
                                     <span class="slider-hint">Drag to crossfade</span>
                                     <span>Enhanced (100%)</span>
                                 </div>
-                                <input type="range" id="abCrossfadeSlider" min="0" max="100" value="100" aria-label="Crossfade between original and enhanced audio">
+                                <input type="range" id="abCrossfadeSlider" min="0" max="100" value="100"
+                                    aria-label="Crossfade between original and enhanced audio">
                             </div>
 
                             <button class="ab-btn active" id="btnAfter" type="button">
@@ -546,7 +543,8 @@
                             <svg id="playIcon" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
                                 <polygon points="6 3 20 12 6 21 6 3"></polygon>
                             </svg>
-                            <svg id="pauseIcon" class="hidden" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" style="display:none;">
+                            <svg id="pauseIcon" class="hidden" viewBox="0 0 24 24" width="22" height="22"
+                                fill="currentColor" style="display:none;">
                                 <rect x="6" y="4" width="4" height="16"></rect>
                                 <rect x="14" y="4" width="4" height="16"></rect>
                             </svg>
@@ -558,20 +556,23 @@
 
                         <div class="preview-enhancement-metrics">
                             <span class="metric-pill">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                                    stroke-width="2">
                                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
                                 </svg>
                                 Clarity +4.5dB
                             </span>
                             <span class="metric-pill">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                                    stroke-width="2">
                                     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                                     <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                                 </svg>
                                 320k Highs
                             </span>
                             <span class="metric-pill">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                                    stroke-width="2">
                                     <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                                 </svg>
                                 Studio -14 LUFS
@@ -579,9 +580,11 @@
                         </div>
 
                         <div class="preview-cta-wrapper">
-                            <button class="preview-cta-btn" onclick="document.getElementById('dropZone').scrollIntoView({behavior:'smooth'})">
+                            <button class="preview-cta-btn"
+                                onclick="document.getElementById('dropZone').scrollIntoView({behavior:'smooth'})">
                                 <span>Enhance My Tracks Now</span>
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="5" y1="12" x2="19" y2="12"></line>
                                     <polyline points="12 5 19 12 12 19"></polyline>
                                 </svg>
@@ -591,106 +594,42 @@
                 </div>
             </section>
 
-            <section class="comparison-section" aria-label="Competitor Checklist & Benefit Matrix">
+            <section class="comparison-section" aria-label="Feature &amp; Benefit Comparison">
                 <div class="comparison-header">
                     <div class="comparison-badge">
                         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                         </svg>
-                        <span>Feature &amp; Benefit Comparison</span>
+                        <span>Feature Comparison</span>
                     </div>
-                    <h2 class="comparison-title">Why MP3aud.io Outperforms Traditional Software</h2>
-                    <p class="comparison-subtitle">See how our all-in-one AI audio engine compares against legacy desktop taggers and tedious manual workflows.</p>
+                    <h2 class="comparison-title">How MP3aud.io Compares</h2>
+                    <p class="comparison-subtitle">Fast, automated in-browser AI tagging and audio enhancement vs. traditional desktop tools.</p>
                 </div>
 
-                <!-- Benefit Checklist Cards -->
-                <div class="benefit-checklist-grid">
-                    <div class="benefit-card">
-                        <div class="benefit-card-top">
-                            <div class="benefit-icon-badge badge-art">
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                    <polyline points="21 15 16 10 5 21"></polyline>
-                                </svg>
-                            </div>
-                            <h3>3000px Ultra-HD Art</h3>
-                        </div>
-                        <p>Auto-embeds crisp 3000×3000px official artwork for Apple Music, CarPlay, and Retina displays.</p>
-                    </div>
-
-                    <div class="benefit-card">
-                        <div class="benefit-card-top">
-                            <div class="benefit-icon-badge badge-ai">
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                                    <line x1="12" y1="19" x2="12" y2="23"></line>
-                                    <line x1="8" y1="23" x2="16" y2="23"></line>
-                                </svg>
-                            </div>
-                            <h3>AI Lyric Transcription</h3>
-                        </div>
-                        <p>Speech AI transcribes vocal tracks and embeds synchronized lyrics directly into ID3 tags.</p>
-                    </div>
-
-                    <div class="benefit-card">
-                        <div class="benefit-card-top">
-                            <div class="benefit-icon-badge badge-audio">
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                                </svg>
-                            </div>
-                            <h3>320k Studio Enhancer</h3>
-                        </div>
-                        <p>Removes mud, normalizes to broadcast -14 LUFS, and restores high-frequency fidelity.</p>
-                    </div>
-
-                    <div class="benefit-card">
-                        <div class="benefit-card-top">
-                            <div class="benefit-icon-badge badge-batch">
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                                    <line x1="12" y1="11" x2="12" y2="17"></line>
-                                    <line x1="9" y1="14" x2="15" y2="14"></line>
-                                </svg>
-                            </div>
-                            <h3>1-Click Batch ZIP</h3>
-                        </div>
-                        <p>Drag an entire album or music library folder and download cleaned, tagged audio in one ZIP.</p>
-                    </div>
-                </div>
-
-                <!-- Comparison & Benefit Matrix Table -->
+                <!-- Clean Comparison Table -->
                 <div class="comparison-table-wrapper">
                     <table class="comparison-table">
                         <thead>
                             <tr>
-                                <th>Feature &amp; Capability</th>
+                                <th>Capability</th>
                                 <th class="col-highlight">
                                     <div class="mp3audio-brand-cell">
-                                        <div class="brand-name">
-                                            <span>MP3aud.io</span>
-                                        </div>
-                                        <span class="brand-tag">★ All-In-One Web AI</span>
+                                        <span class="brand-name">MP3aud.io</span>
+                                        <span class="brand-tag">★ Web AI</span>
                                     </div>
                                 </th>
-                                <th>Mp3tag (Desktop)</th>
-                                <th>MusicBrainz Picard</th>
-                                <th>Manual Search / DAW</th>
+                                <th>Mp3tag</th>
+                                <th>MusicBrainz</th>
+                                <th>Manual / DAW</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="feature-title-cell">
-                                    100% In-Browser
-                                    <span class="feature-desc">Zero downloads, no installs or dependencies</span>
-                                </td>
+                                <td class="feature-title-cell">100% In-Browser (No Install)</td>
                                 <td class="col-highlight">
                                     <span class="status-pill status-highlight-yes">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                        Instant Cloud App
+                                        Instant Web App
                                     </span>
                                 </td>
                                 <td>
@@ -713,56 +652,50 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="feature-title-cell">
-                                    Ultra-HD 3000px Cover Art
-                                    <span class="feature-desc">Automatic high-resolution album artwork fetching</span>
-                                </td>
+                                <td class="feature-title-cell">3000px Ultra-HD Cover Art</td>
                                 <td class="col-highlight">
                                     <span class="status-pill status-highlight-yes">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                        Auto 3000px Studio HD
+                                        Auto Apple Music HD
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-partial">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                                        Manual / Low-Res
+                                        Manual Search
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-partial">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                                        Community DB Only
+                                        Community DB
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-no">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                        Manual Google Search
+                                        Manual Crop
                                     </span>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="feature-title-cell">
-                                    AI Lyric Transcription
-                                    <span class="feature-desc">Transcribes audio and embeds synced lyric tags</span>
-                                </td>
+                                <td class="feature-title-cell">AI Lyric Transcription</td>
                                 <td class="col-highlight">
                                     <span class="status-pill status-highlight-yes">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                        Built-In AI Synced
+                                        Auto Synced AI
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-no">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                        Manual Paste Only
+                                        Manual Paste
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-no">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                        No Built-In Lyrics
+                                        No Lyrics
                                     </span>
                                 </td>
                                 <td>
@@ -773,14 +706,11 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="feature-title-cell">
-                                    AI Audio Enhancer
-                                    <span class="feature-desc">Parametric EQ de-mud, 320k upscaling &amp; -14 LUFS</span>
-                                </td>
+                                <td class="feature-title-cell">320kbps AI Audio Enhancer</td>
                                 <td class="col-highlight">
                                     <span class="status-pill status-highlight-yes">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                        Full Studio EQ / 320k
+                                        Studio EQ &amp; 320k
                                     </span>
                                 </td>
                                 <td>
@@ -798,19 +728,16 @@
                                 <td>
                                     <span class="status-pill status-no">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                        Requires DAW / Audacity
+                                        Requires DAW
                                     </span>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="feature-title-cell">
-                                    Batch Folder Processing
-                                    <span class="feature-desc">Process multiple tracks and export organized ZIP</span>
-                                </td>
+                                <td class="feature-title-cell">1-Click Batch Folder ZIP</td>
                                 <td class="col-highlight">
                                     <span class="status-pill status-highlight-yes">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                        1-Click Drop to ZIP
+                                        Instant ZIP Export
                                     </span>
                                 </td>
                                 <td>
@@ -822,73 +749,40 @@
                                 <td>
                                     <span class="status-pill status-partial">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                                        Complex Cluster Lookup
+                                        Multi-Step
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-no">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                        Slow File-By-File
+                                        One-By-One
                                     </span>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="feature-title-cell">
-                                    Cross-Platform &amp; Mobile
-                                    <span class="feature-desc">Works across Windows, Mac, iOS, Android &amp; ChromeOS</span>
-                                </td>
+                                <td class="feature-title-cell">Cross-Platform &amp; Mobile</td>
                                 <td class="col-highlight">
                                     <span class="status-pill status-highlight-yes">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                        Any Web Browser
+                                        All Devices &amp; Web
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-partial">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                                        Desktop OS Only
+                                        Desktop Only
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-partial">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                                        Desktop OS Only
+                                        Desktop Only
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-partial">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                                         Varies by OS
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="feature-title-cell">
-                                    Learning Curve &amp; Speed
-                                    <span class="feature-desc">Time from upload to enhanced music ready to play</span>
-                                </td>
-                                <td class="col-highlight">
-                                    <span class="status-pill status-highlight-yes">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                        Zero Setup (30s)
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="status-pill status-partial">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                                        Steep Tag Syntax
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="status-pill status-partial">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                                        Complex Workflow
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="status-pill status-no">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                        High Effort / Slow
                                     </span>
                                 </td>
                             </tr>
@@ -1159,11 +1053,11 @@
         }
 
         /* ── FAQ Accordion ── */
-        document.querySelectorAll('.faq-trigger').forEach(function(btn) {
-            btn.addEventListener('click', function() {
+        document.querySelectorAll('.faq-trigger').forEach(function (btn) {
+            btn.addEventListener('click', function () {
                 var isOpen = this.getAttribute('aria-expanded') === 'true';
                 // Close all
-                document.querySelectorAll('.faq-trigger').forEach(function(b) {
+                document.querySelectorAll('.faq-trigger').forEach(function (b) {
                     b.setAttribute('aria-expanded', 'false');
                     b.querySelector('.faq-icon').textContent = '+';
                     var panel = b.nextElementSibling;
@@ -1182,7 +1076,7 @@
         });
 
         /* ── Before/After Audio Preview (100% Interactive & Sound-Reactive) ── */
-        (function() {
+        (function () {
             var canvas = document.getElementById('enhancerVisualizerCanvas');
             var playBtn = document.getElementById('previewPlayBtn');
             var playIcon = document.getElementById('playIcon');
@@ -1392,7 +1286,7 @@
                         var swingOffset = Math.floor(0.66 * beatSec * sampleRate);
 
                         // Swing ride taps
-                        [0, swingOffset].forEach(function(offset, idx) {
+                        [0, swingOffset].forEach(function (offset, idx) {
                             var rStart = bStart + offset;
                             var rLen = Math.floor(0.18 * sampleRate);
                             for (var s = 0; s < rLen && (rStart + s) < totalSamples; s++) {
@@ -1428,7 +1322,7 @@
                         var chord = chords[c % chords.length];
                         var cLen = Math.floor(2 * beatSec * sampleRate);
 
-                        chord.forEach(function(n, nIdx) {
+                        chord.forEach(function (n, nIdx) {
                             var f = noteFreq(n);
                             for (var s = 0; s < cLen && (cStart + s) < totalSamples; s++) {
                                 var t = s / sampleRate;
@@ -1469,8 +1363,8 @@
                                 var t = s / sampleRate;
                                 // Acoustic piano decay with rich overtones
                                 var val = (Math.sin(2 * Math.PI * f * t) * 0.7
-                                         + Math.sin(4 * Math.PI * f * t) * 0.25
-                                         + Math.sin(6 * Math.PI * f * t) * 0.1) * Math.exp(-t * 2.2) * 0.18;
+                                    + Math.sin(4 * Math.PI * f * t) * 0.25
+                                    + Math.sin(6 * Math.PI * f * t) * 0.1) * Math.exp(-t * 2.2) * 0.18;
                                 var pan = 0.8 + (a / 8) * 0.4;
                                 left[nStart + s] += val * pan;
                                 right[nStart + s] += val * (2 - pan);
@@ -1640,7 +1534,7 @@
             function buildAndPlaySource(offset) {
                 initAudioCtx();
                 if (sourceNode) {
-                    try { sourceNode.stop(); } catch(e) {}
+                    try { sourceNode.stop(); } catch (e) { }
                     sourceNode.disconnect();
                     sourceNode = null;
                 }
@@ -1682,7 +1576,7 @@
                     if (pausedAt >= currentDuration) pausedAt = 0;
                 }
                 if (sourceNode) {
-                    try { sourceNode.stop(); } catch(e) {}
+                    try { sourceNode.stop(); } catch (e) { }
                     sourceNode = null;
                 }
                 isPlaying = false;
@@ -1692,7 +1586,7 @@
                 idle();
             }
 
-            playBtn.addEventListener('click', function() {
+            playBtn.addEventListener('click', function () {
                 if (isPlaying) {
                     pauseAudio();
                 } else {
@@ -1726,8 +1620,8 @@
 
             // Click/drag on progress bar
             if (waveformBar) {
-                waveformBar.addEventListener('click', function(e) { handleScrubEvent(e, this); });
-                waveformBar.addEventListener('mousedown', function(e) {
+                waveformBar.addEventListener('click', function (e) { handleScrubEvent(e, this); });
+                waveformBar.addEventListener('mousedown', function (e) {
                     isScrubbing = true;
                     handleScrubEvent(e, this);
                     function onMove(me) { handleScrubEvent(me, waveformBar); }
@@ -1742,8 +1636,8 @@
             }
 
             // Click/drag directly on the vertical bar visualizer canvas
-            canvas.addEventListener('click', function(e) { handleScrubEvent(e, this); });
-            canvas.addEventListener('mousedown', function(e) {
+            canvas.addEventListener('click', function (e) { handleScrubEvent(e, this); });
+            canvas.addEventListener('mousedown', function (e) {
                 isScrubbing = true;
                 handleScrubEvent(e, this);
                 function onMove(me) { handleScrubEvent(me, canvas); }
@@ -1757,15 +1651,15 @@
             });
 
             // Touch support for mobile seeking
-            [waveformBar, canvas].filter(Boolean).forEach(function(el) {
-                el.addEventListener('touchstart', function(e) {
+            [waveformBar, canvas].filter(Boolean).forEach(function (el) {
+                el.addEventListener('touchstart', function (e) {
                     isScrubbing = true;
                     handleScrubEvent(e, this);
                 }, { passive: true });
-                el.addEventListener('touchmove', function(e) {
+                el.addEventListener('touchmove', function (e) {
                     if (isScrubbing) handleScrubEvent(e, this);
                 }, { passive: true });
-                el.addEventListener('touchend', function() {
+                el.addEventListener('touchend', function () {
                     isScrubbing = false;
                 });
             });
@@ -1797,11 +1691,11 @@
 
             if (slider) slider.addEventListener('input', updateABMode);
 
-            btnBefore.addEventListener('click', function() {
+            btnBefore.addEventListener('click', function () {
                 slider.value = 0;
                 updateABMode();
             });
-            btnAfter.addEventListener('click', function() {
+            btnAfter.addEventListener('click', function () {
                 slider.value = 100;
                 updateABMode();
             });
@@ -1814,10 +1708,10 @@
             };
             var userAudioBuffer = null;
 
-            document.querySelectorAll('.preset-tab').forEach(function(tab) {
-                tab.addEventListener('click', function(e) {
+            document.querySelectorAll('.preset-tab').forEach(function (tab) {
+                tab.addEventListener('click', function (e) {
                     if (this === testFileTab && userFileLoaded) {
-                        document.querySelectorAll('.preset-tab').forEach(function(t) { t.classList.remove('active'); });
+                        document.querySelectorAll('.preset-tab').forEach(function (t) { t.classList.remove('active'); });
                         testFileTab.classList.add('active');
                         currentBuffer = userAudioBuffer;
                         currentDuration = currentBuffer.duration;
@@ -1830,7 +1724,7 @@
                     }
 
                     if (this.hasAttribute('data-preset')) {
-                        document.querySelectorAll('.preset-tab').forEach(function(t) { t.classList.remove('active'); });
+                        document.querySelectorAll('.preset-tab').forEach(function (t) { t.classList.remove('active'); });
                         this.classList.add('active');
 
                         var pVal = this.getAttribute('data-preset');
@@ -1864,16 +1758,16 @@
                 pausedAt = 0;
 
                 var reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     initAudioCtx();
-                    audioCtx.decodeAudioData(e.target.result.slice(0), function(buf) {
+                    audioCtx.decodeAudioData(e.target.result.slice(0), function (buf) {
                         userAudioBuffer = buf;
                         currentBuffer = buf;
                         currentDuration = buf.duration;
                         userFileLoaded = true;
 
                         // Highlight Test Tab on right
-                        document.querySelectorAll('.preset-tab').forEach(function(t) { t.classList.remove('active'); });
+                        document.querySelectorAll('.preset-tab').forEach(function (t) { t.classList.remove('active'); });
                         if (testFileTab) {
                             testFileTab.classList.add('has-file', 'active');
                             var displayName = name.length > 14 ? (name.substring(0, 11) + '…') : name;
@@ -1886,7 +1780,7 @@
                         if (fill) fill.style.width = '0%';
                         updateABMode();
                         playAudio();
-                    }, function() {
+                    }, function () {
                         alert('Could not decode this audio file. Please try an MP3 or WAV.');
                         if (testFileTabLabel) testFileTabLabel.textContent = 'Test Your File';
                         if (testFileTabSub) testFileTabSub.textContent = 'Instant Live Demo';
@@ -1896,20 +1790,20 @@
             }
 
             if (testFileInput) {
-                testFileInput.addEventListener('change', function() {
+                testFileInput.addEventListener('change', function () {
                     if (this.files && this.files[0]) loadAudioFile(this.files[0]);
                 });
             }
 
             if (testFileTab) {
-                testFileTab.addEventListener('dragover', function(e) {
+                testFileTab.addEventListener('dragover', function (e) {
                     e.preventDefault();
                     this.classList.add('drag-over');
                 });
-                testFileTab.addEventListener('dragleave', function() {
+                testFileTab.addEventListener('dragleave', function () {
                     this.classList.remove('drag-over');
                 });
-                testFileTab.addEventListener('drop', function(e) {
+                testFileTab.addEventListener('drop', function (e) {
                     e.preventDefault();
                     this.classList.remove('drag-over');
                     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
@@ -1919,7 +1813,7 @@
             }
 
             if (testFileClearBtn) {
-                testFileClearBtn.addEventListener('click', function(e) {
+                testFileClearBtn.addEventListener('click', function (e) {
                     e.stopPropagation();
                     e.preventDefault();
                     if (isPlaying) pauseAudio();
@@ -1937,7 +1831,7 @@
                     testFileClearBtn.classList.add('hidden');
                     if (testFileInput) testFileInput.value = '';
 
-                    document.querySelectorAll('.preset-tab').forEach(function(t) {
+                    document.querySelectorAll('.preset-tab').forEach(function (t) {
                         var pVal = t.getAttribute('data-preset');
                         var pIdx = (presetKeyMap[pVal] !== undefined) ? presetKeyMap[pVal] : parseInt(pVal || 0);
                         if (pIdx === currentPresetIndex) {
@@ -1954,7 +1848,7 @@
                 });
             }
 
-            window.addEventListener('resize', function() {
+            window.addEventListener('resize', function () {
                 resizeCanvas();
                 if (!isPlaying) idle();
             });
