@@ -444,6 +444,26 @@
                 <p class="preview-subtitle">Toggle between the original low-quality rip and the AI-enhanced 320kbps version. Drag the crossfade slider to blend between them.</p>
 
                 <div class="preview-player-card">
+                    <!-- Test Your Own File -->
+                    <div id="testFileZone" class="test-file-zone">
+                        <input type="file" id="testFileInput" accept="audio/*,.mp3,.wav,.flac,.aac,.ogg,.m4a" style="display:none" aria-label="Upload audio file for preview">
+                        <label for="testFileInput" class="test-file-label" id="testFileLabel">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7;flex-shrink:0">
+                                <path d="M9 18V5l12-2v13"/>
+                                <circle cx="6" cy="18" r="3"/>
+                                <circle cx="18" cy="16" r="3"/>
+                            </svg>
+                            <span id="testFileText">Drop your own track here to test &mdash; or click to browse</span>
+                        </label>
+                        <div id="testFileInfo" class="test-file-info hidden">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#22c55e;flex-shrink:0">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            <span id="testFileName">track.mp3</span>
+                            <button id="testFileClearBtn" class="test-file-clear" aria-label="Remove file">&times;</button>
+                        </div>
+                    </div>
+
                     <!-- Preset Song Tabs -->
                     <div class="preset-tabs" id="presetTabs">
                         <button class="preset-tab active" data-preset="0">
@@ -887,12 +907,6 @@
 
         /* ── Before/After Audio Preview ── */
         (function() {
-            var isPlaying = false;
-            var animFrame;
-            var startTime;
-            var elapsed = 0;
-            var duration = 30;
-            var ctx;
             var canvas = document.getElementById('enhancerVisualizerCanvas');
             var playBtn = document.getElementById('previewPlayBtn');
             var playIcon = document.getElementById('playIcon');
@@ -905,81 +919,237 @@
             var modeLabel = document.getElementById('modeLabel');
             var indicatorDot = document.getElementById('indicatorDot');
             var modeIndicator = document.getElementById('modeIndicator');
+            var testFileInput = document.getElementById('testFileInput');
+            var testFileLabel = document.getElementById('testFileLabel');
+            var testFileText = document.getElementById('testFileText');
+            var testFileInfo = document.getElementById('testFileInfo');
+            var testFileName = document.getElementById('testFileName');
+            var testFileClearBtn = document.getElementById('testFileClearBtn');
+            var testFileZone = document.getElementById('testFileZone');
 
             if (!canvas) return;
-            canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
-            canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
-            ctx = canvas.getContext('2d');
 
-            function formatTime(s) {
-                return '0:' + (Math.floor(s) < 10 ? '0' : '') + Math.floor(s);
+            /* ---- canvas setup ---- */
+            function resizeCanvas() {
+                canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+                canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
+            }
+            resizeCanvas();
+            var ctx2d = canvas.getContext('2d');
+
+            /* ---- state ---- */
+            var isPlaying = false;
+            var animFrame;
+            var simStartTime = null;
+            var simElapsed = 0;
+            var simDuration = 30;
+            var userFileLoaded = false;
+
+            /* ---- Web Audio state ---- */
+            var audioCtx = null;
+            var analyser = null;
+            var freqData = null;
+            var rawBuffer = null;         // decoded AudioBuffer
+            var sourceNode = null;        // current BufferSourceNode
+            var gainNode = null;
+            var eqFilter = null;          // biquad for 'After' mode
+            var startedAt = 0;            // audioCtx.currentTime when play began
+            var pausedAt = 0;             // track position when paused
+            var fileDuration = 0;
+
+            function initAudioCtx() {
+                if (audioCtx) return;
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 256;
+                freqData = new Uint8Array(analyser.frequencyBinCount);
+                gainNode = audioCtx.createGain();
+                gainNode.gain.value = 1;
+                // EQ filter for "After" — gentle high-shelf boost to simulate enhancement
+                eqFilter = audioCtx.createBiquadFilter();
+                eqFilter.type = 'highshelf';
+                eqFilter.frequency.value = 5000;
+                eqFilter.gain.value = 4;  // +4 dB high shelf
+                gainNode.connect(analyser);
+                analyser.connect(audioCtx.destination);
             }
 
-            function drawBars(t) {
-                var w = canvas.width, h = canvas.height;
-                ctx.clearRect(0, 0, w, h);
-                var barCount = Math.floor(w / 6);
-                var afterRatio = parseInt(slider ? slider.value : 100) / 100;
+            function getAfterRatio() {
+                return parseInt(slider ? slider.value : 100) / 100;
+            }
 
-                // color interpolation between amber (before) and sky (after)
+            /* ---- Visualizer ---- */
+            function drawSimBars(t) {
+                var w = canvas.width, h = canvas.height;
+                ctx2d.clearRect(0, 0, w, h);
+                var barCount = Math.floor(w / 6);
+                var afterRatio = getAfterRatio();
                 var r = Math.round(245 + (56 - 245) * afterRatio);
                 var g = Math.round(158 + (189 - 158) * afterRatio);
-                var b = Math.round(11 + (248 - 11) * afterRatio);
-                var color = 'rgba(' + r + ',' + g + ',' + b + ',';
-
+                var b2 = Math.round(11 + (248 - 11) * afterRatio);
+                var color = 'rgba(' + r + ',' + g + ',' + b2 + ',';
                 for (var i = 0; i < barCount; i++) {
-                    var x = i * 6;
                     var freq = 0.4 + afterRatio * 0.6;
                     var amp = Math.sin(i * 0.18 + t * 2.8) * Math.cos(i * 0.07 + t * 1.1);
                     var heightRatio = Math.abs(amp) * freq + (1 - freq) * 0.12;
                     var barH = heightRatio * h * 0.85;
                     var y = (h - barH) / 2;
                     var alpha = 0.55 + Math.abs(amp) * 0.45;
-                    ctx.fillStyle = color + alpha + ')';
-                    ctx.beginPath();
-                    ctx.roundRect ? ctx.roundRect(x, y, 4, barH, 2) : ctx.rect(x, y, 4, barH);
-                    ctx.fill();
+                    ctx2d.fillStyle = color + alpha + ')';
+                    ctx2d.beginPath();
+                    ctx2d.roundRect ? ctx2d.roundRect(i * 6, y, 4, barH, 2) : ctx2d.rect(i * 6, y, 4, barH);
+                    ctx2d.fill();
                 }
             }
 
-            function loop(ts) {
-                if (!startTime) startTime = ts;
-                elapsed = (ts - startTime) / 1000;
-                if (elapsed >= duration) {
-                    elapsed = 0; startTime = ts;
+            function drawFreqBars() {
+                if (!analyser) return;
+                analyser.getByteFrequencyData(freqData);
+                var w = canvas.width, h = canvas.height;
+                ctx2d.clearRect(0, 0, w, h);
+                var afterRatio = getAfterRatio();
+                var barW = Math.max(2, Math.floor(w / freqData.length));
+                for (var i = 0; i < freqData.length; i++) {
+                    var val = freqData[i] / 255;
+                    var barH = val * h * 0.9;
+                    var r = Math.round(245 + (56 - 245) * afterRatio);
+                    var g = Math.round(158 + (189 - 158) * afterRatio);
+                    var b2 = Math.round(11 + (248 - 11) * afterRatio);
+                    ctx2d.fillStyle = 'rgba(' + r + ',' + g + ',' + b2 + ',' + (0.5 + val * 0.5) + ')';
+                    var x = i * (barW + 2);
+                    ctx2d.beginPath();
+                    ctx2d.roundRect ? ctx2d.roundRect(x, h - barH, barW, barH, 2) : ctx2d.rect(x, h - barH, barW, barH);
+                    ctx2d.fill();
                 }
-                drawBars(elapsed);
-                fill.style.width = (elapsed / duration * 100) + '%';
-                timeDisplay.textContent = formatTime(elapsed) + ' / ' + formatTime(duration);
-                animFrame = requestAnimationFrame(loop);
             }
 
-            function idle() {
-                drawBars(0);
+            /* ---- Simulation loop (no file loaded) ---- */
+            function simLoop(ts) {
+                if (!simStartTime) simStartTime = ts;
+                simElapsed = (ts - simStartTime) / 1000;
+                if (simElapsed >= simDuration) { simElapsed = 0; simStartTime = ts; }
+                drawSimBars(simElapsed);
+                fill.style.width = (simElapsed / simDuration * 100) + '%';
+                timeDisplay.textContent = fmtTime(simElapsed) + ' / ' + fmtTime(simDuration);
+                animFrame = requestAnimationFrame(simLoop);
             }
+
+            /* ---- Real audio loop ---- */
+            function realLoop() {
+                drawFreqBars();
+                var pos = audioCtx.currentTime - startedAt + pausedAt;
+                if (pos >= fileDuration) { pos = fileDuration; stopAudio(); }
+                fill.style.width = (pos / fileDuration * 100) + '%';
+                timeDisplay.textContent = fmtTime(pos) + ' / ' + fmtTime(fileDuration);
+                if (isPlaying) animFrame = requestAnimationFrame(realLoop);
+            }
+
+            function fmtTime(s) {
+                s = Math.max(0, Math.floor(s));
+                var m = Math.floor(s / 60);
+                var sec = s % 60;
+                return m + ':' + (sec < 10 ? '0' : '') + sec;
+            }
+
+            function idle() { drawSimBars(0); }
             idle();
 
-            playBtn.addEventListener('click', function() {
-                isPlaying = !isPlaying;
-                if (isPlaying) {
-                    startTime = null;
-                    animFrame = requestAnimationFrame(loop);
-                    playIcon.style.display = 'none';
-                    pauseIcon.style.display = '';
+            /* ---- Play/Pause ---- */
+            function startSim() {
+                simStartTime = null;
+                animFrame = requestAnimationFrame(simLoop);
+            }
+
+            function stopSim() {
+                cancelAnimationFrame(animFrame);
+            }
+
+            function stopAudio() {
+                if (sourceNode) {
+                    try { sourceNode.stop(); } catch(e) {}
+                    sourceNode.disconnect();
+                    sourceNode = null;
+                }
+                isPlaying = false;
+                playIcon.style.display = '';
+                pauseIcon.style.display = 'none';
+                cancelAnimationFrame(animFrame);
+                pausedAt = 0;
+                fill.style.width = '0%';
+                timeDisplay.textContent = fmtTime(0) + ' / ' + fmtTime(fileDuration);
+                drawFreqBars();
+            }
+
+            function buildAndPlaySource(offset) {
+                initAudioCtx();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                var afterRatio = getAfterRatio();
+                // disconnect old nodes cleanly
+                try { if (eqFilter) { eqFilter.disconnect(); } } catch(e) {}
+                try { gainNode.disconnect(); } catch(e) {}
+                gainNode.connect(analyser);
+                analyser.connect(audioCtx.destination);
+
+                sourceNode = audioCtx.createBufferSource();
+                sourceNode.buffer = rawBuffer;
+                // route: source -> (eqFilter?) -> gainNode -> analyser -> destination
+                if (afterRatio > 0.5) {
+                    sourceNode.connect(eqFilter);
+                    eqFilter.connect(gainNode);
                 } else {
-                    cancelAnimationFrame(animFrame);
-                    playIcon.style.display = '';
-                    pauseIcon.style.display = 'none';
+                    sourceNode.connect(gainNode);
+                }
+                sourceNode.start(0, offset);
+                startedAt = audioCtx.currentTime - offset;
+                sourceNode.onended = function() {
+                    if (isPlaying && audioCtx.currentTime - startedAt + pausedAt >= fileDuration - 0.1) {
+                        stopAudio();
+                    }
+                };
+            }
+
+            playBtn.addEventListener('click', function() {
+                if (userFileLoaded) {
+                    if (!isPlaying) {
+                        initAudioCtx();
+                        if (audioCtx.state === 'suspended') audioCtx.resume();
+                        buildAndPlaySource(pausedAt);
+                        isPlaying = true;
+                        playIcon.style.display = 'none';
+                        pauseIcon.style.display = '';
+                        animFrame = requestAnimationFrame(realLoop);
+                    } else {
+                        // pause
+                        pausedAt = audioCtx.currentTime - startedAt + pausedAt;
+                        if (sourceNode) { try { sourceNode.stop(); } catch(e) {} sourceNode = null; }
+                        cancelAnimationFrame(animFrame);
+                        isPlaying = false;
+                        playIcon.style.display = '';
+                        pauseIcon.style.display = 'none';
+                    }
+                } else {
+                    // Sim mode
+                    isPlaying = !isPlaying;
+                    if (isPlaying) {
+                        startSim();
+                        playIcon.style.display = 'none';
+                        pauseIcon.style.display = '';
+                    } else {
+                        stopSim();
+                        playIcon.style.display = '';
+                        pauseIcon.style.display = 'none';
+                    }
                 }
             });
 
-            function updateABMode() {
+            /* ---- A/B mode ---- */
+            function updateABMode(restartAudio) {
                 var val = parseInt(slider.value);
                 var isAfter = val >= 50;
                 btnBefore.classList.toggle('active', !isAfter);
                 btnAfter.classList.toggle('active', isAfter);
                 if (isAfter) {
-                    modeLabel.textContent = 'ENHANCED 320K';
+                    modeLabel.textContent = userFileLoaded ? 'ENHANCED (EQ BOOST)' : 'ENHANCED 320K';
                     indicatorDot.classList.remove('original');
                     modeIndicator.classList.remove('original');
                 } else {
@@ -987,30 +1157,127 @@
                     indicatorDot.classList.add('original');
                     modeIndicator.classList.add('original');
                 }
-                if (!isPlaying) idle();
+                // If real audio is playing, rebuild source with new routing
+                if (userFileLoaded && isPlaying && restartAudio) {
+                    var pos = audioCtx.currentTime - startedAt + pausedAt;
+                    pausedAt = pos;
+                    if (sourceNode) { try { sourceNode.stop(); } catch(e) {} sourceNode = null; }
+                    cancelAnimationFrame(animFrame);
+                    buildAndPlaySource(pausedAt);
+                    animFrame = requestAnimationFrame(realLoop);
+                }
+                if (!userFileLoaded && !isPlaying) idle();
             }
 
-            if (slider) slider.addEventListener('input', updateABMode);
+            if (slider) slider.addEventListener('input', function() { updateABMode(true); });
 
-            btnBefore.addEventListener('click', function() {
-                slider.value = 0; updateABMode();
-            });
-            btnAfter.addEventListener('click', function() {
-                slider.value = 100; updateABMode();
-            });
+            btnBefore.addEventListener('click', function() { slider.value = 0; updateABMode(true); });
+            btnAfter.addEventListener('click', function() { slider.value = 100; updateABMode(true); });
 
-            // Preset tabs (decorative)
+            /* ---- Preset tabs (decorative) ---- */
             document.querySelectorAll('.preset-tab').forEach(function(tab) {
                 tab.addEventListener('click', function() {
+                    if (userFileLoaded) return; // ignore when user file is loaded
                     document.querySelectorAll('.preset-tab').forEach(function(t) { t.classList.remove('active'); });
                     this.classList.add('active');
                 });
             });
 
+            /* ---- File upload ---- */
+            function loadAudioFile(file) {
+                if (!file || !file.type.match(/audio/)) {
+                    alert('Please select an audio file (MP3, WAV, FLAC, AAC, etc.)');
+                    return;
+                }
+                var name = file.name;
+                testFileText.textContent = 'Loading…';
+                testFileLabel.style.opacity = '0.6';
+
+                // Stop any current playback
+                if (isPlaying) {
+                    if (userFileLoaded) stopAudio();
+                    else { stopSim(); isPlaying = false; playIcon.style.display = ''; pauseIcon.style.display = 'none'; }
+                }
+                pausedAt = 0;
+
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    initAudioCtx();
+                    audioCtx.decodeAudioData(e.target.result.slice(0), function(buf) {
+                        rawBuffer = buf;
+                        fileDuration = buf.duration;
+                        userFileLoaded = true;
+                        // Update UI
+                        testFileLabel.style.display = 'none';
+                        testFileInfo.classList.remove('hidden');
+                        testFileName.textContent = name;
+                        // Disable preset tabs visually
+                        document.querySelectorAll('.preset-tab').forEach(function(t) {
+                            t.classList.remove('active');
+                            t.style.opacity = '0.35';
+                            t.style.pointerEvents = 'none';
+                        });
+                        timeDisplay.textContent = fmtTime(0) + ' / ' + fmtTime(fileDuration);
+                        fill.style.width = '0%';
+                        drawFreqBars();
+                        updateABMode(false);
+                    }, function() {
+                        alert('Could not decode audio. Please try a different file.');
+                        testFileText.textContent = 'Drop your own track here to test — or click to browse';
+                        testFileLabel.style.opacity = '1';
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            }
+
+            testFileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) loadAudioFile(this.files[0]);
+            });
+
+            // Drag & drop onto the test zone
+            testFileZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('drag-over');
+            });
+            testFileZone.addEventListener('dragleave', function() {
+                this.classList.remove('drag-over');
+            });
+            testFileZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+                var f = e.dataTransfer.files[0];
+                if (f) loadAudioFile(f);
+            });
+
+            // Clear file
+            testFileClearBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                if (isPlaying) stopAudio();
+                rawBuffer = null;
+                userFileLoaded = false;
+                pausedAt = 0;
+                isPlaying = false;
+                playIcon.style.display = '';
+                pauseIcon.style.display = 'none';
+                cancelAnimationFrame(animFrame);
+                // Reset UI
+                testFileInfo.classList.add('hidden');
+                testFileLabel.style.display = '';
+                testFileName.textContent = '';
+                testFileInput.value = '';
+                document.querySelectorAll('.preset-tab').forEach(function(t, i) {
+                    t.style.opacity = ''; t.style.pointerEvents = '';
+                    if (i === 0) t.classList.add('active'); else t.classList.remove('active');
+                });
+                fill.style.width = '0%';
+                timeDisplay.textContent = '0:00 / 0:30';
+                idle();
+            });
+
             window.addEventListener('resize', function() {
-                canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
-                canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
-                if (!isPlaying) idle();
+                resizeCanvas();
+                if (!isPlaying) { if (userFileLoaded) drawFreqBars(); else idle(); }
             });
         })();
     </script>
