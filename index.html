@@ -978,49 +978,140 @@
                 return parseInt(slider ? slider.value : 100) / 100;
             }
 
-            /* ---- Visualizer ---- */
-            function drawSimBars(t) {
+            /* ---- Visualizer & Peak tracking ---- */
+            var NUM_BARS = 48;
+            var peaks = new Float32Array(NUM_BARS);
+            var barHeights = new Float32Array(NUM_BARS);
+
+            function getSpectrumGradient(h, afterRatio) {
+                var grad = ctx2d.createLinearGradient(0, h, 0, 0);
+                // Amber/Orange (Before) vs Electric Cyan/Sky (After)
+                var r1 = Math.round(217 + (2 - 217) * afterRatio);
+                var g1 = Math.round(119 + (132 - 119) * afterRatio);
+                var b1 = Math.round(6 + (199 - 6) * afterRatio);
+
+                var r2 = Math.round(245 + (14 - 245) * afterRatio);
+                var g2 = Math.round(158 + (165 - 158) * afterRatio);
+                var b2 = Math.round(11 + (233 - 11) * afterRatio);
+
+                var r3 = Math.round(251 + (56 - 251) * afterRatio);
+                var g3 = Math.round(191 + (189 - 191) * afterRatio);
+                var b3 = Math.round(36 + (248 - 36) * afterRatio);
+
+                grad.addColorStop(0, 'rgba(' + r1 + ',' + g1 + ',' + b1 + ', 0.25)');
+                grad.addColorStop(0.5, 'rgba(' + r2 + ',' + g2 + ',' + b2 + ', 0.75)');
+                grad.addColorStop(1, 'rgba(' + r3 + ',' + g3 + ',' + b3 + ', 1.0)');
+                return grad;
+            }
+
+            function getPeakColor(afterRatio) {
+                var r = Math.round(251 + (56 - 251) * afterRatio);
+                var g = Math.round(191 + (189 - 191) * afterRatio);
+                var b = Math.round(36 + (248 - 36) * afterRatio);
+                return 'rgba(' + r + ',' + g + ',' + b + ', 0.95)';
+            }
+
+            /* Draw vertical equalizer bars with peak caps */
+            function renderVerticalBars(targetHeights, afterRatio) {
                 var w = canvas.width, h = canvas.height;
                 ctx2d.clearRect(0, 0, w, h);
-                var barCount = Math.floor(w / 6);
-                var afterRatio = getAfterRatio();
-                var r = Math.round(245 + (56 - 245) * afterRatio);
-                var g = Math.round(158 + (189 - 158) * afterRatio);
-                var b2 = Math.round(11 + (248 - 11) * afterRatio);
-                var color = 'rgba(' + r + ',' + g + ',' + b2 + ',';
-                for (var i = 0; i < barCount; i++) {
-                    var freq = 0.4 + afterRatio * 0.6;
-                    var amp = Math.sin(i * 0.18 + t * 2.8) * Math.cos(i * 0.07 + t * 1.1);
-                    var heightRatio = Math.abs(amp) * freq + (1 - freq) * 0.12;
-                    var barH = heightRatio * h * 0.85;
-                    var y = (h - barH) / 2;
-                    var alpha = 0.55 + Math.abs(amp) * 0.45;
-                    ctx2d.fillStyle = color + alpha + ')';
+
+                var numBars = NUM_BARS;
+                var gap = 3 * (window.devicePixelRatio || 1);
+                var totalGaps = gap * (numBars - 1);
+                var barWidth = Math.max(2, (w - totalGaps) / numBars);
+                var grad = getSpectrumGradient(h, afterRatio);
+                var peakColor = getPeakColor(afterRatio);
+
+                for (var i = 0; i < numBars; i++) {
+                    // Smooth interpolation of bar heights
+                    barHeights[i] = barHeights[i] * 0.7 + targetHeights[i] * 0.3;
+                    var val = barHeights[i];
+                    var barH = Math.max(3, val * (h - 12));
+                    var x = i * (barWidth + gap);
+                    var y = h - barH;
+
+                    // Update peaks
+                    if (barH >= peaks[i]) {
+                        peaks[i] = barH;
+                    } else {
+                        peaks[i] = Math.max(3, peaks[i] - 1.2 * (window.devicePixelRatio || 1));
+                    }
+
+                    // Draw vertical bar rising from bottom
+                    ctx2d.fillStyle = grad;
                     ctx2d.beginPath();
-                    ctx2d.roundRect ? ctx2d.roundRect(i * 6, y, 4, barH, 2) : ctx2d.rect(i * 6, y, 4, barH);
+                    var radius = Math.min(barWidth / 2, 3);
+                    if (ctx2d.roundRect) {
+                        ctx2d.roundRect(x, y, barWidth, barH, [radius, radius, 0, 0]);
+                    } else {
+                        ctx2d.rect(x, y, barWidth, barH);
+                    }
                     ctx2d.fill();
+
+                    // Draw peak cap
+                    var peakY = h - peaks[i] - 2;
+                    if (peakY < h - 4) {
+                        ctx2d.fillStyle = peakColor;
+                        ctx2d.fillRect(x, Math.max(1, peakY), barWidth, 2);
+                    }
                 }
             }
 
+            /* Simulated vertical bars (for presets) */
+            function drawSimBars(t) {
+                var afterRatio = getAfterRatio();
+                var targets = new Float32Array(NUM_BARS);
+
+                for (var i = 0; i < NUM_BARS; i++) {
+                    var normX = i / NUM_BARS;
+                    // Bass pulse (left), Mid rhythm (center), High shimmer (right)
+                    var bass = Math.pow(Math.max(0, Math.sin(t * 3.5)), 3) * (1 - normX * 0.8) * 0.85;
+                    var mids = (Math.sin(i * 0.4 + t * 4.2) * 0.3 + 0.35) * Math.sin(normX * Math.PI) * 0.7;
+                    var highs = (Math.cos(i * 0.7 - t * 6.0) * 0.25 + 0.25) * (normX * 0.75);
+                    var noise = (Math.sin(i * 12.3 + t * 8.1) * 0.08);
+
+                    var combined = Math.max(0.04, bass + mids + highs + noise);
+
+                    // If "Before" mode (original low bitrate): high frequency roll-off above 14kHz
+                    if (normX > 0.65) {
+                        var rolloff = Math.max(0.15, 1 - (1 - afterRatio) * ((normX - 0.65) / 0.35) * 0.85);
+                        combined *= rolloff;
+                    }
+
+                    // Enhance boost factor
+                    combined *= (0.65 + afterRatio * 0.45);
+                    targets[i] = Math.min(0.95, combined);
+                }
+
+                renderVerticalBars(targets, afterRatio);
+            }
+
+            /* Real Web Audio FFT vertical bars */
             function drawFreqBars() {
                 if (!analyser) return;
                 analyser.getByteFrequencyData(freqData);
-                var w = canvas.width, h = canvas.height;
-                ctx2d.clearRect(0, 0, w, h);
                 var afterRatio = getAfterRatio();
-                var barW = Math.max(2, Math.floor(w / freqData.length));
-                for (var i = 0; i < freqData.length; i++) {
-                    var val = freqData[i] / 255;
-                    var barH = val * h * 0.9;
-                    var r = Math.round(245 + (56 - 245) * afterRatio);
-                    var g = Math.round(158 + (189 - 158) * afterRatio);
-                    var b2 = Math.round(11 + (248 - 11) * afterRatio);
-                    ctx2d.fillStyle = 'rgba(' + r + ',' + g + ',' + b2 + ',' + (0.5 + val * 0.5) + ')';
-                    var x = i * (barW + 2);
-                    ctx2d.beginPath();
-                    ctx2d.roundRect ? ctx2d.roundRect(x, h - barH, barW, barH, 2) : ctx2d.rect(x, h - barH, barW, barH);
-                    ctx2d.fill();
+                var targets = new Float32Array(NUM_BARS);
+
+                // Group FFT bins logarithmically across NUM_BARS
+                var binCount = freqData.length;
+                for (var i = 0; i < NUM_BARS; i++) {
+                    var startBin = Math.floor(Math.pow(i / NUM_BARS, 1.8) * (binCount - 2));
+                    var endBin = Math.max(startBin + 1, Math.floor(Math.pow((i + 1) / NUM_BARS, 1.8) * (binCount - 1)));
+                    var sum = 0;
+                    var count = 0;
+                    for (var b = startBin; b <= endBin && b < binCount; b++) {
+                        sum += freqData[b];
+                        count++;
+                    }
+                    var avg = (count > 0 ? (sum / count) : 0) / 255;
+                    // Scale high frequencies slightly for balanced visual look
+                    var freqScale = 1 + (i / NUM_BARS) * 0.6;
+                    targets[i] = Math.min(0.98, avg * freqScale);
                 }
+
+                renderVerticalBars(targets, afterRatio);
             }
 
             /* ---- Simulation loop (no file loaded) ---- */
@@ -1051,7 +1142,14 @@
                 return m + ':' + (sec < 10 ? '0' : '') + sec;
             }
 
-            function idle() { drawSimBars(0); }
+            function idle() {
+                var afterRatio = getAfterRatio();
+                var idleTargets = new Float32Array(NUM_BARS);
+                for (var i = 0; i < NUM_BARS; i++) {
+                    idleTargets[i] = 0.05 + Math.sin(i * 0.2) * 0.02;
+                }
+                renderVerticalBars(idleTargets, afterRatio);
+            }
             idle();
 
             /* ---- Play/Pause ---- */
