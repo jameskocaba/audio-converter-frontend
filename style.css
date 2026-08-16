@@ -2563,7 +2563,8 @@ footer p { margin: 0 0 10px 0; }
 @media (max-width: 768px) {
     .audio-preview-section {
         margin: 32px auto 16px auto;
-        padding: 0 8px;
+        padding: 24px 8px 0 8px;
+        border-top: 1px dashed #cbd5e1;
     }
 
     .preview-title {
@@ -2589,6 +2590,7 @@ footer p { margin: 0 0 10px 0; }
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         scroll-snap-type: x mandatory;
+        scroll-padding: 8px;
         padding-bottom: 8px;
         gap: 8px;
         margin-bottom: 14px;
@@ -2609,10 +2611,15 @@ footer p { margin: 0 0 10px 0; }
     }
 
     .preset-tab {
-        flex: 0 0 140px;
-        min-width: 140px;
+        flex: 0 0 135px;
+        min-width: 135px;
         scroll-snap-align: start;
         padding: 10px 12px;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .preset-tab:active {
+        transform: scale(0.97);
     }
 
     .preset-tab .tab-label {
@@ -2628,6 +2635,7 @@ footer p { margin: 0 0 10px 0; }
         padding: 12px 12px 8px 12px;
         margin-bottom: 16px;
         border-radius: 12px;
+        touch-action: none;
     }
 
     .visualizer-overlay-info {
@@ -2645,7 +2653,13 @@ footer p { margin: 0 0 10px 0; }
     }
 
     #enhancerVisualizerCanvas {
-        height: 85px;
+        height: 90px;
+        touch-action: none;
+    }
+
+    .waveform-progress-bar {
+        height: 10px;
+        touch-action: none;
     }
 
     /* 2-Column Side-by-Side A/B Switcher with Full-Width Touch Slider */
@@ -2681,6 +2695,11 @@ footer p { margin: 0 0 10px 0; }
         padding: 10px 8px;
         min-height: 54px;
         border-radius: 10px;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .ab-btn:active {
+        transform: scale(0.97);
     }
 
     .ab-btn-tag {
@@ -2698,16 +2717,18 @@ footer p { margin: 0 0 10px 0; }
 
     #abCrossfadeSlider {
         height: 12px;
+        touch-action: none;
+        -webkit-tap-highlight-color: transparent;
     }
 
     #abCrossfadeSlider::-webkit-slider-thumb {
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
     }
 
     #abCrossfadeSlider::-moz-range-thumb {
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
     }
 
     /* Transport Row */
@@ -2722,6 +2743,11 @@ footer p { margin: 0 0 10px 0; }
     .preview-play-btn {
         width: 44px;
         height: 44px;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .preview-play-btn:active {
+        transform: scale(0.92);
     }
 
     .preview-time-display {
@@ -2744,6 +2770,11 @@ footer p { margin: 0 0 10px 0; }
         padding: 12px 16px;
         font-size: 0.92rem;
         border-radius: 10px;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .preview-cta-btn:active {
+        transform: scale(0.98);
     }
 }
 
@@ -2753,8 +2784,8 @@ footer p { margin: 0 0 10px 0; }
     }
 
     .preset-tab {
-        flex: 0 0 125px;
-        min-width: 125px;
+        flex: 0 0 120px;
+        min-width: 120px;
         padding: 8px 10px;
     }
 
