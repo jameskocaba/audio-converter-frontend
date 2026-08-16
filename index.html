@@ -381,6 +381,41 @@
 
                     <!-- Relocated Pricing Tiers in Main Workspace -->
                     <div id="workspacePricingContainer" class="hidden">
+                        <!-- How-To Steps -->
+                        <div class="how-to-card">
+                            <h4 class="how-to-title">How It Works</h4>
+                            <ol class="how-to-steps">
+                                <li class="how-to-step">
+                                    <span class="step-num">1</span>
+                                    <div class="step-body">
+                                        <strong>Upload Your Tracks</strong>
+                                        <span>Drag &amp; drop audio files or entire folders into the dropzone.</span>
+                                    </div>
+                                </li>
+                                <li class="how-to-step">
+                                    <span class="step-num">2</span>
+                                    <div class="step-body">
+                                        <strong>Choose Enhancements</strong>
+                                        <span>Toggle Album Art &amp; Tags, 320k Bitrate, or Lyrics transcription.</span>
+                                    </div>
+                                </li>
+                                <li class="how-to-step">
+                                    <span class="step-num">3</span>
+                                    <div class="step-body">
+                                        <strong>Click Process</strong>
+                                        <span>Our AI works in the cloud&mdash;no installs, no waiting around.</span>
+                                    </div>
+                                </li>
+                                <li class="how-to-step">
+                                    <span class="step-num">4</span>
+                                    <div class="step-body">
+                                        <strong>Download Your ZIP</strong>
+                                        <span>Grab your fully-tagged, enhanced library in one organized ZIP file.</span>
+                                    </div>
+                                </li>
+                            </ol>
+                        </div>
+
                         <div class="workspace-tier-card pay-as-you-go-card"
                             style="margin: 0 auto; max-width: 320px; width: 100%;">
                             <h4 style="margin: 0 0 10px 0; color: #334155; font-size: 1.15rem; font-weight: 800;">Pay As You
@@ -399,6 +434,95 @@
                 </div>
             </div>
 
+            <!-- Before / After Audio Preview -->
+            <section class="audio-preview-section" aria-label="Before and After Audio Preview">
+                <div class="preview-badge">
+                    <span class="preview-badge-pulse"></span>
+                    LIVE DEMO
+                </div>
+                <h2 class="preview-title">Hear the Difference</h2>
+                <p class="preview-subtitle">Toggle between the original low-quality rip and the AI-enhanced 320kbps version. Drag the crossfade slider to blend between them.</p>
+
+                <div class="preview-player-card">
+                    <!-- Preset Song Tabs -->
+                    <div class="preset-tabs" id="presetTabs">
+                        <button class="preset-tab active" data-preset="0">
+                            <span class="tab-icon">🎸</span>
+                            <span class="tab-label">Rock Classic</span>
+                            <span class="tab-sub">128k &rarr; 320k</span>
+                        </button>
+                        <button class="preset-tab" data-preset="1">
+                            <span class="tab-icon">🎷</span>
+                            <span class="tab-label">Jazz Session</span>
+                            <span class="tab-sub">96k &rarr; 320k</span>
+                        </button>
+                        <button class="preset-tab" data-preset="2">
+                            <span class="tab-icon">🎹</span>
+                            <span class="tab-label">Piano Ballad</span>
+                            <span class="tab-sub">192k &rarr; 320k</span>
+                        </button>
+                    </div>
+
+                    <!-- Visualizer -->
+                    <div class="visualizer-container">
+                        <div class="visualizer-overlay-info">
+                            <div class="mode-indicator" id="modeIndicator">
+                                <span class="indicator-dot" id="indicatorDot"></span>
+                                <span id="modeLabel">ENHANCED 320K</span>
+                            </div>
+                            <span class="spectrum-badge" id="spectrumBadge">44.1 kHz &bull; Stereo</span>
+                        </div>
+                        <canvas id="enhancerVisualizerCanvas"></canvas>
+                        <div class="waveform-progress-bar" id="waveformBar">
+                            <div class="waveform-progress-fill" id="waveformFill"></div>
+                        </div>
+                    </div>
+
+                    <!-- A/B Control Deck -->
+                    <div class="ab-control-deck">
+                        <div class="ab-switch-wrapper">
+                            <button class="ab-btn" id="btnBefore">
+                                <span class="ab-btn-tag">BEFORE</span>
+                                <span class="ab-btn-name">Original</span>
+                                <span class="ab-btn-spec">128 kbps</span>
+                            </button>
+                            <div class="ab-slider-container">
+                                <div class="slider-labels">
+                                    <span>Original</span>
+                                    <span class="slider-hint">&#8596; Crossfade</span>
+                                    <span>Enhanced</span>
+                                </div>
+                                <input type="range" id="abCrossfadeSlider" min="0" max="100" value="100" aria-label="Crossfade between original and enhanced audio">
+                            </div>
+                            <button class="ab-btn active" id="btnAfter">
+                                <span class="ab-btn-tag">AFTER</span>
+                                <span class="ab-btn-name">Enhanced</span>
+                                <span class="ab-btn-spec">320 kbps</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Transport Row -->
+                    <div class="preview-transport-row">
+                        <button class="preview-play-btn" id="previewPlayBtn" aria-label="Play or pause preview">
+                            <svg id="playIcon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <svg id="pauseIcon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                        </button>
+                        <span class="preview-time-display" id="previewTimeDisplay">0:00 / 0:30</span>
+                        <div class="preview-enhancement-metrics">
+                            <span class="metric-pill">&#9650; +18 dB Dynamic Range</span>
+                            <span class="metric-pill">&#9654; Stereo Widened</span>
+                            <span class="metric-pill">&#127926; Noise Floor &minus;42 dB</span>
+                        </div>
+                        <div class="preview-cta-wrapper">
+                            <button class="preview-cta-btn" onclick="document.getElementById('dropZone').scrollIntoView({behavior:'smooth'})">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path><polyline points="7 9 12 4 17 9"></polyline><line x1="12" y1="4" x2="12" y2="16"></line></svg>
+                                Enhance My Tracks
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             <section class="seo-features-section" aria-label="Features & Benefits">
                 <h2 class="seo-section-title">Why Choose MP3aud.io to Tag & Enhance Your Music?</h2>
@@ -737,6 +861,158 @@
                 event.target.style.display = "none";
             }
         }
+
+        /* ── FAQ Accordion ── */
+        document.querySelectorAll('.faq-trigger').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var isOpen = this.getAttribute('aria-expanded') === 'true';
+                // Close all
+                document.querySelectorAll('.faq-trigger').forEach(function(b) {
+                    b.setAttribute('aria-expanded', 'false');
+                    b.querySelector('.faq-icon').textContent = '+';
+                    var panel = b.nextElementSibling;
+                    panel.style.maxHeight = null;
+                    panel.style.opacity = '0';
+                });
+                // Open clicked if it was closed
+                if (!isOpen) {
+                    this.setAttribute('aria-expanded', 'true');
+                    this.querySelector('.faq-icon').textContent = '\u2212';
+                    var panel = this.nextElementSibling;
+                    panel.style.maxHeight = panel.scrollHeight + 'px';
+                    panel.style.opacity = '1';
+                }
+            });
+        });
+
+        /* ── Before/After Audio Preview ── */
+        (function() {
+            var isPlaying = false;
+            var animFrame;
+            var startTime;
+            var elapsed = 0;
+            var duration = 30;
+            var ctx;
+            var canvas = document.getElementById('enhancerVisualizerCanvas');
+            var playBtn = document.getElementById('previewPlayBtn');
+            var playIcon = document.getElementById('playIcon');
+            var pauseIcon = document.getElementById('pauseIcon');
+            var fill = document.getElementById('waveformFill');
+            var timeDisplay = document.getElementById('previewTimeDisplay');
+            var slider = document.getElementById('abCrossfadeSlider');
+            var btnBefore = document.getElementById('btnBefore');
+            var btnAfter = document.getElementById('btnAfter');
+            var modeLabel = document.getElementById('modeLabel');
+            var indicatorDot = document.getElementById('indicatorDot');
+            var modeIndicator = document.getElementById('modeIndicator');
+
+            if (!canvas) return;
+            canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+            canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
+            ctx = canvas.getContext('2d');
+
+            function formatTime(s) {
+                return '0:' + (Math.floor(s) < 10 ? '0' : '') + Math.floor(s);
+            }
+
+            function drawBars(t) {
+                var w = canvas.width, h = canvas.height;
+                ctx.clearRect(0, 0, w, h);
+                var barCount = Math.floor(w / 6);
+                var afterRatio = parseInt(slider ? slider.value : 100) / 100;
+
+                // color interpolation between amber (before) and sky (after)
+                var r = Math.round(245 + (56 - 245) * afterRatio);
+                var g = Math.round(158 + (189 - 158) * afterRatio);
+                var b = Math.round(11 + (248 - 11) * afterRatio);
+                var color = 'rgba(' + r + ',' + g + ',' + b + ',';
+
+                for (var i = 0; i < barCount; i++) {
+                    var x = i * 6;
+                    var freq = 0.4 + afterRatio * 0.6;
+                    var amp = Math.sin(i * 0.18 + t * 2.8) * Math.cos(i * 0.07 + t * 1.1);
+                    var heightRatio = Math.abs(amp) * freq + (1 - freq) * 0.12;
+                    var barH = heightRatio * h * 0.85;
+                    var y = (h - barH) / 2;
+                    var alpha = 0.55 + Math.abs(amp) * 0.45;
+                    ctx.fillStyle = color + alpha + ')';
+                    ctx.beginPath();
+                    ctx.roundRect ? ctx.roundRect(x, y, 4, barH, 2) : ctx.rect(x, y, 4, barH);
+                    ctx.fill();
+                }
+            }
+
+            function loop(ts) {
+                if (!startTime) startTime = ts;
+                elapsed = (ts - startTime) / 1000;
+                if (elapsed >= duration) {
+                    elapsed = 0; startTime = ts;
+                }
+                drawBars(elapsed);
+                fill.style.width = (elapsed / duration * 100) + '%';
+                timeDisplay.textContent = formatTime(elapsed) + ' / ' + formatTime(duration);
+                animFrame = requestAnimationFrame(loop);
+            }
+
+            function idle() {
+                drawBars(0);
+            }
+            idle();
+
+            playBtn.addEventListener('click', function() {
+                isPlaying = !isPlaying;
+                if (isPlaying) {
+                    startTime = null;
+                    animFrame = requestAnimationFrame(loop);
+                    playIcon.style.display = 'none';
+                    pauseIcon.style.display = '';
+                } else {
+                    cancelAnimationFrame(animFrame);
+                    playIcon.style.display = '';
+                    pauseIcon.style.display = 'none';
+                }
+            });
+
+            function updateABMode() {
+                var val = parseInt(slider.value);
+                var isAfter = val >= 50;
+                btnBefore.classList.toggle('active', !isAfter);
+                btnAfter.classList.toggle('active', isAfter);
+                if (isAfter) {
+                    modeLabel.textContent = 'ENHANCED 320K';
+                    indicatorDot.classList.remove('original');
+                    modeIndicator.classList.remove('original');
+                } else {
+                    modeLabel.textContent = 'ORIGINAL';
+                    indicatorDot.classList.add('original');
+                    modeIndicator.classList.add('original');
+                }
+                if (!isPlaying) idle();
+            }
+
+            if (slider) slider.addEventListener('input', updateABMode);
+
+            btnBefore.addEventListener('click', function() {
+                slider.value = 0; updateABMode();
+            });
+            btnAfter.addEventListener('click', function() {
+                slider.value = 100; updateABMode();
+            });
+
+            // Preset tabs (decorative)
+            document.querySelectorAll('.preset-tab').forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.preset-tab').forEach(function(t) { t.classList.remove('active'); });
+                    this.classList.add('active');
+                });
+            });
+
+            window.addEventListener('resize', function() {
+                canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+                canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
+                if (!isPlaying) idle();
+            });
+        })();
     </script>
 
     <script src="script.js?v=7"></script>
