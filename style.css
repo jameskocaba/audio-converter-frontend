@@ -1206,7 +1206,7 @@ footer p { margin: 0 0 10px 0; }
 }
 
 /* =========================================
-   13. SEO FEATURES SECTION
+   13. SEO FEATURES & COMPETITOR COMPARISON SECTION
    ========================================= */
 .seo-features-section {
     margin-top: 35px;
@@ -1274,6 +1274,293 @@ footer p { margin: 0 0 10px 0; }
     color: #64748b;
     margin: 0;
     line-height: 1.5;
+}
+
+/* Competitor Checklist & Benefit Table */
+.comparison-section {
+    margin-top: 35px;
+    margin-bottom: 25px;
+    text-align: left;
+    border-top: 1px dashed #cbd5e1;
+    padding-top: 32px;
+}
+
+.comparison-header {
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto 26px auto;
+}
+
+.comparison-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff7ed;
+    color: #ea580c;
+    border: 1px solid #fed7aa;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+}
+
+.comparison-title {
+    font-size: 1.35rem;
+    color: #0f172a;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+}
+
+.comparison-subtitle {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Benefit Cards Grid */
+.benefit-checklist-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+@media (min-width: 640px) {
+    .benefit-checklist-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .benefit-checklist-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.benefit-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    transition: all 0.2s ease;
+}
+
+.benefit-card:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
+
+.benefit-card-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.benefit-icon-badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.benefit-icon-badge.badge-art {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.benefit-icon-badge.badge-ai {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.benefit-icon-badge.badge-audio {
+    background: #faf5ff;
+    color: #9333ea;
+}
+
+.benefit-icon-badge.badge-batch {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.benefit-card h3 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.benefit-card p {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.45;
+}
+
+/* Comparison Table Container */
+.comparison-table-wrapper {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow-x: auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    -webkit-overflow-scrolling: touch;
+}
+
+.comparison-table {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: left;
+}
+
+.comparison-table th,
+.comparison-table td {
+    padding: 14px 18px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.comparison-table thead th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.01em;
+    border-bottom: 2px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.comparison-table thead th:first-child {
+    border-top-left-radius: 16px;
+}
+
+.comparison-table thead th:last-child {
+    border-top-right-radius: 16px;
+}
+
+.comparison-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.comparison-table tbody tr:hover td {
+    background: #fafafa;
+}
+
+/* Highlight Column for MP3aud.io */
+.comparison-table th.col-highlight,
+.comparison-table td.col-highlight {
+    background: #fffbf7;
+    position: relative;
+}
+
+.comparison-table thead th.col-highlight {
+    background: #fff4ec;
+    color: #c2410c;
+    border-bottom: 2px solid #fdba74;
+}
+
+.comparison-table tbody tr:hover td.col-highlight {
+    background: #fff0e3;
+}
+
+.mp3audio-brand-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.mp3audio-brand-cell .brand-name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #ea580c;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mp3audio-brand-cell .brand-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: #ea580c;
+    color: #ffffff;
+    padding: 2px 7px;
+    border-radius: 6px;
+    width: fit-content;
+    letter-spacing: 0.02em;
+}
+
+/* Comparison Status Tags */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 6px;
+    line-height: 1.25;
+}
+
+.status-pill.status-yes {
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.status-pill.status-highlight-yes {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+    font-weight: 700;
+}
+
+.status-pill.status-no {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+.status-pill.status-partial {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+
+.status-pill svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.feature-title-cell {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.feature-title-cell .feature-desc {
+    display: block;
+    font-weight: 400;
+    font-size: 0.76rem;
+    color: #64748b;
+    margin-top: 2px;
 }
 
 /* =========================================
