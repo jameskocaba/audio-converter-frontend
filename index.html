@@ -497,15 +497,15 @@
                             <span class="tab-label">Piano &amp; Acoustic</span>
                             <span class="tab-sub">Resonance &amp; Dynamic Range</span>
                         </button>
-                        <label class="preset-tab custom-tab" id="testFileTab"
-                            title="Test with your own MP3 or audio file">
+                        <div class="preset-tab custom-tab" id="testFileTab" role="tab" aria-selected="false"
+                            title="Test with your own MP3 or audio file" tabindex="0">
                             <span class="tab-icon">📁</span>
                             <span class="tab-label" id="testFileTabLabel">Test Your File</span>
                             <span class="tab-sub" id="testFileTabSub">Instant Live Demo</span>
-                            <button id="testFileClearBtn" class="tab-clear-btn hidden" aria-label="Remove uploaded file"
+                            <button type="button" id="testFileClearBtn" class="tab-clear-btn hidden" aria-label="Remove uploaded file"
                                 title="Remove file">&times;</button>
-                            <input type="file" id="previewCustomAudioInput" accept="audio/*" style="display: none;">
-                        </label>
+                            <input type="file" id="previewCustomAudioInput" accept="audio/*,.mp3,.wav,.flac,.aac,.ogg,.m4a,.wma,.opus" style="display: none;">
+                        </div>
                     </div>
 
                     <!-- Visualizer Canvas & Mode Header -->
@@ -1725,22 +1725,41 @@
 
             document.querySelectorAll('.preset-tab').forEach(function (tab) {
                 tab.addEventListener('click', function (e) {
-                    if (this === testFileTab && userFileLoaded) {
-                        document.querySelectorAll('.preset-tab').forEach(function (t) { t.classList.remove('active'); });
-                        testFileTab.classList.add('active');
-                        currentBuffer = userAudioBuffer;
-                        currentDuration = currentBuffer.duration;
-                        pausedAt = 0;
-                        if (fill) fill.style.width = '0%';
-                        updateTimeDisplay(0, currentDuration);
-                        updateABMode();
-                        if (isPlaying) buildAndPlaySource(0);
+                    if (e.target === testFileClearBtn || (testFileClearBtn && testFileClearBtn.contains(e.target))) {
+                        return;
+                    }
+
+                    if (this === testFileTab) {
+                        if (userFileLoaded && !testFileTab.classList.contains('active')) {
+                            document.querySelectorAll('.preset-tab').forEach(function (t) {
+                                t.classList.remove('active');
+                                t.setAttribute('aria-selected', 'false');
+                            });
+                            testFileTab.classList.add('active');
+                            testFileTab.setAttribute('aria-selected', 'true');
+                            currentBuffer = userAudioBuffer;
+                            currentDuration = currentBuffer.duration;
+                            pausedAt = 0;
+                            if (fill) fill.style.width = '0%';
+                            updateTimeDisplay(0, currentDuration);
+                            updateABMode();
+                            if (isPlaying) buildAndPlaySource(0);
+                        } else {
+                            if (testFileInput) {
+                                testFileInput.value = '';
+                                testFileInput.click();
+                            }
+                        }
                         return;
                     }
 
                     if (this.hasAttribute('data-preset')) {
-                        document.querySelectorAll('.preset-tab').forEach(function (t) { t.classList.remove('active'); });
+                        document.querySelectorAll('.preset-tab').forEach(function (t) {
+                            t.classList.remove('active');
+                            t.setAttribute('aria-selected', 'false');
+                        });
                         this.classList.add('active');
+                        this.setAttribute('aria-selected', 'true');
 
                         var pVal = this.getAttribute('data-preset');
                         var pIdx = (presetKeyMap[pVal] !== undefined) ? presetKeyMap[pVal] : parseInt(pVal || 0);
@@ -1757,11 +1776,20 @@
                         }
                     }
                 });
+
+                tab.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
             });
 
             /* ---- Test User File Upload ---- */
             function loadAudioFile(file) {
-                if (!file || !file.type.match(/audio/)) {
+                if (!file) return;
+                var isAudio = (file.type && file.type.match(/audio/)) || /\.(mp3|wav|flac|aac|ogg|m4a|wma|opus)$/i.test(file.name);
+                if (!isAudio) {
                     alert('Please select an audio file (MP3, WAV, FLAC, AAC, etc.)');
                     return;
                 }
@@ -1782,9 +1810,13 @@
                         userFileLoaded = true;
 
                         // Highlight Test Tab on right
-                        document.querySelectorAll('.preset-tab').forEach(function (t) { t.classList.remove('active'); });
+                        document.querySelectorAll('.preset-tab').forEach(function (t) {
+                            t.classList.remove('active');
+                            t.setAttribute('aria-selected', 'false');
+                        });
                         if (testFileTab) {
                             testFileTab.classList.add('has-file', 'active');
+                            testFileTab.setAttribute('aria-selected', 'true');
                             var displayName = name.length > 14 ? (name.substring(0, 11) + '…') : name;
                             if (testFileTabLabel) testFileTabLabel.textContent = displayName;
                             if (testFileTabSub) testFileTabSub.textContent = 'Custom Audio';
@@ -1840,6 +1872,7 @@
 
                     if (testFileTab) {
                         testFileTab.classList.remove('has-file', 'active');
+                        testFileTab.setAttribute('aria-selected', 'false');
                         if (testFileTabLabel) testFileTabLabel.textContent = 'Test Your File';
                         if (testFileTabSub) testFileTabSub.textContent = 'Instant Live Demo';
                     }
@@ -1851,8 +1884,10 @@
                         var pIdx = (presetKeyMap[pVal] !== undefined) ? presetKeyMap[pVal] : parseInt(pVal || 0);
                         if (pIdx === currentPresetIndex) {
                             t.classList.add('active');
+                            t.setAttribute('aria-selected', 'true');
                         } else {
                             t.classList.remove('active');
+                            t.setAttribute('aria-selected', 'false');
                         }
                     });
 
