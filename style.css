@@ -2844,41 +2844,125 @@ footer p {
    SPECTROGRAM & AUDIO QUALITY INSPECTOR STYLES
    ========================================================================== */
 
-/* Deck Mode Switcher (Inside Preview Player) */
-.deck-mode-switcher {
-    display: inline-flex;
-    align-items: center;
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 20px;
-    padding: 3px;
-    gap: 3px;
+/* Master Tool Deck Switcher (Top of Card) */
+.master-deck-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.85);
+    padding: 6px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 18px;
 }
 
-.deck-mode-btn {
+.master-deck-tab {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     background: transparent;
-    border: none;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 10px 16px;
     color: #94a3b8;
-    padding: 5px 12px;
-    border-radius: 16px;
-    font-size: 0.75rem;
-    font-weight: 600;
     cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.deck-mode-btn:hover {
+.master-deck-tab:hover {
     color: #f8fafc;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.05);
 }
 
-.deck-mode-btn.active {
-    background: linear-gradient(135deg, #ff5500 0%, #ea580c 100%);
+.master-deck-tab.active {
+    background: linear-gradient(135deg, rgba(255, 85, 0, 0.2) 0%, rgba(234, 88, 12, 0.1) 100%);
+    border-color: rgba(255, 85, 0, 0.4);
     color: #ffffff;
-    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.4);
+    box-shadow: 0 4px 14px rgba(255, 85, 0, 0.15);
+}
+
+.master-tab-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.master-tab-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.master-tab-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: inherit;
+    display: block;
+}
+
+.master-tab-desc {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    margin-top: 1px;
+}
+
+.master-deck-tab.active .master-tab-desc {
+    color: #fdba74;
+}
+
+/* Inspector Deck HUD (Replaces A/B Slider in Inspector Mode) */
+.deck-inspector-hud {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    padding: 14px;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    margin-top: 12px;
+}
+
+.deck-hud-pill {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+
+.deck-hud-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 4px;
+}
+
+.deck-hud-val {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #f8fafc;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.deck-hud-sub {
+    font-size: 0.68rem;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+@media (max-width: 640px) {
+    .master-deck-tabs {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+    .master-deck-tab {
+        padding: 8px 12px;
+    }
+    .master-tab-title {
+        font-size: 0.85rem;
+    }
+    .master-tab-desc {
+        font-size: 0.68rem;
+    }
 }
 
 /* Frequency Threshold Overlay on Canvas */

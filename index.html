@@ -489,6 +489,24 @@
                 </div>
 
                 <div class="preview-player-card">
+                    <!-- Master Tool Switcher Tabs -->
+                    <div class="master-deck-tabs" role="tablist" aria-label="Audio tool mode selection">
+                        <button type="button" class="master-deck-tab active" id="masterTabEnhancer" role="tab" aria-selected="true">
+                            <span class="master-tab-icon">🎚️</span>
+                            <div class="master-tab-content">
+                                <span class="master-tab-title">AI Sound Enhancer</span>
+                                <span class="master-tab-desc">Listen &amp; A/B Crossfade Sound</span>
+                            </div>
+                        </button>
+                        <button type="button" class="master-deck-tab" id="masterTabInspector" role="tab" aria-selected="false">
+                            <span class="master-tab-icon">📊</span>
+                            <div class="master-tab-content">
+                                <span class="master-tab-title">True Bitrate Inspector</span>
+                                <span class="master-tab-desc">Audit 22kHz Cutoffs &amp; Purity</span>
+                            </div>
+                        </button>
+                    </div>
+
                     <!-- Preset Selection Tabs -->
                     <div class="preset-tabs" role="tablist" aria-label="Audio sample presets">
                         <button class="preset-tab active" data-preset="vocals" role="tab" aria-selected="true">
@@ -525,16 +543,6 @@
                                 <span class="indicator-text" id="indicatorText">AI ENHANCED (320kbps HD)</span>
                             </div>
 
-                            <!-- Mode Switcher -->
-                            <div class="deck-mode-switcher" role="radiogroup" aria-label="Deck display mode">
-                                <button type="button" class="deck-mode-btn active" id="modeBtnEnhancer" role="radio" aria-checked="true">
-                                    <span>🎚️ Enhancer Demo</span>
-                                </button>
-                                <button type="button" class="deck-mode-btn" id="modeBtnInspector" role="radio" aria-checked="false" title="Analyze frequency cutoff and true bitrate">
-                                    <span>📊 Spectrogram Inspector</span>
-                                </button>
-                            </div>
-
                             <div class="spectrum-badge" id="spectrumBadge">
                                 Full Spectrum 20Hz – 20kHz
                             </div>
@@ -562,8 +570,8 @@
                         </div>
                     </div>
 
-                    <!-- Main A/B Switcher Deck -->
-                    <div class="ab-control-deck">
+                    <!-- Control Deck (Mode 1: Enhancer A/B Crossfader) -->
+                    <div class="ab-control-deck" id="enhancerControlsDeck">
                         <div class="ab-switch-wrapper">
                             <button class="ab-btn" id="btnBefore" type="button">
                                 <span class="ab-btn-tag">BEFORE</span>
@@ -589,6 +597,25 @@
                         </div>
                     </div>
 
+                    <!-- Control Deck (Mode 2: Inspector Diagnostic HUD) -->
+                    <div class="deck-inspector-hud" id="inspectorControlsDeck" style="display: none;">
+                        <div class="deck-hud-pill">
+                            <div class="deck-hud-label">Audio Purity Grade</div>
+                            <div class="deck-hud-val" id="deckPurityGrade" style="color: #4ade80;">GRADE A+</div>
+                            <div class="deck-hud-sub" id="deckPuritySub">Studio Master (20kHz+ Highs)</div>
+                        </div>
+                        <div class="deck-hud-pill">
+                            <div class="deck-hud-label">Frequency Cutoff</div>
+                            <div class="deck-hud-val" id="deckCutoffVal">21,400 Hz</div>
+                            <div class="deck-hud-sub" id="deckCutoffSub">No artificial lowpass shelf</div>
+                        </div>
+                        <div class="deck-hud-pill">
+                            <div class="deck-hud-label">Estimated True Bitrate</div>
+                            <div class="deck-hud-val" id="deckBitrateVal" style="color: #4ade80;">True 320 kbps</div>
+                            <div class="deck-hud-sub" id="deckBitrateSub">Verified authentic master</div>
+                        </div>
+                    </div>
+
                     <!-- Player Controls Row -->
                     <div class="preview-transport-row">
                         <button class="preview-play-btn" id="previewPlayBtn" aria-label="Play or pause audio preview">
@@ -606,7 +633,7 @@
                             <span id="previewCurrentTime">0:00</span> / <span id="previewTotalTime">0:16</span>
                         </div>
 
-                        <div class="preview-enhancement-metrics">
+                        <div class="preview-enhancement-metrics" id="enhancerMetrics">
                             <span class="metric-pill">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
                                     stroke-width="2">
@@ -631,7 +658,7 @@
                             </span>
                         </div>
 
-                        <div class="preview-cta-wrapper">
+                        <div class="preview-cta-wrapper" id="enhancerCtaWrap">
                             <button class="preview-cta-btn"
                                 onclick="document.getElementById('dropZone').scrollIntoView({behavior:'smooth'})">
                                 <span>Enhance My Tracks Now</span>
@@ -641,6 +668,17 @@
                                     <polyline points="12 5 19 12 12 19"></polyline>
                                 </svg>
                             </button>
+                        </div>
+
+                        <div class="preview-cta-wrapper" id="inspectorCtaWrap" style="display: none;">
+                            <a href="audio-inspector.html" class="preview-cta-btn" style="text-decoration: none;">
+                                <span>Open Full Spectrogram Studio</span>
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -1716,31 +1754,50 @@
                 });
             });
 
-            /* ---- Deck Mode Switcher & Spectrogram Overlay ---- */
+            /* ---- Master Tool Switcher (Enhancer vs Inspector) ---- */
             var currentDeckMode = 'enhancer'; // 'enhancer' or 'inspector'
-            var modeBtnEnhancer = document.getElementById('modeBtnEnhancer');
-            var modeBtnInspector = document.getElementById('modeBtnInspector');
+            var masterTabEnhancer = document.getElementById('masterTabEnhancer');
+            var masterTabInspector = document.getElementById('masterTabInspector');
+            var enhancerControlsDeck = document.getElementById('enhancerControlsDeck');
+            var inspectorControlsDeck = document.getElementById('inspectorControlsDeck');
+            var enhancerCtaWrap = document.getElementById('enhancerCtaWrap');
+            var inspectorCtaWrap = document.getElementById('inspectorCtaWrap');
+            var enhancerMetrics = document.getElementById('enhancerMetrics');
             var spectrogramOverlay = document.getElementById('spectrogramOverlay');
+            var deckPurityGrade = document.getElementById('deckPurityGrade');
+            var deckCutoffVal = document.getElementById('deckCutoffVal');
+            var deckBitrateVal = document.getElementById('deckBitrateVal');
+            var deckPuritySub = document.getElementById('deckPuritySub');
 
-            if (modeBtnEnhancer && modeBtnInspector) {
-                modeBtnEnhancer.addEventListener('click', function () {
-                    currentDeckMode = 'enhancer';
-                    modeBtnEnhancer.classList.add('active');
-                    modeBtnEnhancer.setAttribute('aria-checked', 'true');
-                    modeBtnInspector.classList.remove('active');
-                    modeBtnInspector.setAttribute('aria-checked', 'false');
-                    if (spectrogramOverlay) spectrogramOverlay.classList.remove('active');
-                    updateABMode();
+            function setMasterDeckMode(mode) {
+                currentDeckMode = mode;
+                var isEnhancer = mode === 'enhancer';
+
+                if (masterTabEnhancer) {
+                    masterTabEnhancer.classList.toggle('active', isEnhancer);
+                    masterTabEnhancer.setAttribute('aria-selected', isEnhancer ? 'true' : 'false');
+                }
+                if (masterTabInspector) {
+                    masterTabInspector.classList.toggle('active', !isEnhancer);
+                    masterTabInspector.setAttribute('aria-selected', !isEnhancer ? 'true' : 'false');
+                }
+
+                if (enhancerControlsDeck) enhancerControlsDeck.style.display = isEnhancer ? '' : 'none';
+                if (inspectorControlsDeck) inspectorControlsDeck.style.display = isEnhancer ? 'none' : 'grid';
+                if (enhancerCtaWrap) enhancerCtaWrap.style.display = isEnhancer ? '' : 'none';
+                if (inspectorCtaWrap) inspectorCtaWrap.style.display = isEnhancer ? 'none' : '';
+                if (enhancerMetrics) enhancerMetrics.style.display = isEnhancer ? '' : 'none';
+                if (spectrogramOverlay) spectrogramOverlay.classList.toggle('active', !isEnhancer);
+
+                updateABMode();
+            }
+
+            if (masterTabEnhancer && masterTabInspector) {
+                masterTabEnhancer.addEventListener('click', function () {
+                    setMasterDeckMode('enhancer');
                 });
-
-                modeBtnInspector.addEventListener('click', function () {
-                    currentDeckMode = 'inspector';
-                    modeBtnInspector.classList.add('active');
-                    modeBtnInspector.setAttribute('aria-checked', 'true');
-                    modeBtnEnhancer.classList.remove('active');
-                    modeBtnEnhancer.setAttribute('aria-checked', 'false');
-                    if (spectrogramOverlay) spectrogramOverlay.classList.add('active');
-                    updateABMode();
+                masterTabInspector.addEventListener('click', function () {
+                    setMasterDeckMode('inspector');
                 });
             }
 
@@ -1759,6 +1816,10 @@
                             var dot = modeIndicator.querySelector('.indicator-dot');
                             if (dot) dot.className = 'indicator-dot enhanced';
                         }
+                        if (deckPurityGrade) { deckPurityGrade.textContent = 'GRADE A+'; deckPurityGrade.style.color = '#4ade80'; }
+                        if (deckCutoffVal) deckCutoffVal.textContent = '21,800 Hz';
+                        if (deckBitrateVal) { deckBitrateVal.textContent = 'True 320 kbps'; deckBitrateVal.style.color = '#4ade80'; }
+                        if (deckPuritySub) deckPuritySub.textContent = 'Studio Master (20kHz+ Highs)';
                     } else {
                         if (modeLabel) modeLabel.textContent = '🔴 CUTOFF: 10.5kHz (MUFFLED / LOW BITRATE)';
                         if (spectrumBadge) spectrumBadge.textContent = 'Severe Roll-off at 10.5kHz';
@@ -1766,6 +1827,10 @@
                             var dot = modeIndicator.querySelector('.indicator-dot');
                             if (dot) dot.className = 'indicator-dot original';
                         }
+                        if (deckPurityGrade) { deckPurityGrade.textContent = 'GRADE F'; deckPurityGrade.style.color = '#f87171'; }
+                        if (deckCutoffVal) deckCutoffVal.textContent = '10,500 Hz';
+                        if (deckBitrateVal) { deckBitrateVal.textContent = '128 kbps (Muffled)'; deckBitrateVal.style.color = '#f87171'; }
+                        if (deckPuritySub) deckPuritySub.textContent = 'Severe high-frequency cutoff';
                     }
                 } else {
                     if (isAfter) {
