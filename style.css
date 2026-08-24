@@ -2949,7 +2949,110 @@ footer p {
     margin-top: 2px;
 }
 
+/* Preview Deck Drag & Drop Window */
+.preview-dropzone-wrapper {
+    margin-bottom: 16px;
+}
+
+.preview-dropzone-box {
+    border: 2px dashed rgba(255, 255, 255, 0.18);
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.preview-dropzone-box:hover,
+.preview-dropzone-box.dragover {
+    border-color: #ff5500;
+    background: rgba(255, 85, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+.preview-dropzone-icon {
+    width: 28px;
+    height: 28px;
+    color: #ff5500;
+    flex-shrink: 0;
+}
+
+.preview-dropzone-text {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.preview-dropzone-main {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.preview-dropzone-sub {
+    font-size: 0.72rem;
+    color: #94a3b8;
+}
+
+.preview-loaded-file-pill {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.35);
+    border-radius: 10px;
+    padding: 10px 14px;
+}
+
+.loaded-file-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #4ade80;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.loaded-file-clear-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #f8fafc;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.loaded-file-clear-btn:hover {
+    background: rgba(239, 68, 68, 0.4);
+    color: #ffffff;
+}
+
 @media (max-width: 640px) {
+    .preview-dropzone-box {
+        padding: 12px 10px;
+        gap: 8px;
+    }
+    .preview-dropzone-icon {
+        width: 22px;
+        height: 22px;
+    }
+    .preview-dropzone-main {
+        font-size: 0.82rem;
+    }
+    .preview-dropzone-sub {
+        font-size: 0.68rem;
+    }
     .master-deck-tabs {
         grid-template-columns: 1fr;
         gap: 6px;
