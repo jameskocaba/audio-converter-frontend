@@ -160,6 +160,15 @@
                 </a>
             </li>
             <li>
+                <a href="audio-inspector.html" class="sidebar-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M2 12h2l3-7 4 14 3-9 2 5 2-3h4"></path>
+                    </svg>
+                    <span>Audio Inspector</span>
+                </a>
+            </li>
+            <li>
                 <a href="supported-sites.html" class="sidebar-link">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
@@ -510,15 +519,43 @@
 
                     <!-- Visualizer Canvas & Mode Header -->
                     <div class="visualizer-container">
-                        <div class="visualizer-overlay-info">
+                        <div class="visualizer-overlay-info" style="align-items: center; justify-content: space-between;">
                             <div class="mode-indicator" id="previewModeIndicator">
                                 <span class="indicator-dot enhanced"></span>
                                 <span class="indicator-text" id="indicatorText">AI ENHANCED (320kbps HD)</span>
                             </div>
+
+                            <!-- Mode Switcher -->
+                            <div class="deck-mode-switcher" role="radiogroup" aria-label="Deck display mode">
+                                <button type="button" class="deck-mode-btn active" id="modeBtnEnhancer" role="radio" aria-checked="true">
+                                    <span>🎚️ Enhancer Demo</span>
+                                </button>
+                                <button type="button" class="deck-mode-btn" id="modeBtnInspector" role="radio" aria-checked="false" title="Analyze frequency cutoff and true bitrate">
+                                    <span>📊 Spectrogram Inspector</span>
+                                </button>
+                            </div>
+
                             <div class="spectrum-badge" id="spectrumBadge">
                                 Full Spectrum 20Hz – 20kHz
                             </div>
                         </div>
+
+                        <!-- Spectrogram Cutoff Overlay -->
+                        <div class="spectrogram-cutoff-overlay" id="spectrogramOverlay">
+                            <div class="cutoff-grid-line line-20k">
+                                <span class="cutoff-tag">20 kHz — True 320kbps HD</span>
+                                <span>20,000 Hz</span>
+                            </div>
+                            <div class="cutoff-grid-line line-16k">
+                                <span class="cutoff-tag">15.5–16 kHz — 128kbps Cutoff</span>
+                                <span>16,000 Hz</span>
+                            </div>
+                            <div class="cutoff-grid-line line-10k">
+                                <span class="cutoff-tag">10.5 kHz — Muffled Level</span>
+                                <span>10,500 Hz</span>
+                            </div>
+                        </div>
+
                         <canvas id="enhancerVisualizerCanvas" width="800" height="180"></canvas>
                         <div class="waveform-progress-bar" id="waveformProgressContainer">
                             <div class="waveform-progress-fill" id="waveformProgressFill"></div>
@@ -1679,6 +1716,34 @@
                 });
             });
 
+            /* ---- Deck Mode Switcher & Spectrogram Overlay ---- */
+            var currentDeckMode = 'enhancer'; // 'enhancer' or 'inspector'
+            var modeBtnEnhancer = document.getElementById('modeBtnEnhancer');
+            var modeBtnInspector = document.getElementById('modeBtnInspector');
+            var spectrogramOverlay = document.getElementById('spectrogramOverlay');
+
+            if (modeBtnEnhancer && modeBtnInspector) {
+                modeBtnEnhancer.addEventListener('click', function () {
+                    currentDeckMode = 'enhancer';
+                    modeBtnEnhancer.classList.add('active');
+                    modeBtnEnhancer.setAttribute('aria-checked', 'true');
+                    modeBtnInspector.classList.remove('active');
+                    modeBtnInspector.setAttribute('aria-checked', 'false');
+                    if (spectrogramOverlay) spectrogramOverlay.classList.remove('active');
+                    updateABMode();
+                });
+
+                modeBtnInspector.addEventListener('click', function () {
+                    currentDeckMode = 'inspector';
+                    modeBtnInspector.classList.add('active');
+                    modeBtnInspector.setAttribute('aria-checked', 'true');
+                    modeBtnEnhancer.classList.remove('active');
+                    modeBtnEnhancer.setAttribute('aria-checked', 'false');
+                    if (spectrogramOverlay) spectrogramOverlay.classList.add('active');
+                    updateABMode();
+                });
+            }
+
             /* ---- A/B Mode & Crossfader ---- */
             function updateABMode() {
                 var val = parseInt(slider.value);
@@ -1686,17 +1751,37 @@
                 btnBefore.classList.toggle('active', !isAfter);
                 btnAfter.classList.toggle('active', isAfter);
 
-                if (isAfter) {
-                    if (modeLabel) modeLabel.textContent = userFileLoaded ? 'ENHANCED (HD EQ)' : 'AI ENHANCED (320kbps HD)';
-                    if (modeIndicator) {
-                        var dot = modeIndicator.querySelector('.indicator-dot');
-                        if (dot) dot.className = 'indicator-dot enhanced';
+                if (currentDeckMode === 'inspector') {
+                    if (isAfter) {
+                        if (modeLabel) modeLabel.textContent = '🟢 PURITY: GRADE A (20kHz+ TRUE 320k)';
+                        if (spectrumBadge) spectrumBadge.textContent = '20kHz+ Full Studio Spectrum';
+                        if (modeIndicator) {
+                            var dot = modeIndicator.querySelector('.indicator-dot');
+                            if (dot) dot.className = 'indicator-dot enhanced';
+                        }
+                    } else {
+                        if (modeLabel) modeLabel.textContent = '🔴 CUTOFF: 10.5kHz (MUFFLED / LOW BITRATE)';
+                        if (spectrumBadge) spectrumBadge.textContent = 'Severe Roll-off at 10.5kHz';
+                        if (modeIndicator) {
+                            var dot = modeIndicator.querySelector('.indicator-dot');
+                            if (dot) dot.className = 'indicator-dot original';
+                        }
                     }
                 } else {
-                    if (modeLabel) modeLabel.textContent = 'ORIGINAL AUDIO (96-128K)';
-                    if (modeIndicator) {
-                        var dot = modeIndicator.querySelector('.indicator-dot');
-                        if (dot) dot.className = 'indicator-dot original';
+                    if (isAfter) {
+                        if (modeLabel) modeLabel.textContent = userFileLoaded ? 'ENHANCED (HD EQ)' : 'AI ENHANCED (320kbps HD)';
+                        if (spectrumBadge) spectrumBadge.textContent = 'Full Spectrum 20Hz – 20kHz';
+                        if (modeIndicator) {
+                            var dot = modeIndicator.querySelector('.indicator-dot');
+                            if (dot) dot.className = 'indicator-dot enhanced';
+                        }
+                    } else {
+                        if (modeLabel) modeLabel.textContent = 'ORIGINAL AUDIO (96-128K)';
+                        if (spectrumBadge) spectrumBadge.textContent = 'Muffled Highs (Lowpass Filter)';
+                        if (modeIndicator) {
+                            var dot = modeIndicator.querySelector('.indicator-dot');
+                            if (dot) dot.className = 'indicator-dot original';
+                        }
                     }
                 }
 
