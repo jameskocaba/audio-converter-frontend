@@ -248,16 +248,41 @@
                             <span class="tab-sub">Punchy Sub &amp; 320k Highs</span>
                         </button>
                         <button class="preset-tab" data-preset="acoustic" role="tab" aria-selected="false">
-                            <span class="tab-icon">🎸</span>
-                            <span class="tab-label">Acoustic &amp; Strings</span>
+                            <span class="tab-icon">🎹</span>
+                            <span class="tab-label">Piano &amp; Acoustic</span>
                             <span class="tab-sub">Resonance &amp; Dynamic Range</span>
                         </button>
-                        <div class="preset-tab custom-tab" id="testFileTab" role="tab" aria-selected="false"
-                            title="Test with your own MP3 or audio file" tabindex="0">
-                            <span class="tab-icon">📁</span>
-                            <span class="tab-label" id="testFileTabLabel">Test Your File</span>
-                            <span class="tab-sub" id="testFileTabSub">Instant Live Demo</span>
+                    </div>
+
+                    <!-- Dedicated Preview Drag & Drop Window -->
+                    <div class="preview-dropzone-wrapper">
+                        <label for="previewCustomAudioInput" class="preview-dropzone-box" id="previewDropzoneBox">
                             <input type="file" id="previewCustomAudioInput" accept="audio/*,.mp3,.wav,.flac,.aac,.ogg,.m4a,.wma,.opus" style="display: none;">
+                            <svg class="preview-dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <div class="preview-dropzone-text">
+                                <span class="preview-dropzone-main">Drag &amp; Drop Your Own Audio File Here to Test</span>
+                                <span class="preview-dropzone-sub">Click to browse or drop any MP3, WAV, FLAC &bull; 100% processed in your browser</span>
+                            </div>
+                        </label>
+
+                        <!-- Loaded File Banner Pill -->
+                        <div class="preview-loaded-file-pill" id="previewLoadedFilePill">
+                            <div class="loaded-file-info">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 18V5l12-2v13"></path>
+                                    <circle cx="6" cy="18" r="3"></circle>
+                                    <circle cx="18" cy="16" r="3"></circle>
+                                </svg>
+                                <span id="previewLoadedFileName">my_track.mp3</span>
+                                <span style="color: #86efac; font-size: 0.75rem; font-weight: 500;" id="previewLoadedFileSize">(3.2 MB)</span>
+                            </div>
+                            <button type="button" class="loaded-file-clear-btn" id="previewLoadedFileClearBtn" title="Unload custom file and return to studio presets">
+                                Unload File &times;
+                            </button>
                         </div>
                     </div>
 
@@ -435,6 +460,767 @@
 
         </div>
     </main>
+
+    <script>
+        /* ── Before/After Audio Preview (100% Interactive & Sound-Reactive) ── */
+        (function () {
+            var canvas = document.getElementById('enhancerVisualizerCanvas');
+            var playBtn = document.getElementById('previewPlayBtn');
+            var playIcon = document.getElementById('playIcon');
+            var pauseIcon = document.getElementById('pauseIcon');
+            var fill = document.getElementById('waveformProgressFill') || document.getElementById('waveformFill');
+            var waveformBar = document.getElementById('waveformProgressContainer') || document.getElementById('waveformBar');
+            var currentTimeDisplay = document.getElementById('previewCurrentTime');
+            var totalTimeDisplay = document.getElementById('previewTotalTime');
+            var timeDisplay = document.getElementById('previewTimeDisplay'); // fallback
+            var slider = document.getElementById('abCrossfadeSlider');
+            var btnBefore = document.getElementById('btnBefore');
+            var btnAfter = document.getElementById('btnAfter');
+            var modeLabel = document.getElementById('indicatorText') || document.getElementById('modeLabel');
+            var modeIndicator = document.getElementById('previewModeIndicator') || document.getElementById('modeIndicator');
+            var spectrumBadge = document.getElementById('spectrumBadge');
+
+            if (!canvas) return;
+
+            /* ---- Canvas setup ---- */
+            function resizeCanvas() {
+                canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+                canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
+            }
+            resizeCanvas();
+            var ctx2d = canvas.getContext('2d');
+
+            /* ---- State ---- */
+            var isPlaying = false;
+            var animFrame = null;
+            var userFileLoaded = false;
+            var currentPresetIndex = 0;
+            var currentBuffer = null;
+            var presetBuffers = {};
+            var startedAt = 0;
+            var pausedAt = 0;
+            var currentDuration = 16;
+            var isScrubbing = false;
+
+            /* ---- Web Audio Graph ---- */
+            var audioCtx = null;
+            var analyser = null;
+            var freqData = null;
+            var sourceNode = null;
+            var masterGain = null;
+            var beforeFilter = null;
+            var beforeGain = null;
+            var afterFilter = null;
+            var afterGain = null;
+
+            function initAudioCtx() {
+                if (audioCtx) {
+                    if (audioCtx.state === 'suspended') audioCtx.resume();
+                    return;
+                }
+                var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContextClass();
+
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 512;
+                analyser.smoothingTimeConstant = 0.82;
+                freqData = new Uint8Array(analyser.frequencyBinCount);
+
+                masterGain = audioCtx.createGain();
+                masterGain.gain.value = 0.85;
+
+                // Before Path: 10.5kHz lowpass filter (simulating lossy/muffled low bitrate MP3)
+                beforeFilter = audioCtx.createBiquadFilter();
+                beforeFilter.type = 'lowpass';
+                beforeFilter.frequency.value = 10200;
+                beforeFilter.Q.value = 1.0;
+                beforeGain = audioCtx.createGain();
+
+                // After Path: High-shelf brightness enhancer (+4.5dB at 5.5kHz)
+                afterFilter = audioCtx.createBiquadFilter();
+                afterFilter.type = 'highshelf';
+                afterFilter.frequency.value = 5500;
+                afterFilter.gain.value = 4.5;
+                afterGain = audioCtx.createGain();
+
+                // Connect to master -> analyser -> speakers
+                beforeGain.connect(masterGain);
+                afterGain.connect(masterGain);
+                masterGain.connect(analyser);
+                analyser.connect(audioCtx.destination);
+
+                updateFilterGains();
+            }
+
+            function getAfterRatio() {
+                return parseInt(slider ? slider.value : 100) / 100;
+            }
+
+            function updateFilterGains() {
+                if (!beforeGain || !afterGain || !audioCtx) return;
+                var ratio = getAfterRatio();
+                var now = audioCtx.currentTime;
+                var beforeVol = Math.cos(ratio * 0.5 * Math.PI);
+                var afterVol = Math.sin(ratio * 0.5 * Math.PI);
+                beforeGain.gain.setValueAtTime(beforeVol, now);
+                afterGain.gain.setValueAtTime(afterVol, now);
+            }
+
+            /* ---- Procedural High-Fidelity Audio Synth ---- */
+            function createPresetAudioBuffer(presetIdx) {
+                if (presetBuffers[presetIdx]) return presetBuffers[presetIdx];
+                initAudioCtx();
+
+                var sampleRate = audioCtx.sampleRate || 44100;
+                var dur = (presetIdx === 2) ? 18 : 16;
+                var totalSamples = Math.floor(sampleRate * dur);
+                var buf = audioCtx.createBuffer(2, totalSamples, sampleRate);
+                var left = buf.getChannelData(0);
+                var right = buf.getChannelData(1);
+
+                function noteFreq(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
+
+                if (presetIdx === 0) {
+                    var bpm = 120;
+                    var beatSec = 60 / bpm;
+                    var totalBeats = Math.floor(dur / beatSec);
+
+                    for (var beat = 0; beat < totalBeats; beat++) {
+                        var beatStart = Math.floor(beat * beatSec * sampleRate);
+                        var isKick = (beat % 4 === 0 || beat % 4 === 2 || (beat % 8 === 6));
+                        var isSnare = (beat % 4 === 1 || beat % 4 === 3);
+
+                        if (isKick) {
+                            var kLen = Math.floor(0.35 * sampleRate);
+                            for (var s = 0; s < kLen && (beatStart + s) < totalSamples; s++) {
+                                var t = s / sampleRate;
+                                var f = 130 * Math.exp(-t * 22) + 45;
+                                var env = Math.exp(-t * 12);
+                                var val = Math.sin(2 * Math.PI * f * t) * env * 0.9;
+                                left[beatStart + s] += val;
+                                right[beatStart + s] += val;
+                            }
+                        }
+
+                        if (isSnare) {
+                            var sLen = Math.floor(0.28 * sampleRate);
+                            for (var s = 0; s < sLen && (beatStart + s) < totalSamples; s++) {
+                                var t = s / sampleRate;
+                                var noise = (Math.random() * 2 - 1) * Math.exp(-t * 18) * 0.45;
+                                var tone = Math.sin(2 * Math.PI * 185 * t) * Math.exp(-t * 24) * 0.4;
+                                var val = noise + tone;
+                                left[beatStart + s] += val;
+                                right[beatStart + s] += val;
+                            }
+                        }
+
+                        for (var sub = 0; sub < 2; sub++) {
+                            var hStart = beatStart + Math.floor(sub * 0.5 * beatSec * sampleRate);
+                            var hLen = Math.floor(0.06 * sampleRate);
+                            for (var s = 0; s < hLen && (hStart + s) < totalSamples; s++) {
+                                var t = s / sampleRate;
+                                var hVal = (Math.random() * 2 - 1) * Math.exp(-t * 70) * (sub === 1 ? 0.16 : 0.22);
+                                left[hStart + s] += hVal * 0.7;
+                                right[hStart + s] += hVal * 1.0;
+                            }
+                        }
+                    }
+
+                    var bassNotes = [40, 40, 43, 45, 38, 38, 40, 43];
+                    var leadNotes = [64, 67, 69, 71, 67, 69, 64, 62];
+
+                    for (var b = 0; b < totalBeats; b++) {
+                        var bStart = Math.floor(b * beatSec * sampleRate);
+                        var bLen = Math.floor(beatSec * sampleRate);
+                        var bFreq = noteFreq(bassNotes[b % bassNotes.length]);
+                        var lFreq = noteFreq(leadNotes[b % leadNotes.length]);
+
+                        for (var s = 0; s < bLen && (bStart + s) < totalSamples; s++) {
+                            var t = s / sampleRate;
+                            var bassEnv = Math.exp(-t * 3.5);
+                            var bWave = (Math.sin(2 * Math.PI * bFreq * t) + 0.5 * Math.sin(4 * Math.PI * bFreq * t)) * bassEnv * 0.35;
+                            var lEnv = Math.exp(-t * 2.2);
+                            var lWave = (Math.sin(2 * Math.PI * lFreq * t) + 0.4 * Math.sin(6 * Math.PI * lFreq * t) + 0.25 * Math.sin(10 * Math.PI * lFreq * t)) * lEnv * 0.22;
+                            lWave = Math.tanh(lWave * 2.2) * 0.25;
+
+                            left[bStart + s] += bWave + lWave * 0.85;
+                            right[bStart + s] += bWave + lWave * 1.15;
+                        }
+                    }
+
+                } else if (presetIdx === 1) {
+                    var bpm = 96;
+                    var beatSec = 60 / bpm;
+                    var totalBeats = Math.floor(dur / beatSec);
+
+                    for (var b = 0; b < totalBeats; b++) {
+                        var bStart = Math.floor(b * beatSec * sampleRate);
+                        var swingOffset = Math.floor(0.66 * beatSec * sampleRate);
+
+                        [0, swingOffset].forEach(function (offset, idx) {
+                            var rStart = bStart + offset;
+                            var rLen = Math.floor(0.18 * sampleRate);
+                            for (var s = 0; s < rLen && (rStart + s) < totalSamples; s++) {
+                                var t = s / sampleRate;
+                                var val = (Math.random() * 2 - 1) * Math.exp(-t * 35) * (idx === 1 ? 0.15 : 0.22);
+                                left[rStart + s] += val * 0.9;
+                                right[rStart + s] += val * 0.6;
+                            }
+                        });
+
+                        var jazzBass = [38, 41, 43, 44, 45, 43, 41, 38];
+                        var freq = noteFreq(jazzBass[b % jazzBass.length]);
+                        var bLen = Math.floor(beatSec * sampleRate);
+                        for (var s = 0; s < bLen && (bStart + s) < totalSamples; s++) {
+                            var t = s / sampleRate;
+                            var val = Math.sin(2 * Math.PI * freq * t) * Math.exp(-t * 2.8) * 0.45;
+                            left[bStart + s] += val;
+                            right[bStart + s] += val;
+                        }
+                    }
+
+                    var chords = [
+                        [50, 53, 57, 60],
+                        [43, 47, 50, 53],
+                        [48, 52, 55, 59],
+                        [45, 49, 52, 55]
+                    ];
+
+                    for (var c = 0; c < Math.floor(totalBeats / 2); c++) {
+                        var cStart = Math.floor(c * 2 * beatSec * sampleRate);
+                        var chord = chords[c % chords.length];
+                        var cLen = Math.floor(2 * beatSec * sampleRate);
+
+                        chord.forEach(function (n, nIdx) {
+                            var f = noteFreq(n);
+                            for (var s = 0; s < cLen && (cStart + s) < totalSamples; s++) {
+                                var t = s / sampleRate;
+                                var tremolo = 1 + 0.15 * Math.sin(2 * Math.PI * 4.5 * t);
+                                var val = (Math.sin(2 * Math.PI * f * t) + 0.3 * Math.sin(4 * Math.PI * f * t)) * Math.exp(-t * 1.5) * 0.12 * tremolo;
+                                var pan = (nIdx % 2 === 0) ? 0.7 : 1.3;
+                                left[cStart + s] += val * pan;
+                                right[cStart + s] += val * (2 - pan);
+                            }
+                        });
+                    }
+
+                } else {
+                    var bpm = 72;
+                    var beatSec = 60 / bpm;
+                    var totalBeats = Math.floor(dur / beatSec);
+
+                    var pianoProgression = [
+                        [48, 55, 60, 64, 67],
+                        [47, 55, 59, 62, 67],
+                        [45, 52, 57, 60, 64],
+                        [41, 48, 53, 57, 60]
+                    ];
+
+                    for (var bar = 0; bar < Math.floor(totalBeats / 4); bar++) {
+                        var barStart = Math.floor(bar * 4 * beatSec * sampleRate);
+                        var chord = pianoProgression[bar % pianoProgression.length];
+
+                        for (var a = 0; a < 8; a++) {
+                            var nStart = barStart + Math.floor(a * 0.5 * beatSec * sampleRate);
+                            var n = chord[a % chord.length] + (a >= 4 ? 12 : 0);
+                            var f = noteFreq(n);
+                            var nLen = Math.floor(2.5 * sampleRate);
+
+                            for (var s = 0; s < nLen && (nStart + s) < totalSamples; s++) {
+                                var t = s / sampleRate;
+                                var val = (Math.sin(2 * Math.PI * f * t) * 0.7
+                                    + Math.sin(4 * Math.PI * f * t) * 0.25
+                                    + Math.sin(6 * Math.PI * f * t) * 0.1) * Math.exp(-t * 2.2) * 0.18;
+                                var pan = 0.8 + (a / 8) * 0.4;
+                                left[nStart + s] += val * pan;
+                                right[nStart + s] += val * (2 - pan);
+                            }
+                        }
+                    }
+                }
+
+                var maxPeak = 0;
+                for (var i = 0; i < totalSamples; i++) {
+                    if (Math.abs(left[i]) > maxPeak) maxPeak = Math.abs(left[i]);
+                    if (Math.abs(right[i]) > maxPeak) maxPeak = Math.abs(right[i]);
+                }
+                if (maxPeak > 0) {
+                    var gainMult = 0.82 / maxPeak;
+                    for (var i = 0; i < totalSamples; i++) {
+                        left[i] = Math.tanh(left[i] * gainMult);
+                        right[i] = Math.tanh(right[i] * gainMult);
+                    }
+                }
+
+                presetBuffers[presetIdx] = buf;
+                return buf;
+            }
+
+            /* ---- Vertical Spectrum Equalizer Visualizer ---- */
+            var NUM_BARS = 48;
+            var peaks = new Float32Array(NUM_BARS);
+            var barHeights = new Float32Array(NUM_BARS);
+
+            function getSpectrumGradient(h, afterRatio) {
+                var grad = ctx2d.createLinearGradient(0, h, 0, 0);
+                var r1 = Math.round(217 + (2 - 217) * afterRatio);
+                var g1 = Math.round(119 + (132 - 119) * afterRatio);
+                var b1 = Math.round(6 + (199 - 6) * afterRatio);
+
+                var r2 = Math.round(245 + (14 - 245) * afterRatio);
+                var g2 = Math.round(158 + (165 - 158) * afterRatio);
+                var b2 = Math.round(11 + (233 - 11) * afterRatio);
+
+                var r3 = Math.round(251 + (56 - 251) * afterRatio);
+                var g3 = Math.round(191 + (189 - 191) * afterRatio);
+                var b3 = Math.round(36 + (248 - 36) * afterRatio);
+
+                grad.addColorStop(0, 'rgba(' + r1 + ',' + g1 + ',' + b1 + ', 0.25)');
+                grad.addColorStop(0.5, 'rgba(' + r2 + ',' + g2 + ',' + b2 + ', 0.75)');
+                grad.addColorStop(1, 'rgba(' + r3 + ',' + g3 + ',' + b3 + ', 1.0)');
+                return grad;
+            }
+
+            function getPeakColor(afterRatio) {
+                var r = Math.round(251 + (56 - 251) * afterRatio);
+                var g = Math.round(191 + (189 - 191) * afterRatio);
+                var b = Math.round(36 + (248 - 36) * afterRatio);
+                return 'rgba(' + r + ',' + g + ',' + b + ', 0.95)';
+            }
+
+            function renderVerticalBars(targetHeights, afterRatio) {
+                var w = canvas.width, h = canvas.height;
+                ctx2d.clearRect(0, 0, w, h);
+
+                var numBars = NUM_BARS;
+                var gap = 3 * (window.devicePixelRatio || 1);
+                var totalGaps = gap * (numBars - 1);
+                var barWidth = Math.max(2, (w - totalGaps) / numBars);
+                var grad = getSpectrumGradient(h, afterRatio);
+                var peakColor = getPeakColor(afterRatio);
+
+                for (var i = 0; i < numBars; i++) {
+                    barHeights[i] = barHeights[i] * 0.65 + targetHeights[i] * 0.35;
+                    var val = barHeights[i];
+                    var barH = Math.max(3, val * (h - 12));
+                    var x = i * (barWidth + gap);
+                    var y = h - barH;
+
+                    if (barH >= peaks[i]) {
+                        peaks[i] = barH;
+                    } else {
+                        peaks[i] = Math.max(3, peaks[i] - 1.4 * (window.devicePixelRatio || 1));
+                    }
+
+                    ctx2d.fillStyle = grad;
+                    ctx2d.beginPath();
+                    var radius = Math.min(barWidth / 2, 3);
+                    if (ctx2d.roundRect) {
+                        ctx2d.roundRect(x, y, barWidth, barH, [radius, radius, 0, 0]);
+                    } else {
+                        ctx2d.rect(x, y, barWidth, barH);
+                    }
+                    ctx2d.fill();
+
+                    var peakY = h - peaks[i] - 2;
+                    if (peakY < h - 4) {
+                        ctx2d.fillStyle = peakColor;
+                        ctx2d.fillRect(x, Math.max(1, peakY), barWidth, 2);
+                    }
+                }
+            }
+
+            function updateTimeDisplay(pos, total) {
+                if (currentTimeDisplay) currentTimeDisplay.textContent = fmtTime(pos);
+                if (totalTimeDisplay) totalTimeDisplay.textContent = fmtTime(total);
+                if (timeDisplay) timeDisplay.textContent = fmtTime(pos) + ' / ' + fmtTime(total);
+            }
+
+            /* Live FFT Sound-Reactive Animation Loop */
+            function realLoop() {
+                if (analyser && isPlaying) {
+                    analyser.getByteFrequencyData(freqData);
+                    var afterRatio = getAfterRatio();
+                    var targets = new Float32Array(NUM_BARS);
+                    var binCount = freqData.length;
+
+                    for (var i = 0; i < NUM_BARS; i++) {
+                        var startBin = Math.floor(Math.pow(i / NUM_BARS, 1.8) * (binCount - 2));
+                        var endBin = Math.max(startBin + 1, Math.floor(Math.pow((i + 1) / NUM_BARS, 1.8) * (binCount - 1)));
+                        var sum = 0;
+                        var count = 0;
+                        for (var b = startBin; b <= endBin && b < binCount; b++) {
+                            sum += freqData[b];
+                            count++;
+                        }
+                        var avg = (count > 0 ? (sum / count) : 0) / 255;
+                        var freqScale = 1 + (i / NUM_BARS) * 0.75;
+                        targets[i] = Math.min(0.98, avg * freqScale);
+                    }
+                    renderVerticalBars(targets, afterRatio);
+
+                    if (!isScrubbing) {
+                        var pos = audioCtx.currentTime - startedAt + pausedAt;
+                        if (pos >= currentDuration) {
+                            pos = 0;
+                            pausedAt = 0;
+                            startedAt = audioCtx.currentTime;
+                            buildAndPlaySource(0);
+                        }
+                        if (fill) fill.style.width = ((pos / currentDuration) * 100) + '%';
+                        updateTimeDisplay(pos, currentDuration);
+                    }
+                }
+
+                if (isPlaying) {
+                    animFrame = requestAnimationFrame(realLoop);
+                }
+            }
+
+            function fmtTime(s) {
+                s = Math.max(0, Math.floor(s));
+                var m = Math.floor(s / 60);
+                var sec = s % 60;
+                return m + ':' + (sec < 10 ? '0' : '') + sec;
+            }
+
+            function idle() {
+                var afterRatio = getAfterRatio();
+                var idleTargets = new Float32Array(NUM_BARS);
+                for (var i = 0; i < NUM_BARS; i++) {
+                    idleTargets[i] = 0.04 + Math.sin(i * 0.25) * 0.02;
+                }
+                renderVerticalBars(idleTargets, afterRatio);
+            }
+            idle();
+
+            /* ---- Playback Control ---- */
+            function buildAndPlaySource(offset) {
+                initAudioCtx();
+                if (sourceNode) {
+                    try { sourceNode.stop(); } catch (e) { }
+                    sourceNode.disconnect();
+                    sourceNode = null;
+                }
+
+                if (!currentBuffer) {
+                    currentBuffer = userFileLoaded ? currentBuffer : createPresetAudioBuffer(currentPresetIndex);
+                }
+                currentDuration = currentBuffer.duration;
+
+                sourceNode = audioCtx.createBufferSource();
+                sourceNode.buffer = currentBuffer;
+                sourceNode.loop = false;
+
+                sourceNode.connect(beforeFilter);
+                beforeFilter.connect(beforeGain);
+
+                sourceNode.connect(afterFilter);
+                afterFilter.connect(afterGain);
+
+                updateFilterGains();
+
+                sourceNode.start(0, offset);
+                startedAt = audioCtx.currentTime - offset;
+            }
+
+            function playAudio() {
+                initAudioCtx();
+                buildAndPlaySource(pausedAt);
+                isPlaying = true;
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = '';
+                animFrame = requestAnimationFrame(realLoop);
+            }
+
+            function pauseAudio() {
+                if (audioCtx) {
+                    pausedAt = audioCtx.currentTime - startedAt + pausedAt;
+                    if (pausedAt >= currentDuration) pausedAt = 0;
+                }
+                if (sourceNode) {
+                    try { sourceNode.stop(); } catch (e) { }
+                    sourceNode = null;
+                }
+                isPlaying = false;
+                playIcon.style.display = '';
+                pauseIcon.style.display = 'none';
+                if (animFrame) cancelAnimationFrame(animFrame);
+                idle();
+            }
+
+            playBtn.addEventListener('click', function () {
+                if (isPlaying) {
+                    pauseAudio();
+                } else {
+                    playAudio();
+                }
+            });
+
+            /* ---- Interactive Seeking on Soundwave & Progress Bar ---- */
+            function seekToRatio(ratio) {
+                ratio = Math.max(0, Math.min(1, ratio));
+                if (!currentBuffer) {
+                    currentBuffer = userFileLoaded ? currentBuffer : createPresetAudioBuffer(currentPresetIndex);
+                    currentDuration = currentBuffer.duration;
+                }
+                var newPos = ratio * currentDuration;
+                pausedAt = newPos;
+                if (fill) fill.style.width = (ratio * 100) + '%';
+                updateTimeDisplay(newPos, currentDuration);
+
+                if (isPlaying) {
+                    buildAndPlaySource(newPos);
+                }
+            }
+
+            function handleScrubEvent(e, elem) {
+                var rect = elem.getBoundingClientRect();
+                var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                var ratio = (clientX - rect.left) / rect.width;
+                seekToRatio(ratio);
+            }
+
+            if (waveformBar) {
+                waveformBar.addEventListener('click', function (e) { handleScrubEvent(e, this); });
+                waveformBar.addEventListener('mousedown', function (e) {
+                    isScrubbing = true;
+                    handleScrubEvent(e, this);
+                    function onMove(me) { handleScrubEvent(me, waveformBar); }
+                    function onUp() {
+                        isScrubbing = false;
+                        window.removeEventListener('mousemove', onMove);
+                        window.removeEventListener('mouseup', onUp);
+                    }
+                    window.addEventListener('mousemove', onMove);
+                    window.addEventListener('mouseup', onUp);
+                });
+            }
+
+            canvas.addEventListener('click', function (e) { handleScrubEvent(e, this); });
+            canvas.addEventListener('mousedown', function (e) {
+                isScrubbing = true;
+                handleScrubEvent(e, this);
+                function onMove(me) { handleScrubEvent(me, canvas); }
+                function onUp() {
+                    isScrubbing = false;
+                    window.removeEventListener('mousemove', onMove);
+                    window.removeEventListener('mouseup', onUp);
+                }
+                window.addEventListener('mousemove', onMove);
+                window.addEventListener('mouseup', onUp);
+            });
+
+            [waveformBar, canvas].filter(Boolean).forEach(function (el) {
+                el.addEventListener('touchstart', function (e) {
+                    isScrubbing = true;
+                    handleScrubEvent(e, this);
+                }, { passive: true });
+                el.addEventListener('touchmove', function (e) {
+                    if (isScrubbing) handleScrubEvent(e, this);
+                }, { passive: true });
+                el.addEventListener('touchend', function () {
+                    isScrubbing = false;
+                });
+            });
+
+            /* ---- A/B Mode & Crossfader ---- */
+            function updateABMode() {
+                var val = parseInt(slider.value);
+                var isAfter = val >= 50;
+                btnBefore.classList.toggle('active', !isAfter);
+                btnAfter.classList.toggle('active', isAfter);
+
+                if (isAfter) {
+                    if (modeLabel) modeLabel.textContent = userFileLoaded ? 'ENHANCED (HD EQ)' : 'AI ENHANCED (320kbps HD)';
+                    if (spectrumBadge) spectrumBadge.textContent = 'Full Spectrum 20Hz – 20kHz';
+                    if (modeIndicator) {
+                        var dot = modeIndicator.querySelector('.indicator-dot');
+                        if (dot) dot.className = 'indicator-dot enhanced';
+                    }
+                } else {
+                    if (modeLabel) modeLabel.textContent = 'ORIGINAL AUDIO (96-128K)';
+                    if (spectrumBadge) spectrumBadge.textContent = 'Muffled Highs (Lowpass Filter)';
+                    if (modeIndicator) {
+                        var dot = modeIndicator.querySelector('.indicator-dot');
+                        if (dot) dot.className = 'indicator-dot original';
+                    }
+                }
+
+                updateFilterGains();
+                if (!isPlaying) idle();
+            }
+
+            if (slider) slider.addEventListener('input', updateABMode);
+
+            btnBefore.addEventListener('click', function () {
+                slider.value = 0;
+                updateABMode();
+            });
+            btnAfter.addEventListener('click', function () {
+                slider.value = 100;
+                updateABMode();
+            });
+
+            /* ---- Preset Song Tabs Handling ---- */
+            var presetKeyMap = {
+                'vocals': 0,
+                'hiphop': 1,
+                'acoustic': 2
+            };
+            var userAudioBuffer = null;
+            var previewDropzoneBox = document.getElementById('previewDropzoneBox');
+            var previewCustomAudioInput = document.getElementById('previewCustomAudioInput');
+            var previewLoadedFilePill = document.getElementById('previewLoadedFilePill');
+            var previewLoadedFileName = document.getElementById('previewLoadedFileName');
+            var previewLoadedFileSize = document.getElementById('previewLoadedFileSize');
+            var previewLoadedFileClearBtn = document.getElementById('previewLoadedFileClearBtn');
+
+            document.querySelectorAll('.preset-tab').forEach(function (tab) {
+                tab.addEventListener('click', function (e) {
+                    if (this.hasAttribute('data-preset')) {
+                        document.querySelectorAll('.preset-tab').forEach(function (t) {
+                            t.classList.remove('active');
+                            t.setAttribute('aria-selected', 'false');
+                        });
+                        this.classList.add('active');
+                        this.setAttribute('aria-selected', 'true');
+
+                        userFileLoaded = false;
+                        if (previewLoadedFilePill) previewLoadedFilePill.style.display = 'none';
+                        if (previewDropzoneBox) previewDropzoneBox.style.display = '';
+
+                        var pVal = this.getAttribute('data-preset');
+                        var pIdx = (presetKeyMap[pVal] !== undefined) ? presetKeyMap[pVal] : parseInt(pVal || 0);
+                        currentPresetIndex = pIdx;
+                        currentBuffer = createPresetAudioBuffer(pIdx);
+                        currentDuration = currentBuffer.duration;
+                        pausedAt = 0;
+                        if (fill) fill.style.width = '0%';
+                        updateTimeDisplay(0, currentDuration);
+                        updateABMode();
+
+                        if (isPlaying) {
+                            buildAndPlaySource(0);
+                        }
+                    }
+                });
+
+                tab.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
+
+            /* ---- Dedicated Drag & Drop Audio File Loader ---- */
+            function loadAudioFile(file) {
+                if (!file) return;
+                var isAudio = (file.type && file.type.match(/audio/)) || /\.(mp3|wav|flac|aac|ogg|m4a|wma|opus)$/i.test(file.name);
+                if (!isAudio) {
+                    alert('Please select an audio file (MP3, WAV, FLAC, AAC, etc.)');
+                    return;
+                }
+                var name = file.name;
+                var sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+
+                if (isPlaying) pauseAudio();
+                pausedAt = 0;
+
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    initAudioCtx();
+                    audioCtx.decodeAudioData(e.target.result.slice(0), function (buf) {
+                        userAudioBuffer = buf;
+                        currentBuffer = buf;
+                        currentDuration = buf.duration;
+                        userFileLoaded = true;
+
+                        document.querySelectorAll('.preset-tab').forEach(function (t) {
+                            t.classList.remove('active');
+                            t.setAttribute('aria-selected', 'false');
+                        });
+
+                        if (previewDropzoneBox) previewDropzoneBox.style.display = 'none';
+                        if (previewLoadedFilePill) previewLoadedFilePill.style.display = 'flex';
+                        if (previewLoadedFileName) previewLoadedFileName.textContent = name.length > 28 ? (name.substring(0, 25) + '…') : name;
+                        if (previewLoadedFileSize) previewLoadedFileSize.textContent = '(' + sizeMb + ' MB)';
+
+                        updateTimeDisplay(0, currentDuration);
+                        if (fill) fill.style.width = '0%';
+                        updateABMode();
+                        playAudio();
+                    }, function () {
+                        alert('Could not decode this audio file. Please try another MP3 or WAV.');
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            }
+
+            if (previewCustomAudioInput) {
+                previewCustomAudioInput.addEventListener('change', function () {
+                    if (this.files && this.files[0]) loadAudioFile(this.files[0]);
+                });
+            }
+
+            if (previewDropzoneBox) {
+                previewDropzoneBox.addEventListener('dragover', function (e) {
+                    e.preventDefault();
+                    this.classList.add('dragover');
+                });
+                previewDropzoneBox.addEventListener('dragleave', function () {
+                    this.classList.remove('dragover');
+                });
+                previewDropzoneBox.addEventListener('drop', function (e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                        loadAudioFile(e.dataTransfer.files[0]);
+                    }
+                });
+            }
+
+            if (previewLoadedFileClearBtn) {
+                previewLoadedFileClearBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (isPlaying) pauseAudio();
+                    userFileLoaded = false;
+                    userAudioBuffer = null;
+                    pausedAt = 0;
+
+                    if (previewCustomAudioInput) previewCustomAudioInput.value = '';
+                    if (previewLoadedFilePill) previewLoadedFilePill.style.display = 'none';
+                    if (previewDropzoneBox) previewDropzoneBox.style.display = '';
+
+                    currentPresetIndex = 0;
+                    currentBuffer = createPresetAudioBuffer(0);
+                    currentDuration = currentBuffer.duration;
+
+                    document.querySelectorAll('.preset-tab').forEach(function (t, idx) {
+                        if (idx === 0) {
+                            t.classList.add('active');
+                            t.setAttribute('aria-selected', 'true');
+                        } else {
+                            t.classList.remove('active');
+                            t.setAttribute('aria-selected', 'false');
+                        }
+                    });
+
+                    if (fill) fill.style.width = '0%';
+                    updateTimeDisplay(0, currentDuration);
+                    updateABMode();
+                    idle();
+                });
+            }
+
+            window.addEventListener('resize', function () {
+                resizeCanvas();
+                if (!isPlaying) idle();
+            });
+        })();
+    </script>
 
     <script src="script.js"></script>
 </body>
