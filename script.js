@@ -475,6 +475,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (loginEmail && sendLinkBtn) {
+        loginEmail.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendLinkBtn.click();
+            }
+        });
+    }
+
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async (e) => {
             if (e && e.preventDefault) e.preventDefault();
