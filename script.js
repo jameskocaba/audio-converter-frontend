@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. User Dashboard & Auth UI Elements
     const userDashboard = document.getElementById('userDashboard');
+    const guestPricingGrid = document.getElementById('guestPricingGrid');
     const loginFormContainer = document.getElementById('loginFormContainer');
     const conversionToolContainer = document.getElementById('conversionToolContainer');
     const loginEmail = document.getElementById('loginEmail');
@@ -13,6 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const authMessage = document.getElementById('authMessage');
     const userEmailDisplay = document.getElementById('userEmailDisplay');
     const paidCreditsDisplay = document.getElementById('paidCreditsDisplay');
+    const headerPaidCreditsDisplay = document.getElementById('headerPaidCreditsDisplay');
+    const headerUserNav = document.getElementById('headerUserNav');
+    const headerLoginLink = document.getElementById('headerLoginLink');
+    const headerLogoutBtn = document.getElementById('headerLogoutBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const buyCreditsBtn = document.getElementById('buyCreditsBtn');
     const subscribeBtn = document.getElementById('subscribeBtn');
@@ -322,13 +327,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('session_token', data.token);
             }
 
-            if (paidCreditsDisplay) paidCreditsDisplay.textContent = data.paid_track_credits;
+            const credits = (data.paid_track_credits !== undefined && data.paid_track_credits !== null) ? data.paid_track_credits : 0;
+            if (paidCreditsDisplay) paidCreditsDisplay.textContent = credits;
+            if (headerPaidCreditsDisplay) headerPaidCreditsDisplay.textContent = credits;
 
             if (data.authenticated) {
                 isGuestUser = false;
                 // User is logged in/paid
                 if (userDashboard) userDashboard.classList.remove('hidden');
-                if (userEmailDisplay) userEmailDisplay.textContent = data.email;
+                if (guestPricingGrid) guestPricingGrid.classList.add('hidden');
+                if (headerUserNav) headerUserNav.classList.remove('hidden');
+                if (headerLoginLink) headerLoginLink.classList.add('hidden');
+                if (userEmailDisplay) userEmailDisplay.textContent = data.email || 'Active User';
                 if (logoutBtn) logoutBtn.classList.remove('hidden');
 
                 if (subscriptionBadge) subscriptionBadge.classList.add('hidden');
@@ -339,6 +349,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 isGuestUser = true;
                 // User is a guest
                 if (userDashboard) userDashboard.classList.add('hidden');
+                if (guestPricingGrid) guestPricingGrid.classList.remove('hidden');
+                if (headerUserNav) headerUserNav.classList.add('hidden');
+                if (headerLoginLink) headerLoginLink.classList.remove('hidden');
                 if (workspacePricingContainer) workspacePricingContainer.classList.add('hidden');
                 if (loginFormContainer) loginFormContainer.classList.remove('hidden');
             }
@@ -346,15 +359,31 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Auth Check Failed', error);
             // Fallback for offline mode/guests
             if (userDashboard) userDashboard.classList.add('hidden');
+            if (guestPricingGrid) guestPricingGrid.classList.remove('hidden');
+            if (headerUserNav) headerUserNav.classList.add('hidden');
+            if (headerLoginLink) headerLoginLink.classList.remove('hidden');
             if (workspacePricingContainer) workspacePricingContainer.classList.add('hidden');
             if (loginFormContainer) loginFormContainer.classList.remove('hidden');
         }
     };
 
-    // --- MAGIC LINK VERIFICATION ---
+    // --- MAGIC LINK VERIFICATION & PREVIEW ---
     const token = urlParams.get('token');
+    const preview = urlParams.get('preview');
 
-    if (token) {
+    if (preview === 'login' || preview === 'logged_in') {
+        if (conversionToolContainer) conversionToolContainer.classList.remove('hidden');
+        if (userDashboard) userDashboard.classList.remove('hidden');
+        if (guestPricingGrid) guestPricingGrid.classList.add('hidden');
+        if (headerUserNav) headerUserNav.classList.remove('hidden');
+        if (headerLoginLink) headerLoginLink.classList.add('hidden');
+        if (userEmailDisplay) userEmailDisplay.textContent = 'alex@example.com';
+        if (paidCreditsDisplay) paidCreditsDisplay.textContent = '350';
+        if (headerPaidCreditsDisplay) headerPaidCreditsDisplay.textContent = '350';
+        if (workspacePricingContainer) workspacePricingContainer.classList.remove('hidden');
+        if (buyCreditsBtn) buyCreditsBtn.classList.remove('hidden');
+        if (loginFormContainer) loginFormContainer.classList.add('hidden');
+    } else if (token) {
         if (urlMessage) {
             urlMessage.innerHTML = `<div class="alert-message" style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe;">Verifying secure link...</div>`;
             urlMessage.classList.remove('hidden');
@@ -484,13 +513,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const handleLogout = async (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        localStorage.removeItem('session_token');
+        await fetch(`${BACKEND_URL}/auth/logout`, { method: 'POST', credentials: 'include' });
+        window.location.reload();
+    };
+
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', async (e) => {
-            if (e && e.preventDefault) e.preventDefault();
-            localStorage.removeItem('session_token');
-            await fetch(`${BACKEND_URL}/auth/logout`, { method: 'POST', credentials: 'include' });
-            window.location.reload();
-        });
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+
+    if (headerLogoutBtn) {
+        headerLogoutBtn.addEventListener('click', handleLogout);
     }
 
     if (buyCreditsBtn) {
