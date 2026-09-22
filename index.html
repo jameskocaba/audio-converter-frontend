@@ -280,17 +280,21 @@
 
             <header class="logo-container">
                 <div class="header-eyebrow">
-                    <svg viewBox="0 0 24 24" width="10" height="10" fill="#FF5500"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <svg viewBox="0 0 24 24" width="10" height="10" fill="#FF5500">
+                        <polygon
+                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
                     AI-Powered Music Tagging
                 </div>
-                <h1 class="main-headline">The Force Behind Your <span class="accent">Album Art</span></h1>
+                <h1 class="main-headline">The Force Behind Your <span class="accent">Music Library</span></h1>
                 <h2 class="main-subheadline">
                     Own tracks ripped from CDs, vinyl, or cassettes? Automatically apply
                     high-resolution album art, edit ID3 metadata, and transcribe lyrics &mdash;
                     no software required.
                 </h2>
                 <p class="header-note">
-                    Your first 5 conversions are always free &middot; Additional conversions cost 1 credit or more per track
+                    Your first 5 conversions are always free &middot; Additional conversions cost 1 credit or more per
+                    track
                 </p>
             </header>
 
@@ -301,27 +305,31 @@
                 aria-label="Interactive Audio Enhancer Demo">
                 <div class="preview-header">
                     <div class="preview-badge">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                             <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                         </svg>
                         <span>Interactive Audio Enhancer Demo</span>
                     </div>
                     <h2 class="preview-title">Hear the Before &amp; After Difference</h2>
-                    <p class="preview-subtitle">Listen to real-time audio samples or upload your own tracks. Toggle between muffled 96–128kbps originals and crystal-clear 320kbps AI-enhanced masters.</p>
+                    <p class="preview-subtitle">Listen to real-time audio samples or upload your own tracks. Toggle
+                        between muffled 96–128kbps originals and crystal-clear 320kbps AI-enhanced masters.</p>
                 </div>
 
                 <div class="preview-player-card">
                     <!-- Master Tool Switcher Tabs -->
                     <div class="master-deck-tabs" role="tablist" aria-label="Audio tool mode selection">
-                        <button type="button" class="master-deck-tab active" id="masterTabEnhancer" role="tab" aria-selected="true">
+                        <button type="button" class="master-deck-tab active" id="masterTabEnhancer" role="tab"
+                            aria-selected="true">
                             <span class="master-tab-icon">🎚️</span>
                             <div class="master-tab-content">
                                 <span class="master-tab-title">AI Sound Enhancer</span>
                                 <span class="master-tab-desc">Listen &amp; A/B Crossfade Sound</span>
                             </div>
                         </button>
-                        <button type="button" class="master-deck-tab" id="masterTabInspector" role="tab" aria-selected="false">
+                        <button type="button" class="master-deck-tab" id="masterTabInspector" role="tab"
+                            aria-selected="false">
                             <span class="master-tab-icon">📊</span>
                             <div class="master-tab-content">
                                 <span class="master-tab-title">True Bitrate Inspector</span>
@@ -352,30 +360,37 @@
                     <!-- Dedicated Preview Drag & Drop Window -->
                     <div class="preview-dropzone-wrapper">
                         <label for="previewCustomAudioInput" class="preview-dropzone-box" id="previewDropzoneBox">
-                            <input type="file" id="previewCustomAudioInput" accept="audio/*,.mp3,.wav,.flac,.aac,.ogg,.m4a,.wma,.opus" style="display: none;">
-                            <svg class="preview-dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <input type="file" id="previewCustomAudioInput"
+                                accept="audio/*,.mp3,.wav,.flac,.aac,.ogg,.m4a,.wma,.opus" style="display: none;">
+                            <svg class="preview-dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                 <polyline points="17 8 12 3 7 8"></polyline>
                                 <line x1="12" y1="3" x2="12" y2="15"></line>
                             </svg>
                             <div class="preview-dropzone-text">
-                                <span class="preview-dropzone-main">Drag &amp; Drop Your Own Audio File Here to Test</span>
-                                <span class="preview-dropzone-sub">Click to browse or drop any MP3, WAV, FLAC &bull; 100% processed in your browser</span>
+                                <span class="preview-dropzone-main">Drag &amp; Drop Your Own Audio File Here to
+                                    Test</span>
+                                <span class="preview-dropzone-sub">Click to browse or drop any MP3, WAV, FLAC &bull;
+                                    100% processed in your browser</span>
                             </div>
                         </label>
 
                         <!-- Loaded File Banner Pill -->
                         <div class="preview-loaded-file-pill" id="previewLoadedFilePill">
                             <div class="loaded-file-info">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M9 18V5l12-2v13"></path>
                                     <circle cx="6" cy="18" r="3"></circle>
                                     <circle cx="18" cy="16" r="3"></circle>
                                 </svg>
                                 <span id="previewLoadedFileName">my_track.mp3</span>
-                                <span style="color: #86efac; font-size: 0.75rem; font-weight: 500;" id="previewLoadedFileSize">(3.2 MB)</span>
+                                <span style="color: #86efac; font-size: 0.75rem; font-weight: 500;"
+                                    id="previewLoadedFileSize">(3.2 MB)</span>
                             </div>
-                            <button type="button" class="loaded-file-clear-btn" id="previewLoadedFileClearBtn" title="Unload custom file and return to studio presets">
+                            <button type="button" class="loaded-file-clear-btn" id="previewLoadedFileClearBtn"
+                                title="Unload custom file and return to studio presets">
                                 Unload File &times;
                             </button>
                         </div>
@@ -523,13 +538,17 @@
             <section class="comparison-section" aria-label="Feature &amp; Benefit Comparison">
                 <div class="comparison-header">
                     <div class="comparison-badge">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon
+                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                            </polygon>
                         </svg>
                         <span>Feature Comparison</span>
                     </div>
                     <h2 class="comparison-title">How MP3aud.io Compares</h2>
-                    <p class="comparison-subtitle">Fast, automated in-browser AI tagging and audio enhancement vs. traditional desktop tools.</p>
+                    <p class="comparison-subtitle">Fast, automated in-browser AI tagging and audio enhancement vs.
+                        traditional desktop tools.</p>
                 </div>
 
                 <!-- Clean Comparison Table -->
@@ -554,25 +573,40 @@
                                 <td class="feature-title-cell">100% In-Browser (No Install)</td>
                                 <td class="col-highlight">
                                     <span class="status-pill status-highlight-yes">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
                                         Instant Web App
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-no">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
                                         App Install Req.
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-no">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
                                         App Install Req.
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-no">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
                                         Multiple Tools
                                     </span>
                                 </td>
@@ -581,25 +615,42 @@
                                 <td class="feature-title-cell">3000px Ultra-HD Cover Art</td>
                                 <td class="col-highlight">
                                     <span class="status-pill status-highlight-yes">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
                                         Auto Apple Music HD
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-partial">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                        </svg>
                                         Manual Search
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-partial">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                        </svg>
                                         Community DB
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-no">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
                                         Manual Crop
                                     </span>
                                 </td>
@@ -608,25 +659,40 @@
                                 <td class="feature-title-cell">AI Lyric Transcription</td>
                                 <td class="col-highlight">
                                     <span class="status-pill status-highlight-yes">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
                                         Auto Synced AI
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-no">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
                                         Manual Paste
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-no">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
                                         No Lyrics
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-no">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
                                         Manual Scraping
                                     </span>
                                 </td>
@@ -635,25 +701,40 @@
                                 <td class="feature-title-cell">320kbps AI Audio Enhancer</td>
                                 <td class="col-highlight">
                                     <span class="status-pill status-highlight-yes">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
                                         Studio EQ &amp; 320k
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-no">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
                                         Metadata Only
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-no">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
                                         Metadata Only
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-no">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
                                         Requires DAW
                                     </span>
                                 </td>
@@ -662,25 +743,42 @@
                                 <td class="feature-title-cell">1-Click Batch Folder ZIP</td>
                                 <td class="col-highlight">
                                     <span class="status-pill status-highlight-yes">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
                                         Instant ZIP Export
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-partial">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                        </svg>
                                         Local Files Only
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-partial">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                        </svg>
                                         Multi-Step
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-no">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
                                         One-By-One
                                     </span>
                                 </td>
@@ -689,25 +787,43 @@
                                 <td class="feature-title-cell">Cross-Platform &amp; Mobile</td>
                                 <td class="col-highlight">
                                     <span class="status-pill status-highlight-yes">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
                                         All Devices &amp; Web
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-partial">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                        </svg>
                                         Desktop Only
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-partial">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                        </svg>
                                         Desktop Only
                                     </span>
                                 </td>
                                 <td>
                                     <span class="status-pill status-partial">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                        </svg>
                                         Varies by OS
                                     </span>
                                 </td>
@@ -729,7 +845,8 @@
                             <div>
                                 <div class="plan-card-header">
                                     <div class="plan-title-row">
-                                        <svg viewBox="0 0 24 24" width="22" height="22" stroke="#2563eb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" stroke="#2563eb"
+                                            stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                             <circle cx="12" cy="7" r="4"></circle>
                                         </svg>
@@ -765,7 +882,8 @@
                             <div>
                                 <div class="plan-card-header">
                                     <div class="plan-title-row">
-                                        <svg viewBox="0 0 24 24" width="22" height="22" stroke="#d97706" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" stroke="#d97706"
+                                            stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                                         </svg>
                                         <h3 class="plan-card-title payg-title">Add Track Credits</h3>
@@ -777,7 +895,8 @@
                                     <span class="plan-price-period payg-period">/ 350 Track Credits</span>
                                 </div>
                                 <p class="plan-card-desc payg-desc">
-                                    <strong>Instant credit top-up.</strong> Credits never expire and immediately unlock batch high-speed AI processing:
+                                    <strong>Instant credit top-up.</strong> Credits never expire and immediately unlock
+                                    batch high-speed AI processing:
                                 </p>
                                 <ul class="plan-features-list payg-list">
                                     <li><strong>+350 Track Credits</strong> (~$0.011 per conversion)</li>
@@ -788,9 +907,14 @@
                                 </ul>
                             </div>
                             <div class="buy-credits-action-wrap">
-                                <button id="buyCreditsBtn" class="premium-btn buy-credits-btn">Buy 350 Credits ($3.99)</button>
+                                <button id="buyCreditsBtn" class="premium-btn buy-credits-btn">Buy 350 Credits
+                                    ($3.99)</button>
                                 <span class="secure-checkout-hint">
-                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
                                     Instant Stripe Checkout &middot; Encrypted &amp; Secure
                                 </span>
                             </div>
@@ -804,7 +928,9 @@
                             <div>
                                 <div class="plan-card-header">
                                     <div class="plan-title-row">
-                                        <svg viewBox="0 0 24 24" width="22" height="22" stroke="#059669" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" stroke="#059669"
+                                            stroke-width="2.5" fill="none" stroke-linecap="round"
+                                            stroke-linejoin="round">
                                             <path d="M20 6L9 17l-5-5"></path>
                                         </svg>
                                         <h3 class="plan-card-title free-title">Free Tier</h3>
@@ -816,7 +942,8 @@
                                     <span class="plan-price-period free-period">/ 5 Free Track Conversions</span>
                                 </div>
                                 <p class="plan-card-desc free-desc">
-                                    <strong>Instant in-browser conversions with zero commitments.</strong> Perfect for tagging songs, ripping CDs, and quick albums:
+                                    <strong>Instant in-browser conversions with zero commitments.</strong> Perfect for
+                                    tagging songs, ripping CDs, and quick albums:
                                 </p>
                                 <ul class="plan-features-list free-list">
                                     <li><strong>5 Free track conversions</strong> every session</li>
@@ -833,7 +960,8 @@
                             <div>
                                 <div class="plan-card-header">
                                     <div class="plan-title-row">
-                                        <svg viewBox="0 0 24 24" width="22" height="22" stroke="#d97706" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" stroke="#d97706"
+                                            stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                                         </svg>
                                         <h3 class="plan-card-title payg-title">Pay As You Go</h3>
@@ -845,7 +973,8 @@
                                     <span class="plan-price-period payg-period">/ 350 Track Credits</span>
                                 </div>
                                 <p class="plan-card-desc payg-desc">
-                                    <strong>Convert entire collections with flexible AI credits.</strong> Enter your email below to log in or purchase credits:
+                                    <strong>Convert entire collections with flexible AI credits.</strong> Enter your
+                                    email below to log in or purchase credits:
                                 </p>
                                 <ul class="plan-features-list payg-list">
                                     <li><strong>350 Track Credits</strong> (~$0.011 per conversion)</li>
@@ -856,7 +985,8 @@
                             </div>
                             <div>
                                 <div class="unified-search-bar payg-search-bar">
-                                    <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
+                                    <input type="email" id="loginEmail" placeholder="you@example.com"
+                                        autocomplete="email">
                                     <button id="sendLinkBtn">Send Link</button>
                                 </div>
                                 <div id="authMessage"></div>
