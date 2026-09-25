@@ -751,12 +751,43 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     if (data.completed > 0) {
+                        const downloadUrl = `${BACKEND_URL}${data.zip_path}`;
+                        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(downloadUrl)}`;
+
                         downloadList.innerHTML = `
                             <li>
-                                <a href="${BACKEND_URL}${data.zip_path}" class="zip-btn" target="_blank">
+                                <a href="${downloadUrl}" class="zip-btn" target="_blank">
                                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                                    Download ZIP Archive
+                                    Download Complete ZIP Archive
                                 </a>
+                            </li>
+                            <li style="margin-top: 12px; list-style: none;">
+                                <div class="ringtone-download-card">
+                                    <div class="ringtone-download-header">
+                                        <div class="rt-dl-info">
+                                            <span class="rt-dl-icon">📱</span>
+                                            <div class="rt-dl-text">
+                                                <strong>Cellular Phone Ringtone Ready</strong>
+                                                <p>Includes standard MP3 (Android) and M4R (iPhone) formats.</p>
+                                            </div>
+                                        </div>
+                                        <div class="rt-dl-actions">
+                                            <button type="button" class="ringtone-guide-btn" onclick="openModal('ringtoneModal')">
+                                                <span>📖 Setup Directions</span>
+                                            </button>
+                                            <button type="button" class="ringtone-qr-toggle-btn" onclick="window.toggleRingtoneQr()">
+                                                <span>📱 Scan to Mobile</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="ringtoneQrBox" class="ringtone-qr-box" style="display: none;">
+                                        <img src="${qrCodeUrl}" alt="Scan QR Code to download on mobile" width="130" height="130" loading="lazy">
+                                        <div class="ringtone-qr-desc">
+                                            <h4>Scan with Phone Camera</h4>
+                                            <p>Point your iPhone or Android camera at this code to download the ringtone files directly to your phone without cords or emails.</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </li>
                         `;
                     } else {
@@ -858,9 +889,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     formData.append('files', fileInput.files[i]);
                 }
                 if (increaseQualityInput && increaseQualityInput.checked) formData.append('increase_quality', 'true');
-                if (videoToMp3Input && videoToMp3Input.checked) formData.append('video_to_mp3', 'true');
+                if (videoToMp3Input && videoToMp3Input.checked) {
+                    formData.append('video_to_mp3', 'true');
+                    formData.append('is_ringtone', 'true');
+                }
                 if (attachLyricsInput && attachLyricsInput.checked) formData.append('attach_lyrics', 'true');
                 if (autoAddAlbumArtInput && autoAddAlbumArtInput.checked) formData.append('auto_add_album_art', 'true');
+                if (startTimeInput && startTimeInput.value.trim()) formData.append('start_time', startTimeInput.value.trim());
+                if (endTimeInput && endTimeInput.value.trim()) formData.append('end_time', endTimeInput.value.trim());
 
                 response = await fetch(`${BACKEND_URL}/process_local_files`, {
                     method: 'POST',
@@ -871,6 +907,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const startTime = startTimeInput ? startTimeInput.value.trim() : '';
                 const endTime = endTimeInput ? endTimeInput.value.trim() : '';
                 const transcribeAudio = transcribeInput ? transcribeInput.checked : false;
+                const isVideo = videoToMp3Input ? videoToMp3Input.checked : false;
 
                 response = await fetch(`${BACKEND_URL}/start_conversion`, {
                     method: 'POST',
@@ -881,6 +918,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         start_time: startTime,
                         end_time: endTime,
                         transcribe_audio: transcribeAudio,
+                        video_to_mp3: isVideo,
+                        is_ringtone: isVideo,
                         auto_add_album_art: autoAddAlbumArtInput ? autoAddAlbumArtInput.checked : false
                     })
                 });
@@ -1026,4 +1065,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchGlobalStats();
     window.fetchGlobalStats = fetchGlobalStats;
+
+    // --- MOBILE QR CODE BRIDGE TOGGLE ---
+    window.toggleRingtoneQr = function() {
+        const box = document.getElementById('ringtoneQrBox');
+        if (box) {
+            box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+        }
+    };
 });

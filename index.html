@@ -143,6 +143,7 @@
             <nav class="header-nav" aria-label="Main Navigation">
                 <ul class="header-nav-list">
                     <li><a href="index.html" class="header-nav-link active">Converter</a></li>
+                    <li><a href="video-to-ringtone.html" class="header-nav-link">Ringtone Maker</a></li>
                     <li><a href="ai-audio-enhancer.html" class="header-nav-link">Audio Enhancer</a></li>
                     <li><a href="audio-inspector.html" class="header-nav-link">Audio Inspector</a></li>
                     <li><a href="supported-sites.html" class="header-nav-link">Supported Sites</a></li>
@@ -248,13 +249,21 @@
                         </div>
 
                         <div class="inline-ai-toggle compact-toggle">
-                            <label class="switch" aria-label="Convert Video to MP3">
+                            <label class="switch" aria-label="Convert Video to MP3 & Phone Ringtone">
                                 <input type="checkbox" id="videoToMp3" name="videoToMp3">
                                 <span class="slider round"></span>
                             </label>
                             <div class="toggle-text">
-                                <span class="feature-title">Video to MP3</span>
-                                <span class="premium-badge">5 Credits</span>
+                                <div class="toggle-title-row">
+                                    <span class="feature-title">Video to MP3</span>
+                                    <button type="button" class="ringtone-info-trigger" onclick="openModal('ringtoneModal')" title="View Phone Ringtone Setup Directions" aria-label="Phone Ringtone Setup Directions">
+                                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <span class="premium-badge">5 Credits &middot; Ringtone</span>
                             </div>
                         </div>
 
@@ -1306,6 +1315,230 @@
         </div>
     </div>
 
+    <!-- =========================================
+         CELLULAR PHONE RINGTONE STEP-BY-STEP MODAL
+         ========================================= -->
+    <div id="ringtoneModal" class="modal" role="dialog" aria-labelledby="ringtoneModalTitle" aria-hidden="true">
+        <div class="modal-content ringtone-modal-content">
+            <span class="close" onclick="closeModal('ringtoneModal')" aria-label="Close modal">&times;</span>
+            
+            <div class="rt-modal-header">
+                <div class="rt-eyebrow">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                    </svg>
+                    <span>Cellular Ringtone Setup</span>
+                </div>
+                <h2 id="ringtoneModalTitle">Set as Cellular Phone Ringtone</h2>
+                <p class="rt-sub">Follow these step-by-step directions to install your converted audio as a custom ringtone, text alert, or alarm tone on your phone.</p>
+            </div>
+
+            <!-- Platform Switcher Tabs -->
+            <div class="rt-platform-tabs" role="tablist" aria-label="Smartphone Operating System Selection">
+                <button type="button" class="rt-platform-tab active" id="rtTabIos" role="tab" aria-selected="true" onclick="switchRingtonePlatform('ios')">
+                    <span class="rt-tab-ico">🍏</span>
+                    <span>Apple iPhone (iOS)</span>
+                </button>
+                <button type="button" class="rt-platform-tab" id="rtTabAndroid" role="tab" aria-selected="false" onclick="switchRingtonePlatform('android')">
+                    <span class="rt-tab-ico">🤖</span>
+                    <span>Android</span>
+                </button>
+            </div>
+
+            <!-- Apple iPhone Panel -->
+            <div id="rtPanelIos" class="rt-panel active" role="tabpanel" aria-labelledby="rtTabIos">
+                <!-- Method Switcher: GarageBand vs PC -->
+                <div class="rt-method-switch" role="group" aria-label="iPhone setup method">
+                    <button type="button" class="rt-method-btn active" id="rtBtnGb" onclick="switchIosMethod('gb')">
+                        <span>✨ Direct on iPhone (GarageBand)</span>
+                    </button>
+                    <button type="button" class="rt-method-btn" id="rtBtnPc" onclick="switchIosMethod('pc')">
+                        <span>💻 Via Mac / Windows PC</span>
+                    </button>
+                </div>
+
+                <!-- View 1: GarageBand (No PC Needed) -->
+                <div id="rtViewGb" class="rt-method-view active">
+                    <div class="rt-alert-banner">
+                        <span class="rt-alert-icon">💡</span>
+                        <p><strong>No Computer Needed!</strong> Uses Apple's free <strong>GarageBand</strong> app (available free in the App Store). Apple requires custom ringtones to be under 40 seconds.</p>
+                    </div>
+
+                    <div class="rt-steps-list">
+                        <div class="rt-step-card">
+                            <div class="rt-step-badge">1</div>
+                            <div class="rt-step-body">
+                                <strong>Save Download to Files</strong>
+                                <p>Tap <strong>Download</strong> on MP3aud.io. When prompted by Safari, tap <em>Download</em> to save the audio into your iPhone's <strong>Files</strong> app (under <code>Downloads</code>).</p>
+                            </div>
+                        </div>
+
+                        <div class="rt-step-card">
+                            <div class="rt-step-badge">2</div>
+                            <div class="rt-step-body">
+                                <strong>Open GarageBand &amp; Audio Recorder</strong>
+                                <p>Open the free <strong>GarageBand</strong> app. Swipe through the instruments until you see <strong>Audio Recorder</strong>, then tap it.</p>
+                            </div>
+                        </div>
+
+                        <div class="rt-step-card">
+                            <div class="rt-step-badge">3</div>
+                            <div class="rt-step-body">
+                                <strong>Switch to Tracks View</strong>
+                                <p>Tap the <strong>Tracks icon</strong> near the top-left (looks like a wall of horizontal audio bars, 3rd icon from the left) to view the project timeline.</p>
+                            </div>
+                        </div>
+
+                        <div class="rt-step-card">
+                            <div class="rt-step-badge">4</div>
+                            <div class="rt-step-body">
+                                <strong>Import Converted Audio</strong>
+                                <p>Tap the <strong>Loop icon</strong> (top right, next to gear) &rarr; tap the <strong>Files</strong> tab &rarr; tap <em>"Browse items from the Files app"</em> &rarr; touch &amp; drag your downloaded audio file onto the timeline track.</p>
+                            </div>
+                        </div>
+
+                        <div class="rt-step-card">
+                            <div class="rt-step-badge">5</div>
+                            <div class="rt-step-body">
+                                <strong>Save Project to "My Songs"</strong>
+                                <p>Tap the <strong>downward triangle</strong> icon in the top-left corner &rarr; tap <strong>My Songs</strong>. Your project will appear in your GarageBand browser.</p>
+                            </div>
+                        </div>
+
+                        <div class="rt-step-card">
+                            <div class="rt-step-badge">6</div>
+                            <div class="rt-step-body">
+                                <strong>Share as Ringtone</strong>
+                                <p>Long-press (touch and hold) your song project &rarr; tap <strong>Share</strong> &rarr; choose <strong>Ringtone</strong> &rarr; enter a name for your ringtone &rarr; tap <strong>Export</strong> in the top right.</p>
+                            </div>
+                        </div>
+
+                        <div class="rt-step-card">
+                            <div class="rt-step-badge">7</div>
+                            <div class="rt-step-body">
+                                <strong>Set as Default Ringtone</strong>
+                                <p>When the export succeeds, tap <strong>"Use sound as..."</strong> &rarr; select <strong>Standard Ringtone</strong>, <strong>Text Tone</strong>, or <strong>Assign to Contact</strong>!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View 2: Mac / Windows PC Cable Sync -->
+                <div id="rtViewPc" class="rt-method-view">
+                    <div class="rt-alert-banner">
+                        <span class="rt-alert-icon">⚡</span>
+                        <p><strong>Fast Cable Sync!</strong> Transfer the generated <code>.m4r</code> ringtone directly to your iPhone using Finder (Mac) or iTunes / Apple Devices (Windows).</p>
+                    </div>
+
+                    <div class="rt-steps-list">
+                        <div class="rt-step-card">
+                            <div class="rt-step-badge">1</div>
+                            <div class="rt-step-body">
+                                <strong>Download .M4R File on Computer</strong>
+                                <p>Download the ringtone package from MP3aud.io to your computer and locate the <code>.m4r</code> file.</p>
+                            </div>
+                        </div>
+
+                        <div class="rt-step-card">
+                            <div class="rt-step-badge">2</div>
+                            <div class="rt-step-body">
+                                <strong>Connect iPhone via Cable</strong>
+                                <p>Plug your iPhone into your Mac or PC using your Lightning or USB-C charging cable.</p>
+                            </div>
+                        </div>
+
+                        <div class="rt-step-card">
+                            <div class="rt-step-badge">3</div>
+                            <div class="rt-step-body">
+                                <strong>Drag &amp; Drop to iPhone</strong>
+                                <p><strong>On Mac (Finder):</strong> Open Finder &rarr; click your iPhone in the left sidebar &rarr; drag and drop the <code>.m4r</code> file directly onto the iPhone window.<br><strong>On Windows:</strong> Open <em>iTunes</em> (or <em>Apple Devices</em> app) &rarr; select your device &rarr; click <strong>Tones</strong> &rarr; drag the <code>.m4r</code> file into the list.</p>
+                            </div>
+                        </div>
+
+                        <div class="rt-step-card">
+                            <div class="rt-step-badge">4</div>
+                            <div class="rt-step-body">
+                                <strong>Select on iPhone</strong>
+                                <p>On your iPhone, open <strong>Settings &rarr; Sounds &amp; Haptics &rarr; Ringtone</strong>. Your new custom tone will appear at the very top under <em>Custom</em>!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Android Panel -->
+            <div id="rtPanelAndroid" class="rt-panel" role="tabpanel" aria-labelledby="rtTabAndroid">
+                <div class="rt-alert-banner">
+                    <span class="rt-alert-icon">🤖</span>
+                    <p><strong>Universal MP3 Support!</strong> Android lets you set any MP3 file as your phone ringtone, notification tone, or alarm sound directly in Settings with no extra software needed.</p>
+                </div>
+
+                <div class="rt-steps-list">
+                    <div class="rt-step-card">
+                        <div class="rt-step-badge">1</div>
+                        <div class="rt-step-body">
+                            <strong>Download the MP3 Track</strong>
+                            <p>Tap <strong>Download</strong> on MP3aud.io to save your converted MP3 file to your phone's <code>Downloads</code> folder.</p>
+                        </div>
+                    </div>
+
+                    <div class="rt-step-card">
+                        <div class="rt-step-badge">2</div>
+                        <div class="rt-step-body">
+                            <strong>Open Sound Settings</strong>
+                            <p>Open your Android phone's <strong>Settings</strong> app &rarr; scroll down and tap <strong>Sound &amp; vibration</strong> (or <em>Sounds and vibration</em> on Samsung Galaxy).</p>
+                        </div>
+                    </div>
+
+                    <div class="rt-step-card">
+                        <div class="rt-step-badge">3</div>
+                        <div class="rt-step-body">
+                            <strong>Select Phone Ringtone</strong>
+                            <p>Tap <strong>Phone ringtone</strong> (or choose SIM 1 / SIM 2 if you have dual SIM cards active).</p>
+                        </div>
+                    </div>
+
+                    <div class="rt-step-card">
+                        <div class="rt-step-badge">4</div>
+                        <div class="rt-step-body">
+                            <strong>Add Custom Audio Track</strong>
+                            <p><strong>On Samsung Galaxy:</strong> Tap the <strong>+</strong> (plus icon) in the top-right corner of the screen.<br><strong>On Google Pixel, Motorola, OnePlus:</strong> Tap <strong>My Sounds</strong> &rarr; tap the <strong>+ Add Ringtone</strong> button at the bottom.</p>
+                        </div>
+                    </div>
+
+                    <div class="rt-step-card">
+                        <div class="rt-step-badge">5</div>
+                        <div class="rt-step-body">
+                            <strong>Pick Track &amp; Save</strong>
+                            <p>Select your downloaded MP3 audio file from your files or music picker and tap <strong>Done</strong> or <strong>Save</strong>. Your ringtone is now set!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rt-tip-card">
+                    <span class="rt-tip-badge">VIP Pro-Tip</span>
+                    <p>Want a unique ringtone for specific people? Open your <strong>Contacts</strong> app &rarr; select a contact &rarr; tap <strong>Edit</strong> (or More) &rarr; tap <strong>Ringtone</strong> and choose your custom sound so you know who is calling before looking at your screen!</p>
+                </div>
+            </div>
+
+            <!-- Modal Action Footer -->
+            <div class="rt-modal-footer">
+                <button type="button" class="rt-copy-btn" id="rtCopyBtn" onclick="copyRingtoneDirections()">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy Directions</span>
+                </button>
+                <div class="rt-footer-right">
+                    <a href="video-to-ringtone.html" class="rt-full-guide-link">Read In-Depth Guide &rarr;</a>
+                    <button type="button" class="rt-close-btn" onclick="closeModal('ringtoneModal')">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function openModal(modalId) {
             var modal = document.getElementById(modalId);
@@ -1318,6 +1551,80 @@
         window.onclick = function (event) {
             if (event.target.classList.contains('modal')) {
                 event.target.style.display = "none";
+            }
+        }
+
+        /* ── Ringtone Modal Functions ── */
+        function switchRingtonePlatform(platform) {
+            var tabIos = document.getElementById('rtTabIos');
+            var tabAndroid = document.getElementById('rtTabAndroid');
+            var panelIos = document.getElementById('rtPanelIos');
+            var panelAndroid = document.getElementById('rtPanelAndroid');
+
+            if (platform === 'ios') {
+                if (tabIos) { tabIos.classList.add('active'); tabIos.setAttribute('aria-selected', 'true'); }
+                if (tabAndroid) { tabAndroid.classList.remove('active'); tabAndroid.setAttribute('aria-selected', 'false'); }
+                if (panelIos) panelIos.classList.add('active');
+                if (panelAndroid) panelAndroid.classList.remove('active');
+            } else {
+                if (tabAndroid) { tabAndroid.classList.add('active'); tabAndroid.setAttribute('aria-selected', 'true'); }
+                if (tabIos) { tabIos.classList.remove('active'); tabIos.setAttribute('aria-selected', 'false'); }
+                if (panelAndroid) panelAndroid.classList.add('active');
+                if (panelIos) panelIos.classList.remove('active');
+            }
+        }
+
+        function switchIosMethod(method) {
+            var btnGb = document.getElementById('rtBtnGb');
+            var btnPc = document.getElementById('rtBtnPc');
+            var viewGb = document.getElementById('rtViewGb');
+            var viewPc = document.getElementById('rtViewPc');
+
+            if (method === 'gb') {
+                if (btnGb) btnGb.classList.add('active');
+                if (btnPc) btnPc.classList.remove('active');
+                if (viewGb) viewGb.classList.add('active');
+                if (viewPc) viewPc.classList.remove('active');
+            } else {
+                if (btnPc) btnPc.classList.add('active');
+                if (btnGb) btnGb.classList.remove('active');
+                if (viewPc) viewPc.classList.add('active');
+                if (viewGb) viewGb.classList.remove('active');
+            }
+        }
+
+        function copyRingtoneDirections() {
+            var activePanel = document.querySelector('.rt-panel.active');
+            if (!activePanel) return;
+
+            var textLines = [];
+            var title = activePanel.id === 'rtPanelIos' ? "Apple iPhone Custom Ringtone Directions" : "Android Custom Ringtone Directions";
+            textLines.push("📱 " + title + " (via MP3aud.io)");
+            textLines.push("----------------------------------------");
+
+            var cards = activePanel.querySelectorAll('.rt-method-view.active .rt-step-card, .rt-panel.active > .rt-steps-list .rt-step-card');
+            if (!cards || cards.length === 0) {
+                cards = activePanel.querySelectorAll('.rt-step-card');
+            }
+
+            cards.forEach(function (c, idx) {
+                var bold = c.querySelector('strong') ? c.querySelector('strong').innerText : "Step " + (idx + 1);
+                var desc = c.querySelector('p') ? c.querySelector('p').innerText : "";
+                textLines.push((idx + 1) + ". " + bold + " - " + desc);
+            });
+
+            var copyText = textLines.join("\n\n");
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(copyText).then(function () {
+                    var btn = document.getElementById('rtCopyBtn');
+                    if (btn) {
+                        var originalHtml = btn.innerHTML;
+                        btn.innerHTML = '<span>✅ Copied to Clipboard!</span>';
+                        setTimeout(function () { btn.innerHTML = originalHtml; }, 2500);
+                    }
+                }).catch(function (err) {
+                    console.error("Clipboard copy error:", err);
+                });
             }
         }
 

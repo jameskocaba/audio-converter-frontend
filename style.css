@@ -237,6 +237,31 @@ body.home-page .hero-dropzone-wrapper #conversionToolContainer::before {
     }
 }
 
+.toggle-title-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ringtone-info-trigger {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    color: #FF5500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.85;
+    transition: all 0.2s ease;
+}
+
+.ringtone-info-trigger:hover {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
 .hero-dropzone-wrapper .compact-toggle {
     min-width: 0 !important;
     max-width: 100%;
@@ -4121,4 +4146,484 @@ footer p {
     color: #64748b;
     line-height: 1.55;
     margin: 0;
+}
+
+/* =========================================
+   CELLULAR PHONE RINGTONE MODAL & DOWNLOAD CARD
+   ========================================= */
+.ringtone-modal-content {
+    max-width: 660px;
+    width: 92%;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(226, 232, 240, 0.8);
+    padding: 28px 24px;
+    box-sizing: border-box;
+    max-height: 88vh;
+    overflow-y: auto;
+}
+
+.rt-modal-header {
+    margin-bottom: 20px;
+}
+
+.rt-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 85, 0, 0.1);
+    color: #FF5500;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+}
+
+.ringtone-modal-content h2 {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px 0;
+    line-height: 1.25;
+}
+
+.rt-sub {
+    font-size: 0.9rem;
+    color: #64748b;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Platform Switcher Tabs */
+.rt-platform-tabs {
+    display: flex;
+    gap: 8px;
+    background: #f1f5f9;
+    padding: 5px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.rt-platform-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rt-platform-tab:hover {
+    color: #1e293b;
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.rt-platform-tab.active {
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.rt-tab-ico {
+    font-size: 1.15rem;
+}
+
+/* Panels */
+.rt-panel {
+    display: none;
+    animation: rtFadeIn 0.22s ease-out;
+}
+
+.rt-panel.active {
+    display: block;
+}
+
+@keyframes rtFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Method Switcher for iOS */
+.rt-method-switch {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 4px;
+    border-radius: 10px;
+}
+
+.rt-method-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.rt-method-btn.active {
+    background: #0f172a;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+}
+
+.rt-method-view {
+    display: none;
+}
+
+.rt-method-view.active {
+    display: block;
+}
+
+/* Alert Banner */
+.rt-alert-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+}
+
+.rt-alert-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+    margin-top: 1px;
+}
+
+.rt-alert-banner p {
+    font-size: 0.84rem;
+    color: #1e3a8a;
+    line-height: 1.45;
+    margin: 0;
+}
+
+/* Steps List & Cards */
+.rt-steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.rt-step-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px 14px;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.rt-step-card:hover {
+    border-color: #cbd5e1;
+    transform: translateX(2px);
+    background: #ffffff;
+}
+
+.rt-step-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #FF5500;
+    color: #ffffff;
+    font-size: 0.82rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    margin-top: 1px;
+    box-shadow: 0 2px 6px rgba(255, 85, 0, 0.3);
+}
+
+.rt-step-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.rt-step-body strong {
+    display: block;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.rt-step-body p {
+    font-size: 0.84rem;
+    color: #475569;
+    line-height: 1.48;
+    margin: 0;
+}
+
+.rt-step-body code {
+    background: #e2e8f0;
+    color: #0f172a;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 0.8em;
+}
+
+/* Tip Card */
+.rt-tip-card {
+    background: #fefce8;
+    border: 1px solid #fef08a;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+}
+
+.rt-tip-badge {
+    display: inline-block;
+    background: #ca8a04;
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+}
+
+.rt-tip-card p {
+    font-size: 0.83rem;
+    color: #713f12;
+    line-height: 1.45;
+    margin: 0;
+}
+
+/* Modal Footer */
+.rt-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 16px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.rt-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #1e293b;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.rt-copy-btn:hover {
+    background: #e2e8f0;
+    border-color: #94a3b8;
+}
+
+.rt-footer-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.rt-full-guide-link {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #FF5500;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.rt-full-guide-link:hover {
+    text-decoration: underline;
+    color: #e04b00;
+}
+
+.rt-close-btn {
+    background: #0f172a;
+    color: #ffffff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.rt-close-btn:hover {
+    background: #1e293b;
+}
+
+/* Download Area Ringtone Card */
+.ringtone-download-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #FF5500;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-top: 14px;
+    text-align: left;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.ringtone-download-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.rt-dl-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rt-dl-icon {
+    font-size: 1.4rem;
+}
+
+.rt-dl-text strong {
+    display: block;
+    font-size: 0.94rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.rt-dl-text p {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin: 2px 0 0 0;
+}
+
+.rt-dl-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.ringtone-guide-btn {
+    background: #FF5500;
+    color: #ffffff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(255, 85, 0, 0.25);
+}
+
+.ringtone-guide-btn:hover {
+    background: #e04b00;
+    transform: translateY(-1px);
+}
+
+.ringtone-qr-toggle-btn {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s ease;
+}
+
+.ringtone-qr-toggle-btn:hover {
+    background: #e2e8f0;
+}
+
+.ringtone-qr-box {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    animation: rtFadeIn 0.2s ease-out;
+}
+
+.ringtone-qr-box img {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    padding: 4px;
+}
+
+.ringtone-qr-desc h4 {
+    margin: 0 0 4px 0;
+    font-size: 0.92rem;
+    color: #0f172a;
+}
+
+.ringtone-qr-desc p {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #64748b;
+    line-height: 1.45;
+}
+
+@media (max-width: 600px) {
+    .ringtone-modal-content {
+        padding: 20px 16px;
+    }
+    .rt-platform-tab {
+        font-size: 0.84rem;
+        padding: 8px 10px;
+    }
+    .ringtone-download-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .rt-dl-actions {
+        width: 100%;
+        margin-top: 6px;
+    }
+    .ringtone-guide-btn, .ringtone-qr-toggle-btn {
+        flex: 1;
+        justify-content: center;
+    }
+    .ringtone-qr-box {
+        flex-direction: column;
+        text-align: center;
+    }
 }
