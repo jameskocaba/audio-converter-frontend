@@ -256,8 +256,13 @@
                             <div class="toggle-text">
                                 <div class="toggle-title-row">
                                     <span class="feature-title">Video to MP3</span>
-                                    <button type="button" class="ringtone-info-trigger" onclick="openModal('ringtoneModal')" title="View Phone Ringtone Setup Directions" aria-label="Phone Ringtone Setup Directions">
-                                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <button type="button" class="ringtone-info-trigger"
+                                        onclick="openModal('ringtoneModal')"
+                                        title="View Phone Ringtone Setup Directions"
+                                        aria-label="Phone Ringtone Setup Directions">
+                                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none"
+                                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                            stroke-linejoin="round">
                                             <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
                                             <line x1="12" y1="18" x2="12.01" y2="18"></line>
                                         </svg>
@@ -316,7 +321,8 @@
                 <h1 class="main-headline">The Force Behind Your <span class="accent">Music Library</span></h1>
                 <h2 class="main-subheadline">
                     Converting videos to MP3 or organizing tracks ripped from CDs, vinyl, and cassettes?
-                    Automatically apply high-resolution album art, edit ID3 metadata, and transcribe lyrics &mdash;
+                    Automatically apply high-resolution album art, generate ringtones,edit ID3 metadata, and transcribe
+                    lyrics &mdash;
                     no software required.
                 </h2>
                 <p class="header-note">
@@ -574,7 +580,8 @@
                         <span>Feature Comparison</span>
                     </div>
                     <h2 class="comparison-title">How MP3aud.io Compares</h2>
-                    <p class="comparison-subtitle">Fast, automated in-browser video-to-MP3 conversion, AI tagging, and audio enhancement vs.
+                    <p class="comparison-subtitle">Fast, automated in-browser video-to-MP3 conversion, AI tagging, and
+                        audio enhancement vs.
                         traditional desktop tools.</p>
                 </div>
 
@@ -1321,26 +1328,30 @@
     <div id="ringtoneModal" class="modal" role="dialog" aria-labelledby="ringtoneModalTitle" aria-hidden="true">
         <div class="modal-content ringtone-modal-content">
             <span class="close" onclick="closeModal('ringtoneModal')" aria-label="Close modal">&times;</span>
-            
+
             <div class="rt-modal-header">
                 <div class="rt-eyebrow">
-                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
                         <line x1="12" y1="18" x2="12.01" y2="18"></line>
                     </svg>
                     <span>Cellular Ringtone Setup</span>
                 </div>
                 <h2 id="ringtoneModalTitle">Set as Cellular Phone Ringtone</h2>
-                <p class="rt-sub">Follow these step-by-step directions to install your converted audio as a custom ringtone, text alert, or alarm tone on your phone.</p>
+                <p class="rt-sub">Follow these step-by-step directions to install your converted audio as a custom
+                    ringtone, text alert, or alarm tone on your phone.</p>
             </div>
 
             <!-- Platform Switcher Tabs -->
             <div class="rt-platform-tabs" role="tablist" aria-label="Smartphone Operating System Selection">
-                <button type="button" class="rt-platform-tab active" id="rtTabIos" role="tab" aria-selected="true" onclick="switchRingtonePlatform('ios')">
+                <button type="button" class="rt-platform-tab active" id="rtTabIos" role="tab" aria-selected="true"
+                    onclick="switchRingtonePlatform('ios')">
                     <span class="rt-tab-ico">🍏</span>
                     <span>Apple iPhone (iOS)</span>
                 </button>
-                <button type="button" class="rt-platform-tab" id="rtTabAndroid" role="tab" aria-selected="false" onclick="switchRingtonePlatform('android')">
+                <button type="button" class="rt-platform-tab" id="rtTabAndroid" role="tab" aria-selected="false"
+                    onclick="switchRingtonePlatform('android')">
                     <span class="rt-tab-ico">🤖</span>
                     <span>Android</span>
                 </button>
@@ -1362,7 +1373,9 @@
                 <div id="rtViewGb" class="rt-method-view active">
                     <div class="rt-alert-banner">
                         <span class="rt-alert-icon">💡</span>
-                        <p><strong>No Computer Needed!</strong> Uses Apple's free <strong>GarageBand</strong> app (available free in the App Store). Apple requires custom ringtones to be under 40 seconds.</p>
+                        <p><strong>No Computer Needed!</strong> Uses Apple's free <strong>GarageBand</strong> app
+                            (available free in the App Store). Apple requires custom ringtones to be under 40 seconds.
+                        </p>
                     </div>
 
                     <div class="rt-steps-list">
@@ -1370,7 +1383,9 @@
                             <div class="rt-step-badge">1</div>
                             <div class="rt-step-body">
                                 <strong>Save Download to Files</strong>
-                                <p>Tap <strong>Download</strong> on MP3aud.io. When prompted by Safari, tap <em>Download</em> to save the audio into your iPhone's <strong>Files</strong> app (under <code>Downloads</code>).</p>
+                                <p>Tap <strong>Download</strong> on MP3aud.io. When prompted by Safari, tap
+                                    <em>Download</em> to save the audio into your iPhone's <strong>Files</strong> app
+                                    (under <code>Downloads</code>).</p>
                             </div>
                         </div>
 
@@ -1378,7 +1393,8 @@
                             <div class="rt-step-badge">2</div>
                             <div class="rt-step-body">
                                 <strong>Open GarageBand &amp; Audio Recorder</strong>
-                                <p>Open the free <strong>GarageBand</strong> app. Swipe through the instruments until you see <strong>Audio Recorder</strong>, then tap it.</p>
+                                <p>Open the free <strong>GarageBand</strong> app. Swipe through the instruments until
+                                    you see <strong>Audio Recorder</strong>, then tap it.</p>
                             </div>
                         </div>
 
@@ -1386,7 +1402,8 @@
                             <div class="rt-step-badge">3</div>
                             <div class="rt-step-body">
                                 <strong>Switch to Tracks View</strong>
-                                <p>Tap the <strong>Tracks icon</strong> near the top-left (looks like a wall of horizontal audio bars, 3rd icon from the left) to view the project timeline.</p>
+                                <p>Tap the <strong>Tracks icon</strong> near the top-left (looks like a wall of
+                                    horizontal audio bars, 3rd icon from the left) to view the project timeline.</p>
                             </div>
                         </div>
 
@@ -1394,7 +1411,9 @@
                             <div class="rt-step-badge">4</div>
                             <div class="rt-step-body">
                                 <strong>Import Converted Audio</strong>
-                                <p>Tap the <strong>Loop icon</strong> (top right, next to gear) &rarr; tap the <strong>Files</strong> tab &rarr; tap <em>"Browse items from the Files app"</em> &rarr; touch &amp; drag your downloaded audio file onto the timeline track.</p>
+                                <p>Tap the <strong>Loop icon</strong> (top right, next to gear) &rarr; tap the
+                                    <strong>Files</strong> tab &rarr; tap <em>"Browse items from the Files app"</em>
+                                    &rarr; touch &amp; drag your downloaded audio file onto the timeline track.</p>
                             </div>
                         </div>
 
@@ -1402,7 +1421,8 @@
                             <div class="rt-step-badge">5</div>
                             <div class="rt-step-body">
                                 <strong>Save Project to "My Songs"</strong>
-                                <p>Tap the <strong>downward triangle</strong> icon in the top-left corner &rarr; tap <strong>My Songs</strong>. Your project will appear in your GarageBand browser.</p>
+                                <p>Tap the <strong>downward triangle</strong> icon in the top-left corner &rarr; tap
+                                    <strong>My Songs</strong>. Your project will appear in your GarageBand browser.</p>
                             </div>
                         </div>
 
@@ -1410,7 +1430,9 @@
                             <div class="rt-step-badge">6</div>
                             <div class="rt-step-body">
                                 <strong>Share as Ringtone</strong>
-                                <p>Long-press (touch and hold) your song project &rarr; tap <strong>Share</strong> &rarr; choose <strong>Ringtone</strong> &rarr; enter a name for your ringtone &rarr; tap <strong>Export</strong> in the top right.</p>
+                                <p>Long-press (touch and hold) your song project &rarr; tap <strong>Share</strong>
+                                    &rarr; choose <strong>Ringtone</strong> &rarr; enter a name for your ringtone &rarr;
+                                    tap <strong>Export</strong> in the top right.</p>
                             </div>
                         </div>
 
@@ -1418,7 +1440,9 @@
                             <div class="rt-step-badge">7</div>
                             <div class="rt-step-body">
                                 <strong>Set as Default Ringtone</strong>
-                                <p>When the export succeeds, tap <strong>"Use sound as..."</strong> &rarr; select <strong>Standard Ringtone</strong>, <strong>Text Tone</strong>, or <strong>Assign to Contact</strong>!</p>
+                                <p>When the export succeeds, tap <strong>"Use sound as..."</strong> &rarr; select
+                                    <strong>Standard Ringtone</strong>, <strong>Text Tone</strong>, or <strong>Assign to
+                                        Contact</strong>!</p>
                             </div>
                         </div>
                     </div>
@@ -1428,7 +1452,8 @@
                 <div id="rtViewPc" class="rt-method-view">
                     <div class="rt-alert-banner">
                         <span class="rt-alert-icon">⚡</span>
-                        <p><strong>Fast Cable Sync!</strong> Transfer the generated <code>.m4r</code> ringtone directly to your iPhone using Finder (Mac) or iTunes / Apple Devices (Windows).</p>
+                        <p><strong>Fast Cable Sync!</strong> Transfer the generated <code>.m4r</code> ringtone directly
+                            to your iPhone using Finder (Mac) or iTunes / Apple Devices (Windows).</p>
                     </div>
 
                     <div class="rt-steps-list">
@@ -1436,7 +1461,8 @@
                             <div class="rt-step-badge">1</div>
                             <div class="rt-step-body">
                                 <strong>Download .M4R File on Computer</strong>
-                                <p>Download the ringtone package from MP3aud.io to your computer and locate the <code>.m4r</code> file.</p>
+                                <p>Download the ringtone package from MP3aud.io to your computer and locate the
+                                    <code>.m4r</code> file.</p>
                             </div>
                         </div>
 
@@ -1444,7 +1470,8 @@
                             <div class="rt-step-badge">2</div>
                             <div class="rt-step-body">
                                 <strong>Connect iPhone via Cable</strong>
-                                <p>Plug your iPhone into your Mac or PC using your Lightning or USB-C charging cable.</p>
+                                <p>Plug your iPhone into your Mac or PC using your Lightning or USB-C charging cable.
+                                </p>
                             </div>
                         </div>
 
@@ -1452,7 +1479,11 @@
                             <div class="rt-step-badge">3</div>
                             <div class="rt-step-body">
                                 <strong>Drag &amp; Drop to iPhone</strong>
-                                <p><strong>On Mac (Finder):</strong> Open Finder &rarr; click your iPhone in the left sidebar &rarr; drag and drop the <code>.m4r</code> file directly onto the iPhone window.<br><strong>On Windows:</strong> Open <em>iTunes</em> (or <em>Apple Devices</em> app) &rarr; select your device &rarr; click <strong>Tones</strong> &rarr; drag the <code>.m4r</code> file into the list.</p>
+                                <p><strong>On Mac (Finder):</strong> Open Finder &rarr; click your iPhone in the left
+                                    sidebar &rarr; drag and drop the <code>.m4r</code> file directly onto the iPhone
+                                    window.<br><strong>On Windows:</strong> Open <em>iTunes</em> (or <em>Apple
+                                        Devices</em> app) &rarr; select your device &rarr; click <strong>Tones</strong>
+                                    &rarr; drag the <code>.m4r</code> file into the list.</p>
                             </div>
                         </div>
 
@@ -1460,7 +1491,9 @@
                             <div class="rt-step-badge">4</div>
                             <div class="rt-step-body">
                                 <strong>Select on iPhone</strong>
-                                <p>On your iPhone, open <strong>Settings &rarr; Sounds &amp; Haptics &rarr; Ringtone</strong>. Your new custom tone will appear at the very top under <em>Custom</em>!</p>
+                                <p>On your iPhone, open <strong>Settings &rarr; Sounds &amp; Haptics &rarr;
+                                        Ringtone</strong>. Your new custom tone will appear at the very top under
+                                    <em>Custom</em>!</p>
                             </div>
                         </div>
                     </div>
@@ -1471,7 +1504,8 @@
             <div id="rtPanelAndroid" class="rt-panel" role="tabpanel" aria-labelledby="rtTabAndroid">
                 <div class="rt-alert-banner">
                     <span class="rt-alert-icon">🤖</span>
-                    <p><strong>Universal MP3 Support!</strong> Android lets you set any MP3 file as your phone ringtone, notification tone, or alarm sound directly in Settings with no extra software needed.</p>
+                    <p><strong>Universal MP3 Support!</strong> Android lets you set any MP3 file as your phone ringtone,
+                        notification tone, or alarm sound directly in Settings with no extra software needed.</p>
                 </div>
 
                 <div class="rt-steps-list">
@@ -1479,7 +1513,8 @@
                         <div class="rt-step-badge">1</div>
                         <div class="rt-step-body">
                             <strong>Download the MP3 Track</strong>
-                            <p>Tap <strong>Download</strong> on MP3aud.io to save your converted MP3 file to your phone's <code>Downloads</code> folder.</p>
+                            <p>Tap <strong>Download</strong> on MP3aud.io to save your converted MP3 file to your
+                                phone's <code>Downloads</code> folder.</p>
                         </div>
                     </div>
 
@@ -1487,7 +1522,9 @@
                         <div class="rt-step-badge">2</div>
                         <div class="rt-step-body">
                             <strong>Open Sound Settings</strong>
-                            <p>Open your Android phone's <strong>Settings</strong> app &rarr; scroll down and tap <strong>Sound &amp; vibration</strong> (or <em>Sounds and vibration</em> on Samsung Galaxy).</p>
+                            <p>Open your Android phone's <strong>Settings</strong> app &rarr; scroll down and tap
+                                <strong>Sound &amp; vibration</strong> (or <em>Sounds and vibration</em> on Samsung
+                                Galaxy).</p>
                         </div>
                     </div>
 
@@ -1495,7 +1532,8 @@
                         <div class="rt-step-badge">3</div>
                         <div class="rt-step-body">
                             <strong>Select Phone Ringtone</strong>
-                            <p>Tap <strong>Phone ringtone</strong> (or choose SIM 1 / SIM 2 if you have dual SIM cards active).</p>
+                            <p>Tap <strong>Phone ringtone</strong> (or choose SIM 1 / SIM 2 if you have dual SIM cards
+                                active).</p>
                         </div>
                     </div>
 
@@ -1503,7 +1541,10 @@
                         <div class="rt-step-badge">4</div>
                         <div class="rt-step-body">
                             <strong>Add Custom Audio Track</strong>
-                            <p><strong>On Samsung Galaxy:</strong> Tap the <strong>+</strong> (plus icon) in the top-right corner of the screen.<br><strong>On Google Pixel, Motorola, OnePlus:</strong> Tap <strong>My Sounds</strong> &rarr; tap the <strong>+ Add Ringtone</strong> button at the bottom.</p>
+                            <p><strong>On Samsung Galaxy:</strong> Tap the <strong>+</strong> (plus icon) in the
+                                top-right corner of the screen.<br><strong>On Google Pixel, Motorola, OnePlus:</strong>
+                                Tap <strong>My Sounds</strong> &rarr; tap the <strong>+ Add Ringtone</strong> button at
+                                the bottom.</p>
                         </div>
                     </div>
 
@@ -1511,21 +1552,25 @@
                         <div class="rt-step-badge">5</div>
                         <div class="rt-step-body">
                             <strong>Pick Track &amp; Save</strong>
-                            <p>Select your downloaded MP3 audio file from your files or music picker and tap <strong>Done</strong> or <strong>Save</strong>. Your ringtone is now set!</p>
+                            <p>Select your downloaded MP3 audio file from your files or music picker and tap
+                                <strong>Done</strong> or <strong>Save</strong>. Your ringtone is now set!</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="rt-tip-card">
                     <span class="rt-tip-badge">VIP Pro-Tip</span>
-                    <p>Want a unique ringtone for specific people? Open your <strong>Contacts</strong> app &rarr; select a contact &rarr; tap <strong>Edit</strong> (or More) &rarr; tap <strong>Ringtone</strong> and choose your custom sound so you know who is calling before looking at your screen!</p>
+                    <p>Want a unique ringtone for specific people? Open your <strong>Contacts</strong> app &rarr; select
+                        a contact &rarr; tap <strong>Edit</strong> (or More) &rarr; tap <strong>Ringtone</strong> and
+                        choose your custom sound so you know who is calling before looking at your screen!</p>
                 </div>
             </div>
 
             <!-- Modal Action Footer -->
             <div class="rt-modal-footer">
                 <button type="button" class="rt-copy-btn" id="rtCopyBtn" onclick="copyRingtoneDirections()">
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                     </svg>
