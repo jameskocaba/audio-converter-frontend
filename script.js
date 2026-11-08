@@ -2986,80 +2986,100 @@ function appendAssistantMusicBubble(payload) {
     }
 }
 
-// --- Send Message Handler (Text Request or Attached Local Files) ---
-async function sendUserMessage(customText = null) {
-    if (!isBackendAwake) {
-        // Trigger background wake ping without stalling or blocking the user
-        fetch(`${BACKEND_URL}/health`, { cache: 'no-store' }).then(r => {
-            if (r && r.ok) unlockChatAfterWake();
-        }).catch(() => { });
+    // --- Send Message Handler (Text Request or Attached Local Files) ---
+    async function sendUserMessage(customText = null) {
+        if (!isBackendAwake) {
+            // Trigger background wake ping without stalling or blocking the user
+            fetch(`${BACKEND_URL}/health`, { cache: 'no-store' }).then(r => {
+                if (r && r.ok) unlockChatAfterWake();
+            }).catch(() => {});
+        }
+
+        if (pendingFiles.length > 0 && !customText) {
+            await handleSendLocalFilesInChat();
+            return;
+        }
     }
 
     if (pendingFiles.length > 0 && !customText) {
         await handleSendLocalFilesInChat();
         return;
     }
-}
 
-if (pendingFiles.length > 0 && !customText) {
-    await handleSendLocalFilesInChat();
-    return;
-}
+    const text = (customText !== null ? customText : (chatInput ? chatInput.value : '')).trim();
+    if (!text) return;
 
-const text = (customText !== null ? customText : (chatInput ? chatInput.value : '')).trim();
-if (!text) return;
+    if (customText === null && chatInput) {
+        chatInput.value = '';
+        chatInput.style.height = 'auto';
+    }
 
-if (customText === null && chatInput) {
-    chatInput.value = '';
-    chatInput.style.height = 'auto';
-}
+    appendUserBubble(text);
+    saveRecentPrompt(text);
+    chatHistory.push({ role: 'user', content: text });
 
-appendUserBubble(text);
-saveRecentPrompt(text);
-chatHistory.push({ role: 'user', content: text });
+    const typingRow = appendTypingBubble();
+    const lowerText = text.toLowerCase();
+    const isAskingForNew = /\b(new|another|different|fresh|random|more|next|surprise|other|else|switch|change|again)\b/i.test(text);
+    const isGenericMakePlaylist = /^(hey|hi|hello|yo|please|can you|could you|will you|would you|i want you to|i'd like you to)?\s*(make|build|create|curate|put together|give|send)\s+(me\s+)?(a\s+)?(good\s+|cool\s+|nice\s+)?(playlist|mix|mixtape)\s*[?.!]*$/i.test(lowerText);
+    const isExplicitMusicReq = isExplicitPlaylistRequest(lowerText) || isExplicitSingleTrackRequest(text, lowerText);
+    const isPureConvOrLifeMoment = Boolean(assistantMemory.awaitingPlaylistVibe || isGenericMakePlaylist || !isExplicitMusicReq || isConversationalOnlyMessage(lowerText));
+    const looksLikeQuestion = /\?$/.test(text) || /^(who|what|when|where|why|how|which|tell me|can you tell|do you know|explain|swap|replace|pause|resume|next|skip)\b/i.test(lowerText);
 
-const typingRow = appendTypingBubble();
-const lowerText = text.toLowerCase();
-const isAskingForNew = /\b(new|another|different|fresh|random|more|next|surprise|other|else|switch|change|again)\b/i.test(text);
-const isGenericMakePlaylist = /^(hey|hi|hello|yo|please|can you|could you|will you|would you|i want you to|i'd like you to)?\s*(make|build|create|curate|put together|give|send)\s+(me\s+)?(a\s+)?(good\s+|cool\s+|nice\s+)?(playlist|mix|mixtape)\s*[?.!]*$/i.test(lowerText);
-const isExplicitMusicReq = isExplicitPlaylistRequest(lowerText) || isExplicitSingleTrackRequest(text, lowerText);
-const isPureConvOrLifeMoment = Boolean(assistantMemory.awaitingPlaylistVibe || isGenericMakePlaylist || !isExplicitMusicReq || isConversationalOnlyMessage(lowerText));
-const looksLikeQuestion = /\?$/.test(text) || /^(who|what|when|where|why|how|which|tell me|can you tell|do you know|explain|swap|replace|pause|resume|next|skip)\b/i.test(lowerText);
+    if (assistantStatusText) {
+        assistantStatusText.textContent = (isPureConvOrLifeMoment || looksLikeQuestion)
+            ? 'typing a reply...'
+            : 'digging through crates & curating tracks...';
+    }
 
-if (assistantStatusText) {
-    assistantStatusText.textContent = (isPureConvOrLifeMoment || looksLikeQuestion)
-        ? 'typing a reply...'
-        : 'digging through crates & curating tracks...';
-}
+    try {
+        let result = null;
 
-try {
-    let result = null;
+            // 2. Query backend LLM if awake, or use instant client curation if sleeping (never stalls!)
+            if (!result) {
+                if (isBackendAwake) {
+                    const waitTimeoutMs = 12000;
+                    try {
+                        const customAiKey = (localStorage.getItem('mp3audio_custom_ai_key') || '').trim();
+                        const reqHeaders = { 'Content-Type': 'application/json' };
+                        if (customAiKey) {
+                            reqHeaders['X-AI-Key'] = customAiKey;
+                        }
 
-    // 2. Query backend LLM if awake, or use instant client curation if sleeping (never stalls!)
-    if (!result) {
-        if (isBackendAwake) {
-            const waitTimeoutMs = 12000;
-            try {
-                const customAiKey = (localStorage.getItem('mp3audio_custom_ai_key') || '').trim();
-                const reqHeaders = { 'Content-Type': 'application/json' };
-                if (customAiKey) {
-                    reqHeaders['X-AI-Key'] = customAiKey;
-                }
-
-                const backendCall = (async () => {
-                    const resp = await fetchWithTimeout(`${BACKEND_URL}/api/assistant/chat`, {
-                        method: 'POST',
-                        headers: reqHeaders,
-                        body: JSON.stringify({
-                            message: text,
-                            history: chatHistory.slice(-8),
-                            current_tracks: (assistantMemory.lastTracks || []).slice(0, 6),
-                            options: {
-                                auto_add_album_art: autoAddAlbumArtInput ? autoAddAlbumArtInput.checked : true,
-                                increase_quality: increaseQualityInput ? increaseQualityInput.checked : false,
-                                is_ringtone: videoToMp3Input ? videoToMp3Input.checked : false,
-                                transcribe_audio: attachLyricsInput ? attachLyricsInput.checked : false
+                        const backendCall = (async () => {
+                            const resp = await fetchWithTimeout(`${BACKEND_URL}/api/assistant/chat`, {
+                                method: 'POST',
+                                headers: reqHeaders,
+                                body: JSON.stringify({
+                                    message: text,
+                                    history: chatHistory.slice(-8),
+                                    current_tracks: (assistantMemory.lastTracks || []).slice(0, 6),
+                                    options: {
+                                        auto_add_album_art: autoAddAlbumArtInput ? autoAddAlbumArtInput.checked : true,
+                                        increase_quality: increaseQualityInput ? increaseQualityInput.checked : false,
+                                        is_ringtone: videoToMp3Input ? videoToMp3Input.checked : false,
+                                        transcribe_audio: attachLyricsInput ? attachLyricsInput.checked : false
+                                    }
+                                })
+                            }, waitTimeoutMs - 2000);
+                            if (resp) {
+                                const data = await resp.json().catch(() => null);
+                                if (data) {
+                                    if (data.requires_payment) {
+                                        return data;
+                                    }
+                                    if (resp.ok && data.success) {
+                                        return data;
+                                    }
+                                }
                             }
+                            return null;
+                        })();
+
+                        const raceTimeout = new Promise(resolve => setTimeout(() => resolve(null), waitTimeoutMs));
+                        result = await Promise.race([backendCall, raceTimeout]);
+                        if (result && (result.success || result.requires_payment)) {
+                            isBackendAwake = true;
                         })
                     }, waitTimeoutMs - 2000);
                     if (resp) {
@@ -3072,93 +3092,73 @@ try {
                                 return data;
                             }
                         }
+                    } catch (networkErr) {
+                        console.info('Backend assistant offline or timed out, using instant client fallback:', networkErr);
                     }
-                    return null;
-                })();
+                }
 
+                // If backend is still sleeping or timed out, IMMEDIATELY serve response via client curation (no stall!)
                 const raceTimeout = new Promise(resolve => setTimeout(() => resolve(null), waitTimeoutMs));
                 result = await Promise.race([backendCall, raceTimeout]);
                 if (result && (result.success || result.requires_payment)) {
                     isBackendAwake = true;
-                })
-            }, waitTimeoutMs - 2000);
-            if (resp) {
-                const data = await resp.json().catch(() => null);
-                if (data) {
-                    if (data.requires_payment) {
-                        return data;
-                    }
-                    if (resp.ok && data.success) {
-                        return data;
-                    }
                 }
             } catch (networkErr) {
-                console.info('Backend assistant offline or timed out, using instant client fallback:', networkErr);
+                console.info('Backend assistant offline or timed out, using client fallback:', networkErr);
+            }
+
+            let shouldUseClientCuration = (!result || (!result.success && !result.requires_payment));
+            if (!shouldUseClientCuration && !result.requires_payment && isAskingForNew && Array.isArray(result.tracks) && result.tracks.length > 0) {
+                const allAlreadyShown = result.tracks.every(t =>
+                    shownTrackKeys.has(`${(t.title || '').toLowerCase()}|${(t.artist || '').toLowerCase()}`)
+                );
+                const looksLikeLiteralNewQuery = /\b(a new|new|another|different)\s+—\s+curated mix/i.test(result.playlist_title || '');
+                if (allAlreadyShown || looksLikeLiteralNewQuery) {
+                    shouldUseClientCuration = true;
+                }
+            }
+
+            if (shouldUseClientCuration) {
+                result = await clientSideCurateFallback(text);
+            } else if (result && !result.requires_payment && Array.isArray(result.tracks) && result.tracks.length > 0) {
+                result.tracks.forEach(t => {
+                    shownTrackKeys.add(`${(t.title || '').toLowerCase()}|${(t.artist || '').toLowerCase()}`);
+                });
+                assistantMemory.lastTracks = result.tracks;
+                assistantMemory.lastPlaylistTitle = result.playlist_title || text;
+                if (result.tracks[0] && result.tracks[0].artist) assistantMemory.lastArtist = result.tracks[0].artist;
+            }
+
+            if (result) {
+                if (result.free_playlists_used !== undefined) {
+                    localStorage.setItem('mp3audio_free_playlists_used', result.free_playlists_used);
+                }
+                if (result.credits_remaining !== undefined) {
+                    if (paidCreditsDisplay) paidCreditsDisplay.textContent = result.credits_remaining;
+                    if (headerPaidCreditsDisplay) headerPaidCreditsDisplay.textContent = result.credits_remaining;
+                }
             }
         }
 
-        // If backend is still sleeping or timed out, IMMEDIATELY serve response via client curation (no stall!)
-        const raceTimeout = new Promise(resolve => setTimeout(() => resolve(null), waitTimeoutMs));
-        result = await Promise.race([backendCall, raceTimeout]);
-        if (result && (result.success || result.requires_payment)) {
-            isBackendAwake = true;
-        }
-    } catch (networkErr) {
-        console.info('Backend assistant offline or timed out, using client fallback:', networkErr);
-    }
-
-    let shouldUseClientCuration = (!result || (!result.success && !result.requires_payment));
-    if (!shouldUseClientCuration && !result.requires_payment && isAskingForNew && Array.isArray(result.tracks) && result.tracks.length > 0) {
-        const allAlreadyShown = result.tracks.every(t =>
-            shownTrackKeys.has(`${(t.title || '').toLowerCase()}|${(t.artist || '').toLowerCase()}`)
-        );
-        const looksLikeLiteralNewQuery = /\b(a new|new|another|different)\s+—\s+curated mix/i.test(result.playlist_title || '');
-        if (allAlreadyShown || looksLikeLiteralNewQuery) {
-            shouldUseClientCuration = true;
-        }
-    }
-
-    if (shouldUseClientCuration) {
-        result = await clientSideCurateFallback(text);
-    } else if (result && !result.requires_payment && Array.isArray(result.tracks) && result.tracks.length > 0) {
-        result.tracks.forEach(t => {
-            shownTrackKeys.add(`${(t.title || '').toLowerCase()}|${(t.artist || '').toLowerCase()}`);
-        });
-        assistantMemory.lastTracks = result.tracks;
-        assistantMemory.lastPlaylistTitle = result.playlist_title || text;
-        if (result.tracks[0] && result.tracks[0].artist) assistantMemory.lastArtist = result.tracks[0].artist;
-    }
-
-    if (result) {
-        if (result.free_playlists_used !== undefined) {
-            localStorage.setItem('mp3audio_free_playlists_used', result.free_playlists_used);
-        }
-        if (result.credits_remaining !== undefined) {
-            if (paidCreditsDisplay) paidCreditsDisplay.textContent = result.credits_remaining;
-            if (headerPaidCreditsDisplay) headerPaidCreditsDisplay.textContent = result.credits_remaining;
-        }
-    }
-}
-
         if (typingRow && typingRow.parentNode) typingRow.remove();
-appendAssistantMusicBubble(result);
-chatHistory.push({ role: 'assistant', content: result.reply || '' });
+        appendAssistantMusicBubble(result);
+        chatHistory.push({ role: 'assistant', content: result.reply || '' });
     } catch (err) {
-    console.error('Chat message error, recovering with fallback:', err);
-    if (typingRow && typingRow.parentNode) typingRow.remove();
-    try {
-        const fallbackResult = await clientSideCurateFallback(text);
-        appendAssistantMusicBubble(fallbackResult);
-    } catch (_) {
-        showToast('Something went wrong processing your message.', 'error');
+        console.error('Chat message error, recovering with fallback:', err);
+        if (typingRow && typingRow.parentNode) typingRow.remove();
+        try {
+            const fallbackResult = await clientSideCurateFallback(text);
+            appendAssistantMusicBubble(fallbackResult);
+        } catch (_) {
+            showToast('Something went wrong processing your message.', 'error');
+        }
+    } finally {
+        if (wakeTimer) clearInterval(wakeTimer);
+        if (typingRow && typingRow.parentNode) typingRow.remove();
+        if (assistantStatusText) {
+            assistantStatusText.innerHTML = 'Online &bull; AI Personal Assistant &amp; DJ';
+        }
     }
-} finally {
-    if (wakeTimer) clearInterval(wakeTimer);
-    if (typingRow && typingRow.parentNode) typingRow.remove();
-    if (assistantStatusText) {
-        assistantStatusText.innerHTML = 'Online &bull; AI Personal Assistant &amp; DJ';
-    }
-}
 }
 
 // --- Local File Upload in Chat ---
